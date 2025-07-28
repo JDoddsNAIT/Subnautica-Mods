@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnifeDamageMod", "KnifeDamageMod\KnifeDamageMod.csproj", "{958A990D-3D84-4899-9A2A-BBCACC0C69D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{84B219F5-E600-43DD-9970-CF558D45C373}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraft3Remake", "CustomCraft3Remake\CustomCraft3Remake.csproj", "{2C049528-4AE1-46C5-8DDE-E20CBED8069D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{958A990D-3D84-4899-9A2A-BBCACC0C69D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{958A990D-3D84-4899-9A2A-BBCACC0C69D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{958A990D-3D84-4899-9A2A-BBCACC0C69D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{958A990D-3D84-4899-9A2A-BBCACC0C69D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84B219F5-E600-43DD-9970-CF558D45C373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84B219F5-E600-43DD-9970-CF558D45C373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84B219F5-E600-43DD-9970-CF558D45C373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84B219F5-E600-43DD-9970-CF558D45C373}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C049528-4AE1-46C5-8DDE-E20CBED8069D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C049528-4AE1-46C5-8DDE-E20CBED8069D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C049528-4AE1-46C5-8DDE-E20CBED8069D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C049528-4AE1-46C5-8DDE-E20CBED8069D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BB58013D-2302-4396-B570-C00B43409970}
+	EndGlobalSection
+EndGlobal
