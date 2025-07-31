@@ -28,6 +28,6 @@ public class Plugin : BaseUnityPlugin
 
 	private void InitializePrefabs()
 	{
-		YeetKnifePrefab.Register();
+		HandheldDrillPrefab.Register();
 	}
 }
