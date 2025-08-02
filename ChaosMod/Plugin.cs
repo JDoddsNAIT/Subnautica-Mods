@@ -1,10 +1,8 @@
 ﻿using System.Reflection;
 using BepInEx;
-using BepInEx.Logging;
 using FrootLuips.ChaosMod.Logging;
 using HarmonyLib;
 using Nautilus.Handlers;
-using Logger = FrootLuips.ChaosMod.Logging.Logger;
 
 namespace FrootLuips.ChaosMod;
 [BepInPlugin(GUID, NAME, VERSION)]
@@ -16,12 +14,14 @@ public class Plugin : BaseUnityPlugin
 	public const string VERSION = "1.0.0";
 
 	public new static ILogger? Logger { get; private set; }
+	internal static ModOptions? Options { get; private set; }
 
 	internal static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
 	private void Awake()
 	{
 		Logger = new Logger(base.Logger);
+		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
 		Harmony.CreateAndPatchAll(Assembly, GUID);
 
