@@ -2,6 +2,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Nautilus.Handlers;
 
 namespace FrootLuips.RPGElements;
 #nullable disable
@@ -9,13 +10,16 @@ namespace FrootLuips.RPGElements;
 [BepInDependency("com.snmodding.nautilus")]
 public class Plugin : BaseUnityPlugin
 {
+	public const string DISPLAY_NAME = "FrootLuips' RPG Elements";
+
+	public static ModOptions Options { get; private set; }
 	public new static ManualLogSource Logger { get; private set; }
 
 	private static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
 	private void Awake()
 	{
-		// set project-scoped logger instance
+		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 		Logger = base.Logger;
 
 		// register harmony patches, if there are any
