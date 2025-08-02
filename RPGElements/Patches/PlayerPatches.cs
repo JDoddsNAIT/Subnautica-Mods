@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BepInEx;
+using HarmonyLib;
 
-namespace RPGElements.Patches;
+namespace FrootLuips.RPGElements.Patches;
+
+[HarmonyPatch(typeof(Player))]
 internal class PlayerPatches
 {
+
 }

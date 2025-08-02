@@ -3,7 +3,7 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 
-namespace RPGElements;
+namespace FrootLuips.RPGElements;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 [BepInDependency("com.snmodding.nautilus")]
 public class Plugin : BaseUnityPlugin
