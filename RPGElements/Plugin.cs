@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 
 namespace FrootLuips.RPGElements;
+#nullable disable
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 [BepInDependency("com.snmodding.nautilus")]
 public class Plugin : BaseUnityPlugin

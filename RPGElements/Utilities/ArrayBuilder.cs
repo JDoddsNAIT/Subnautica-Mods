@@ -5,21 +5,24 @@ internal class ArrayBuilder<T>
 {
 	private readonly List<T[]> _values = new();
 
+	public int Count { get; private set; }
+
 	public ArrayBuilder<T> Append(params T[] values)
 	{
 		_values.Add(values);
+		Count += values.Length;
 		return this;
+	}
+
+	public void Clear()
+	{
+		_values.Clear();
+		Count = 0;
 	}
 
 	public T[] ToArray()
 	{
-		int length = 0;
-		for (int i = 0; i < _values.Count; i++)
-		{
-			length += _values[i].Length;
-		}
-
-		var result = new T[length];
+		var result = new T[this.Count];
 		int index = 0;
 		for (int i = 0; i < _values.Count; i++)
 		{
