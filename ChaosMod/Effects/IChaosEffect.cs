@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Objects;
 
 namespace FrootLuips.ChaosMod.Effects;
-internal interface IChaosEffect
+internal interface IChaosEffect : IDistributable
 {
 	string Id { get; }
 	string Description { get; set; }
 	float Duration { get; set; }
-	int Weight { get; set; }
 
 	void Activate();
 
