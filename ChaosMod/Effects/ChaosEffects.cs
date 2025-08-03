@@ -2,15 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Objects;
+using FrootLuips.ChaosMod.Utilities;
 using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal static class ChaosEffects
 {
-	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; } = new() {
-		[ChaosEffect.ReaperRain] = new ReaperRain(),
+	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; private set; } = ResetEffects();
 
+	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => new() {
+		[ChaosEffect.ReaperRain] = new ReaperRain(),
 	};
+
+	public static RandomDistribution<IChaosEffect>? RandomDistribution { get; private set; }
+
+	public static RandomDistribution<IChaosEffect> GetRandomDistribution()
+	{
+		var effects = Effects.Values.Where(v => v.Weight > 0).ToArray();
+		RandomDistribution = new RandomDistribution<IChaosEffect>(effects);
+		return RandomDistribution;
+	}
 
 	public static void LoadEffects(string filePath)
 	{
@@ -23,7 +35,7 @@ internal static class ChaosEffects
 		{
 			if (!Enum.TryParse(effects[i].Id, out ChaosEffect effect))
 			{
-				Plugin.Logger!.LogWarn(new LogMessage(context: context)
+				Plugin.Logger.LogWarn(new LogMessage(context: context)
 					.WithNotice("Effect ID '", effects[i].Id, "' is invalid")
 					.WithMessage("Skipping"));
 				continue;
@@ -42,12 +54,12 @@ internal static class ChaosEffects
 						if (issues.Count > 0)
 						{
 							message.WithMessage("Some issues occurred.").WithRemarks(string.Join("\n", issues));
-							Plugin.Logger!.LogWarn(message);
+							Plugin.Logger.LogWarn(message);
 						}
 						else
 						{
 							message.WithMessage("No issues");
-							Plugin.Logger!.LogInfo(message);
+							Plugin.Logger.LogInfo(message);
 						}
 					}
 					else
@@ -55,7 +67,7 @@ internal static class ChaosEffects
 						message.WithNotice("Failed to load settings for '", effect, "'")
 							.WithMessage("Skipping")
 							.WithRemarks(string.Join("\n", issues));
-						Plugin.Logger!.LogError(message);
+						Plugin.Logger.LogError(message);
 					}
 				}
 			}

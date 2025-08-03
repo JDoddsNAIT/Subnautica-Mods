@@ -22,9 +22,14 @@ internal interface IChaosEffect : IDistributable
 [Serializable]
 internal class EffectData
 {
-	public string Id { get; private set; } = "";
-	public string Description { get; private set; } = "";
-	public float Duration { get; private set; }
-	public int Weight { get; private set; }
-	public string[] Data { get; private set; } = Array.Empty<string>();
+	public string Id { get; set; } = "";
+	public string Description { get; set; } = "";
+	public float Duration { get; set; }
+	public int Weight { get; set; }
+	public Tag[] Tags { get; set; } = Array.Empty<Tag>();
+
+	[Serializable]
+	internal record class Tag(string Name, string Value);
 }
+
+
