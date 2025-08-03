@@ -13,8 +13,6 @@ public sealed class Plugin : BaseUnityPlugin
 	public const string NAME = "FrootLuips' Chaos Mod";
 	public const string VERSION = "1.0.0";
 
-	//public const string StartupMessage = "Welcome to " + NAME + "! open the console an"
-
 	private static ILogger? _logger;
 	private static ModOptions? _options;
 
@@ -28,6 +26,7 @@ public sealed class Plugin : BaseUnityPlugin
 		Logger = new Logger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
+		ConsoleCommandsHandler.RegisterConsoleCommands(typeof(ConsoleCommands));
 		Harmony.CreateAndPatchAll(Assembly, GUID);
 
 		Logger.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: GUID));

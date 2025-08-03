@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal interface IChaosEffect : IDistributable
 {
-	string Id { get; }
-	string Description { get; set; }
-	float Duration { get; set; }
+	ChaosEffect Id { get; }
+	string Description { get; }
+	float Duration { get; }
 
-	void Activate();
+	IEnumerator Activate();
 
 	EffectData ToData();
 	void FromData(EffectData data, StatusCallback callback);

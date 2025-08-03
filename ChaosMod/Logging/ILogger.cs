@@ -8,5 +8,5 @@ public interface ILogger
 	void LogWarn(string message);
 	void LogError(string message);
 	void LogFatal(string message);
-	void LogInGame(string message, LogLevel level, float duration = 5f);
+	void LogInGame(string message, LogLevel level = LogLevel.Info, float duration = 5f);
 }

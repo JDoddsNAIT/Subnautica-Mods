@@ -17,16 +17,19 @@ internal static class ChaosEffects
 
 	public static RandomDistribution<IChaosEffect>? RandomDistribution { get; private set; }
 
-	public static RandomDistribution<IChaosEffect> GetRandomDistribution()
+	public static RandomDistribution<IChaosEffect> GetRandomDistribution(IEnumerable<ChaosEffect> exclusions)
 	{
-		var effects = Effects.Values.Where(v => v.Weight > 0).ToArray();
+		var effects = Effects
+			.Where(kvp => !exclusions.Contains(kvp.Key) && kvp.Value.Weight > 0)
+			.Select(kvp => kvp.Value)
+			.ToArray();
 		RandomDistribution = new RandomDistribution<IChaosEffect>(effects);
 		return RandomDistribution;
 	}
 
-	public static void LoadEffects(string filePath)
+	public static void Load(string filePath)
 	{
-		const string context = $"{nameof(ChaosEffects)}.{nameof(LoadEffects)})";
+		const string context = $"{nameof(ChaosEffects)}.{nameof(Load)})";
 		var effects = new List<EffectData>();
 
 		effects.LoadJson(filePath);
@@ -74,9 +77,9 @@ internal static class ChaosEffects
 		}
 	}
 
-	public static void SaveEffects(string filePath)
+	public static void Save(string filePath)
 	{
-		const string context = $"{nameof(ChaosEffects)}.{nameof(SaveEffects)})";
+		const string context = $"{nameof(ChaosEffects)}.{nameof(Save)})";
 		var effects = Effects.Values.Select(static v => v.ToData());
 		effects.SaveJson(filePath);
 	}

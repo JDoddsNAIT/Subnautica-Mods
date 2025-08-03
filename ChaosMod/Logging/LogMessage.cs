@@ -144,7 +144,7 @@ public class LogMessage
 	/// <returns>A <see cref="LogMessage"/> with the notice, message, and remarks set.</returns>
 	public static LogMessage FromException(Exception exception)
 	{
-		return new LogMessage(notice: exception.Message, message: "See below for details.", remarks: exception.ToString());
+		return new LogMessage(message: exception.Message + "; See below for details.", remarks: exception.ToString());
 	}
 
 	public static implicit operator string(LogMessage logMessage) => logMessage.ToString();

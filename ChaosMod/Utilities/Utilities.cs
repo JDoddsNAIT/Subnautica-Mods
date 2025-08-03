@@ -8,14 +8,18 @@ using FrootLuips.ChaosMod.Objects;
 namespace FrootLuips.ChaosMod.Utilities;
 internal static class Utilities
 {
-	public static string GetPluginPath()
+	public static string GetPluginPath(string filename = "")
 	{
-		return Path.Combine(BepInEx.Paths.PluginPath, Plugin.NAME);
+		return string.IsNullOrWhiteSpace(filename)
+			? Path.Combine(BepInEx.Paths.PluginPath, Plugin.NAME)
+			: Path.Combine(BepInEx.Paths.PluginPath, Plugin.NAME, filename);
 	}
 
-	public static string GetConfigPath()
+	public static string GetConfigPath(string filename = "")
 	{
-		return Path.Combine(BepInEx.Paths.ConfigPath, Plugin.NAME);
+		return string.IsNullOrWhiteSpace(filename)
+			? Path.Combine(BepInEx.Paths.ConfigPath, Plugin.NAME)
+			: Path.Combine(BepInEx.Paths.ConfigPath, Plugin.NAME, filename);
 	}
 
 	public static Exception Invalid(this EffectData.Tag tag)
