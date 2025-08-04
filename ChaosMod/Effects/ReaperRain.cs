@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Utilities;
-using static FrootLuips.ChaosMod.Utilities.Utilities;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : IChaosEffect
 {
 	public ChaosEffect Id { get; } = ChaosEffect.ReaperRain;
-	public string Description { get; private set; } = "It's raining reapers!";
+	public string? Description { get; set; } = "";
 	public float Duration { get; private set; } = 30f;
-	public int Weight { get; private set; } = 1;
+	public int Weight { get; private set; } = 100;
 
 	/// <summary>
 	/// Height in metres above sea level where the reapers will spawn.
 	/// </summary>
-	public int? Height { get; set; }
+	public int? Height { get; set; } = null;
 	/// <summary>
 	/// Amount of reapers spawned every second over the duration.
 	/// </summary>
-	public float? SpawnsPerSecond { get; set; }
+	public float? SpawnsPerSecond { get; set; } = null;
 
 	public IEnumerator Activate()
 	{
@@ -28,9 +28,8 @@ internal class ReaperRain : IChaosEffect
 		yield return null;
 	}
 
-	public void FromData(EffectData data, StatusCallback callback)
+	public void FromData(Effect data, StatusCallback callback)
 	{
-		this.Description = data.Description;
 		this.Duration = data.Duration;
 		this.Weight = data.Weight;
 
@@ -40,7 +39,7 @@ internal class ReaperRain : IChaosEffect
 		List<string> errors = new();
 		try
 		{
-			Assertions.Validate(ValidateTags(data.Tags));
+			Assertions.Validate(ValidateAttributes(data.Attributes));
 		}
 		catch (AggregateException ex)
 		{
@@ -56,26 +55,28 @@ internal class ReaperRain : IChaosEffect
 		}
 	}
 
-	private IEnumerator<Exception> ValidateTags(EffectData.Tag[] tags)
+	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
 	{
-		for (int i = 0; i < tags.Length; i++)
+		EffectHelpers.ExpectAttributeCount(attributes, count: 2);
+
+		for (int i = 0; i < attributes.Length; i++)
 		{
 			Exception? exception = null;
 
 			try
 			{
-				switch (tags[i].Name)
+				switch (attributes[i].Name)
 				{
 					case nameof(Height):
-						tags[i].ParseTag(int.TryParse, out int height);
-						SetProperty(nameof(Height), GetHeight, SetHeight, height);
+						attributes[i].ParseAttribute(int.Parse, out int height);
+						Height = height;
 						break;
 					case nameof(SpawnsPerSecond):
-						tags[i].ParseTag(float.TryParse, out float spawns);
-						SetProperty(nameof(SpawnsPerSecond), GetSpawns, SetSpawns, spawns);
+						attributes[i].ParseAttribute(float.Parse, out float spawns);
+						SpawnsPerSecond = spawns;
 						break;
 					default:
-						throw tags[i].Invalid();
+						throw attributes[i].Invalid();
 				}
 			}
 			catch (Exception ex)
@@ -90,19 +91,13 @@ internal class ReaperRain : IChaosEffect
 		}
 	}
 
-	private int? GetHeight() => Height;
-	private void SetHeight(int value) => Height = value;
-	private float? GetSpawns() => SpawnsPerSecond;
-	private void SetSpawns(float value) => SpawnsPerSecond = value;
-
-	public EffectData ToData() => new() {
+	public Effect ToData() => new() {
 		Id = this.Id.ToString(),
-		Description = this.Description,
 		Duration = this.Duration,
 		Weight = this.Weight,
-		Tags = new[] {
-			new EffectData.Tag(nameof(Height), Height.ToString()),
-			new EffectData.Tag(nameof(SpawnsPerSecond), SpawnsPerSecond.ToString()),
+		Attributes = new[] {
+			new Effect.Attribute(nameof(Height), Height.ToString()),
+			new Effect.Attribute(nameof(SpawnsPerSecond), SpawnsPerSecond.ToString()),
 		},
 	};
 }

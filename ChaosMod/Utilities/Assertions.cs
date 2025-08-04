@@ -44,9 +44,17 @@ public static class Assertions
 	{
 		var errors = new List<Exception>();
 
-		while (enumerator.MoveNext())
+		try
 		{
-			errors.Add(enumerator.Current);
+			enumerator.Reset();
+			while (enumerator.MoveNext())
+			{
+				errors.Add(enumerator.Current);
+			}
+		}
+		catch (Exception ex)
+		{
+			errors.Add(ex);
 		}
 
 		if (errors.Count > 0)

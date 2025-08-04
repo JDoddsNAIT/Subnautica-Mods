@@ -11,7 +11,14 @@ internal static class ChaosEffects
 	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; private set; } = ResetEffects();
 
 	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => Effects = new() {
-		[ChaosEffect.ReaperRain] = new ReaperRain() { Height = 100, SpawnsPerSecond = 1 },
+		[ChaosEffect.ReaperRain] = new ReaperRain() {
+			Description = "It's raining reapers!",
+			Height = 100, SpawnsPerSecond = 1
+		},
+		[ChaosEffect.RandomTeleport] = new RandomTeleport() { 
+			Description = "Where were we?",
+			Biomes = new[] { BiomeType.SafeShallows_EscapePod },
+		}
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -29,7 +36,7 @@ internal static class ChaosEffects
 	public static void Load(string filePath)
 	{
 		const string context = $"{nameof(ChaosEffects)}.{nameof(Load)})";
-		var effects = new List<EffectData>();
+		var effects = new List<Effect>();
 
 		effects.LoadJson(filePath);
 
@@ -87,5 +94,5 @@ internal static class ChaosEffects
 internal enum ChaosEffect
 {
 	ReaperRain,
-
+	RandomTeleport,
 }

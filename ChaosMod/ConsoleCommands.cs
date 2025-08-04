@@ -57,7 +57,7 @@ internal static class ConsoleCommands
 			try
 			{
 				ChaosMod.TriggerEffect(ChaosEffects.Effects[effectId]);
-				return $"Triggered effect {effectId}";
+				return $"Triggered effect {effectId.ToString().GetDisplayString()}";
 			}
 			catch (Exception ex)
 			{
@@ -80,7 +80,7 @@ internal static class ConsoleCommands
 		else if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect clearEffect))
 		{
 			ChaosMod.ClearEffects(clearEffect);
-			return $"Removed effect \"{clearEffect}\"";
+			return $"Removed effect \"{clearEffect.ToString().GetDisplayString()}\"";
 		}
 		else
 		{

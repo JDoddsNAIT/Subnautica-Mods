@@ -7,26 +7,26 @@ namespace FrootLuips.ChaosMod.Effects;
 internal interface IChaosEffect : IDistributable
 {
 	ChaosEffect Id { get; }
-	string Description { get; }
+	string? Description { get; set; }
 	float Duration { get; }
 
 	IEnumerator Activate();
 
-	EffectData ToData();
-	void FromData(EffectData data, StatusCallback callback);
+	Effect ToData();
+	void FromData(Effect data, StatusCallback callback);
+
 }
 
 [Serializable]
-internal class EffectData
+internal class Effect
 {
 	public string Id { get; set; } = "";
-	public string Description { get; set; } = "";
 	public float Duration { get; set; }
 	public int Weight { get; set; }
-	public Tag[] Tags { get; set; } = Array.Empty<Tag>();
+	public Attribute[] Attributes { get; set; } = Array.Empty<Attribute>();
 
 	[Serializable]
-	internal record class Tag(string Name, string Value);
+	internal record class Attribute(string Name, string Value);
 }
 
 

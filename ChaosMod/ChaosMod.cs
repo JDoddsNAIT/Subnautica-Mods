@@ -94,8 +94,10 @@ internal static class ChaosMod
 
 		if (showInGame)
 		{
-			float duration = effect.Duration > 0 ? effect.Duration : 5f;
-			Plugin.Logger.LogInGame(effect.Description, BepInEx.Logging.LogLevel.Info, duration);
+			string description = string.IsNullOrWhiteSpace(effect.Description)
+				? effect.Id.ToString()
+				: effect.Description;
+			Plugin.Logger.LogInGame(description);
 		}
 	}
 
