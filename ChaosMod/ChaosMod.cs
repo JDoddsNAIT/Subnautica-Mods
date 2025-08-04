@@ -85,8 +85,8 @@ internal static class ChaosMod
 
 	public static void TriggerEffect(IChaosEffect effect, bool showInGame = true)
 	{
-		if (!_activeEffects.ContainsKey(effect.Id))
-			throw new Exception("Two effects cannot be active at the same time");
+		if (_activeEffects.ContainsKey(effect.Id))
+			throw new Exception("Two of the same effect cannot be active at the same time");
 
 		var routine = UWE.CoroutineHost.StartCoroutine(effect.Activate());
 		UWE.CoroutineHost.StartCoroutine(RemoveEffectAfterDuration(effect));
