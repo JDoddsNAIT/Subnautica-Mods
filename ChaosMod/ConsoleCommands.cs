@@ -1,6 +1,7 @@
 ﻿using System;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Utilities;
 using Nautilus.Commands;
 
 namespace FrootLuips.ChaosMod;
@@ -50,8 +51,15 @@ internal static class ConsoleCommands
 		effect = effect.ToLower();
 		if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect effectId))
 		{
-			ChaosMod.TriggerEffect(ChaosEffects.Effects[effectId]);
-			return $"Triggered effect {effectId}";
+			try
+			{
+				ChaosMod.TriggerEffect(ChaosEffects.Effects[effectId]);
+				return $"Triggered effect {effectId}";
+			}
+			catch (AssertionFailedException ex)
+			{
+				return ex.Message;
+			}
 		}
 		else
 		{
