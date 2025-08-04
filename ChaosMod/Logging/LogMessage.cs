@@ -103,7 +103,7 @@ public class LogMessage
 
 		if (this.HasNotice)
 		{
-			AppendValues(sb, _notice);
+			AppendValues(sb, _notice.ToArray());
 			if (this.HasMessage)
 				sb.Append(" - ");
 			else if (this.HasRemarks)
@@ -112,7 +112,7 @@ public class LogMessage
 
 		if (this.HasMessage)
 		{
-			AppendValues(sb, _message);
+			AppendValues(sb, _message.ToArray());
 		}
 
 		if (this.HasRemarks)
@@ -122,7 +122,7 @@ public class LogMessage
 				sb.Append('\n');
 			}
 
-			AppendValues(sb, _remarks);
+			AppendValues(sb, _remarks.ToArray());
 		}
 
 		return sb.ToString().Trim();
