@@ -16,6 +16,15 @@ public class Logger : ILogger
 
 	public Logger(ManualLogSource bepInLogger)
 	{
+		try
+		{
+			_ = ErrorMessage.main;
+		}
+		catch (System.FieldAccessException ex)
+		{
+			throw new Utilities.AssertionFailedException("Error Message is using the wrong assembly", ex);
+		}
+
 		this.BepInLogger = bepInLogger;
 		_inGameMessageQueue = new();
 		MainMenuLoaded = false;
