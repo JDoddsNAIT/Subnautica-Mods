@@ -14,7 +14,8 @@ internal static class ChaosEffects
 		[ChaosEffect.ReaperRain] = new ReaperRain() { Height = 100, SpawnsPerSecond = 1 },
 	};
 
-	public static RandomDistribution<IChaosEffect>? RandomDistribution { get; private set; }
+	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
+		= GetRandomDistribution(Array.Empty<ChaosEffect>());
 
 	public static RandomDistribution<IChaosEffect> GetRandomDistribution(IEnumerable<ChaosEffect> exclusions)
 	{

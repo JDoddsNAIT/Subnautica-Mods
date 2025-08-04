@@ -24,8 +24,11 @@ internal static class ChaosMod
 
 	public static readonly string effectsFilePath = GetPluginPath(EFFECTS_CONFIG);
 
-	public static void Start(bool showInGame = true)
+	public static bool? Start(bool showInGame = true)
 	{
+		if (_main != null)
+			return false;
+
 		Plugin.Logger.LogDebug("Loading Effects...");
 
 		try
@@ -38,7 +41,7 @@ internal static class ChaosMod
 			Plugin.Logger.LogInGame(
 				Logging.LogMessage.FromException(ex).WithNotice("Failed to load effects"),
 				BepInEx.Logging.LogLevel.Error);
-			return;
+			return null;
 		}
 
 		_main = UWE.CoroutineHost.StartCoroutine(RunChaosMod());
@@ -47,9 +50,10 @@ internal static class ChaosMod
 		{
 			Plugin.Logger.LogInGame(START_MESSAGE);
 		}
+		return true;
 	}
 
-	public static void Stop(bool showInGame = true)
+	public static bool Stop(bool showInGame = true)
 	{
 		if (_main != null)
 		{
@@ -61,6 +65,7 @@ internal static class ChaosMod
 		{
 			Plugin.Logger.LogInGame(STOP_MESSAGE);
 		}
+		return true;
 	}
 
 	public static IEnumerable<string> GetActiveEffectIds()
@@ -118,7 +123,16 @@ internal static class ChaosMod
 		while (true)
 		{
 			yield return new UnityEngine.WaitForSeconds(Plugin.Options.Delay);
-			TriggerEffect(ChaosEffects.GetRandomDistribution(exclusions: _activeEffects.Keys).GetRandomItem());
+			try
+			{
+				ChaosEffects.GetRandomDistribution(exclusions: _activeEffects.Keys);
+				TriggerEffect(ChaosEffects.RandomDistribution.GetRandomItem());
+			}
+			catch (Exception ex)
+			{
+				Plugin.Logger.LogError(Logging.LogMessage.FromException(ex));
+				continue;
+			}
 		}
 	}
 

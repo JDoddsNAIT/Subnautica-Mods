@@ -36,8 +36,11 @@ internal static class ConsoleCommands
 
 	public static string Start()
 	{
-		ChaosMod.Start(showInGame: false);
-		return ChaosMod.START_MESSAGE;
+		return ChaosMod.Start(showInGame: false) switch {
+			true => ChaosMod.START_MESSAGE,
+			false => "Chaos is already in progress.",
+			null => new LogMessage(notice: "Failed to start", message: "Could not load effects"),
+		};
 	}
 
 	public static string Stop()
