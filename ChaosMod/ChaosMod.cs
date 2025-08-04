@@ -96,7 +96,7 @@ internal static class ChaosMod
 		{
 			string description = string.IsNullOrWhiteSpace(effect.Description)
 				? effect.Id.ToString()
-				: effect.Description;
+				: effect.Description!;
 			Plugin.Logger.LogInGame(description);
 		}
 	}

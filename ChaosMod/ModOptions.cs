@@ -35,7 +35,7 @@ internal class ModOptions : Nautilus.Json.ConfigFile
 			"30 Minutes",
 			"1 Hour"
 		})]
-	public FrequencyEnum Frequency { get; set; }
+	public FrequencyEnum Frequency { get; set; } = FrequencyEnum.FiveMinutes;
 
 	public float Delay => (ushort)Frequency;
 }

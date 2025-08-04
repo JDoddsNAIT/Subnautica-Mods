@@ -13,10 +13,10 @@ public class Logger : ILogger
 	public ManualLogSource BepInLogger { get; }
 
 	public bool MainMenuLoaded { get; private set; }
-	private readonly Queue<(string, float)> _inGameMessageQueue;
+	private readonly Queue<string> _inGameMessageQueue;
 
-	private ErrorMessage? _errorMessageInstance;
-	private readonly FieldInfo _timeDelay;
+	//private ErrorMessage? _errorMessageInstance;
+	//private readonly FieldInfo _timeDelay;
 
 	public Logger(ManualLogSource bepInLogger)
 	{
@@ -24,7 +24,7 @@ public class Logger : ILogger
 		_inGameMessageQueue = new();
 		MainMenuLoaded = false;
 
-		_timeDelay = HarmonyLib.AccessTools.Field(typeof(ErrorMessage), nameof(ErrorMessage.timeFadeOut));
+		//_timeDelay = HarmonyLib.AccessTools.Field(typeof(ErrorMessage), nameof(ErrorMessage.timeFadeOut));
 
 		UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
 	}
@@ -44,12 +44,11 @@ public class Logger : ILogger
 		if (scene.name != _MAINMENU_SCENE_NAME)
 			return;
 
-		_errorMessageInstance ??= UnityEngine.Object.FindObjectOfType<ErrorMessage>();
 		UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
-		_errorMessageInstance.StartCoroutine(ShowMessageQueue());
+		UWE.CoroutineHost.StartCoroutine(ShowMessageQueue());
 	}
 
-	public void LogInGame(string message, LogLevel level = LogLevel.Info, float duration = 5f)
+	public void LogInGame(string message, LogLevel level = LogLevel.Info)
 	{
 		BepInLogger.Log(level, message);
 
@@ -61,20 +60,20 @@ public class Logger : ILogger
 
 		if (!MainMenuLoaded)
 		{
-			_inGameMessageQueue.Enqueue((message, duration));
+			_inGameMessageQueue.Enqueue(message);
 		}
 		else
 		{
-			AddInGameMessage(message, duration);
+			AddInGameMessage(message);
 		}
 	}
 
-	private void AddInGameMessage(string message, float duration)
+	private void AddInGameMessage(string message)
 	{
-		float initialDuration = (float)_timeDelay.GetValue(obj: _errorMessageInstance);
-		_timeDelay.SetValue(obj: _errorMessageInstance, value: duration);
+		//float initialDuration = (float)_timeDelay.GetValue(obj: _errorMessageInstance);
+		//_timeDelay.SetValue(obj: _errorMessageInstance, value: duration);
 		ErrorMessage.AddMessage(message);
-		_timeDelay.SetValue(obj: _errorMessageInstance, value: initialDuration);
+		//_timeDelay.SetValue(obj: _errorMessageInstance, value: initialDuration);
 	}
 
 	private IEnumerator ShowMessageQueue()
@@ -83,8 +82,8 @@ public class Logger : ILogger
 
 		while (_inGameMessageQueue.Count > 0)
 		{
-			(string message, float duration) = _inGameMessageQueue.Dequeue();
-			AddInGameMessage(message, duration);
+			string message = _inGameMessageQueue.Dequeue();
+			AddInGameMessage(message);
 		}
 		MainMenuLoaded = true;
 	}
