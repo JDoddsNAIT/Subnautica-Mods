@@ -10,7 +10,6 @@ public class Logger : ILogger
 	private const string _MAINMENU_SCENE_NAME = "XMenu";
 
 	public ManualLogSource BepInLogger { get; }
-	public ErrorMessage? ErrorMessage { get; private set; }
 
 	public bool MainMenuLoaded { get; private set; }
 	private readonly Queue<(string, float)> _inGameMessageQueue;
@@ -38,7 +37,9 @@ public class Logger : ILogger
 	{
 		if (scene.name != _MAINMENU_SCENE_NAME)
 			return;
-		UWE.CoroutineHost.StartCoroutine(FindErrorMessageInstance());
+
+		UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+		ErrorMessage.main.StartCoroutine(ShowMessageQueue());
 	}
 
 	public void LogInGame(string message, LogLevel level = LogLevel.Info, float duration = 5f)
@@ -63,10 +64,10 @@ public class Logger : ILogger
 
 	private void AddInGameMessage(string message, float duration)
 	{
-		float initialDuration = ErrorMessage!.timeDelay;
-		ErrorMessage!.timeDelay = duration;
+		float initialDuration = ErrorMessage.main.timeDelay;
+		ErrorMessage.main.timeDelay = duration;
 		ErrorMessage.AddMessage(message);
-		ErrorMessage!.timeDelay = initialDuration;
+		ErrorMessage.main.timeDelay = initialDuration;
 	}
 
 	private IEnumerator ShowMessageQueue()
@@ -78,27 +79,6 @@ public class Logger : ILogger
 		{
 			(string message, float duration) = _inGameMessageQueue.Dequeue();
 			AddInGameMessage(message, duration);
-		}
-	}
-
-	private IEnumerator FindErrorMessageInstance()
-	{
-		while (ErrorMessage == null)
-		{
-			LogWarn("Searching for instance of ErrorMessage...");
-			ErrorMessage = UnityEngine.Object.FindObjectOfType<ErrorMessage>();
-			if (ErrorMessage != null)
-			{
-				LogInfo("ErrorMessage Instance found.");
-				UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
-				ErrorMessage!.StartCoroutine(ShowMessageQueue());
-				yield break;
-			}
-			else
-			{
-				LogWarn("No instance found. Will try again on the next frame.");
-				yield return null;
-			}
 		}
 	}
 }
