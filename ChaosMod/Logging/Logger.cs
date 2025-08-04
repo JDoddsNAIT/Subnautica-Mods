@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Logging;
 
 namespace FrootLuips.ChaosMod.Logging;
@@ -14,20 +15,16 @@ public class Logger : ILogger
 	public bool MainMenuLoaded { get; private set; }
 	private readonly Queue<(string, float)> _inGameMessageQueue;
 
+	private ErrorMessage? _errorMessageInstance;
+	private readonly FieldInfo _timeDelay;
+
 	public Logger(ManualLogSource bepInLogger)
 	{
-		try
-		{
-			_ = ErrorMessage.main;
-		}
-		catch (System.FieldAccessException ex)
-		{
-			throw new Utilities.AssertionFailedException("Error Message is using the wrong assembly", ex);
-		}
-
 		this.BepInLogger = bepInLogger;
 		_inGameMessageQueue = new();
 		MainMenuLoaded = false;
+
+		_timeDelay = typeof(ErrorMessage).GetField(nameof(ErrorMessage.timeDelay));
 
 		UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
 	}
@@ -73,10 +70,12 @@ public class Logger : ILogger
 
 	private void AddInGameMessage(string message, float duration)
 	{
-		float initialDuration = ErrorMessage.main.timeDelay;
-		ErrorMessage.main.timeDelay = duration;
+		_errorMessageInstance ??= UnityEngine.Object.FindObjectOfType<ErrorMessage>();
+
+		float initialDuration = (float)_timeDelay.GetValue(_errorMessageInstance);
+		_timeDelay.SetValue(duration, _errorMessageInstance);
 		ErrorMessage.AddMessage(message);
-		ErrorMessage.main.timeDelay = initialDuration;
+		_timeDelay.SetValue(initialDuration, _errorMessageInstance);
 	}
 
 	private IEnumerator ShowMessageQueue()
