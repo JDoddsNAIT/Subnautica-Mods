@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BepInEx;
+using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
 using HarmonyLib;
 using Nautilus.Handlers;
@@ -21,17 +22,32 @@ public sealed class Plugin : BaseUnityPlugin
 	internal static ModOptions Options { get => _options!; private set => _options = value; }
 	internal static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
-	private void Awake()
+	internal void Awake()
 	{
 		Logger = new Logger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
+
+		if (!System.IO.File.Exists(ChaosMod.effectsFilePath))
+		{
+			Logger.LogDebug(new LogMessage(
+				notice: $"{ChaosMod.EFFECTS_CONFIG} is missing.",
+				message: "Restoring..."));
+			ChaosEffects.ResetEffects();
+
+			try
+			{
+				ChaosEffects.Save(ChaosMod.effectsFilePath);
+			}
+			catch (System.Exception ex)
+			{
+				Logger.LogError(LogMessage.FromException(ex).WithNotice("Failed to generate effect data."));
+				return;
+			}
+		}
 
 		ConsoleCommandsHandler.RegisterConsoleCommands(typeof(ConsoleCommands));
 		Harmony.CreateAndPatchAll(Assembly, GUID);
 
 		Logger.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: GUID));
 	}
-
-	// TODO: Load all chaos effects when the game starts
-	// TODO: Reset all chaos effect when the game ends
 }

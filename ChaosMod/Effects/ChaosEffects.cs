@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
-using FrootLuips.ChaosMod.Utilities;
 using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.ChaosMod.Effects;
@@ -11,7 +10,7 @@ internal static class ChaosEffects
 {
 	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; private set; } = ResetEffects();
 
-	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => new() {
+	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => Effects = new() {
 		[ChaosEffect.ReaperRain] = new ReaperRain(),
 	};
 
@@ -23,8 +22,7 @@ internal static class ChaosEffects
 			.Where(kvp => !exclusions.Contains(kvp.Key) && kvp.Value.Weight > 0)
 			.Select(kvp => kvp.Value)
 			.ToArray();
-		RandomDistribution = new RandomDistribution<IChaosEffect>(effects);
-		return RandomDistribution;
+		return RandomDistribution = new RandomDistribution<IChaosEffect>(effects);
 	}
 
 	public static void Load(string filePath)

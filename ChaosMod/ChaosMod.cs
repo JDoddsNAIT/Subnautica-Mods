@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Utilities;
 
@@ -23,7 +21,7 @@ internal static class ChaosMod
 	private static readonly Dictionary<ChaosEffect, UnityEngine.Coroutine> _activeEffects = new();
 	private static UnityEngine.Coroutine? _main;
 
-	private static readonly string _effectsFilePath = Utilities.Utilities.GetPluginPath(EFFECTS_CONFIG);
+	public static readonly string effectsFilePath = Utilities.Utilities.GetPluginPath(EFFECTS_CONFIG);
 
 	public static void Start(bool showInGame = true)
 	{
@@ -31,7 +29,7 @@ internal static class ChaosMod
 
 		try
 		{
-			ChaosEffects.Load(_effectsFilePath);
+			ChaosEffects.Load(effectsFilePath);
 			Plugin.Logger.LogDebug("Loaded effects!");
 		}
 		catch (Exception ex)
@@ -61,6 +59,21 @@ internal static class ChaosMod
 		if (showInGame)
 		{
 			Plugin.Logger.LogInGame(STOP_MESSAGE);
+		}
+	}
+
+	public static IEnumerable<string> GetActiveEffectIds()
+	{
+		if (_activeEffects.Count == 0)
+		{
+			yield return "No effects are currently active.";
+		}
+		else
+		{
+			foreach (var effect in _activeEffects.Keys)
+			{
+				yield return effect.ToString();
+			}
 		}
 	}
 

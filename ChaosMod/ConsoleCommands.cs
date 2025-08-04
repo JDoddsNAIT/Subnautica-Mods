@@ -2,7 +2,6 @@
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
 using Nautilus.Commands;
-using Nautilus.Handlers;
 
 namespace FrootLuips.ChaosMod;
 
@@ -12,7 +11,7 @@ internal static class ConsoleCommands
 
 	public enum Command
 	{
-		Start, Stop, Trigger, Clear, Help
+		Start, Stop, List, Trigger, Clear, Help
 	}
 
 	[ConsoleCommand(COMMAND_NAME)]
@@ -26,6 +25,7 @@ internal static class ConsoleCommands
 		return command switch {
 			Command.Start => Start(),
 			Command.Stop => Stop(),
+			Command.List => string.Join(", ", ChaosMod.GetActiveEffectIds()),
 			Command.Trigger => Trigger(arg2),
 			Command.Clear => Clear(arg2),
 			Command.Help => Help(arg2),
@@ -86,6 +86,7 @@ internal static class ConsoleCommands
 			_ when Enum.TryParse(help, ignoreCase: true, out Command command) => command switch {
 				Command.Start => "Enables the mod.",
 				Command.Stop => "Disables the mod.",
+				Command.List => "Lists all active chaos effects.",
 				Command.Trigger => "Triggers the specified effect.",
 				Command.Clear => "Stops the specific effect. Stops all if none specified.",
 				Command.Help => "Shows details on all commands.",
