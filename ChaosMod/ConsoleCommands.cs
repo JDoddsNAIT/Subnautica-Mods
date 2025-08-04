@@ -59,7 +59,7 @@ internal static class ConsoleCommands
 				ChaosMod.TriggerEffect(ChaosEffects.Effects[effectId]);
 				return $"Triggered effect {effectId}";
 			}
-			catch (AssertionFailedException ex)
+			catch (Exception ex)
 			{
 				return ex.Message;
 			}
