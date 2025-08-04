@@ -35,7 +35,7 @@ internal static class ChaosEffects
 
 	public static void Load(string filePath)
 	{
-		const string context = $"{nameof(ChaosEffects)}.{nameof(Load)})";
+		const string context = $"{nameof(ChaosEffects)}.{nameof(Load)}";
 		var effects = new List<Effect>();
 
 		effects.LoadJson(filePath);

@@ -119,10 +119,9 @@ public class LogMessage
 		{
 			if (this.HasNotice || this.HasMessage)
 			{
-				sb.Append('\n');
+				sb.Append('\n').Append('\t');
 			}
-
-			AppendValues(sb, _remarks.ToArray());
+			sb.Append(string.Join("\n\t", _remarks.ToArray()));
 		}
 
 		return sb.ToString().Trim();

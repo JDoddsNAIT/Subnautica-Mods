@@ -46,7 +46,6 @@ public static class Assertions
 
 		try
 		{
-			enumerator.Reset();
 			while (enumerator.MoveNext())
 			{
 				errors.Add(enumerator.Current);

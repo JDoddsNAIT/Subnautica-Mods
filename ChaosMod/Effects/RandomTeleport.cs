@@ -77,6 +77,7 @@ internal class RandomTeleport : IChaosEffect
 
 			if (biomes.Count == 0)
 				throw new InvalidAttributeException(attribute);
+			Biomes = biomes.ToArray();
 
 			if (errors.Count > 0)
 				throw new AggregateException(errors);
