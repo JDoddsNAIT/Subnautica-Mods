@@ -9,18 +9,18 @@ namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : IChaosEffect
 {
 	public ChaosEffect Id { get; } = ChaosEffect.ReaperRain;
-	public string Description { get; private set; } = "";
+	public string Description { get; private set; } = "It's raining reapers!";
 	public float Duration { get; private set; } = 30f;
 	public int Weight { get; private set; } = 1;
 
 	/// <summary>
 	/// Height in metres above sea level where the reapers will spawn.
 	/// </summary>
-	public int? Height { get; private set; } = 100;
+	public int? Height { get; set; }
 	/// <summary>
 	/// Amount of reapers spawned every second over the duration.
 	/// </summary>
-	public float? SpawnsPerSecond { get; private set; } = 1;
+	public float? SpawnsPerSecond { get; set; }
 
 	public IEnumerator Activate()
 	{

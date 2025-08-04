@@ -24,7 +24,7 @@ public class Logger : ILogger
 		_inGameMessageQueue = new();
 		MainMenuLoaded = false;
 
-		_timeDelay = typeof(ErrorMessage).GetField(nameof(ErrorMessage.timeDelay));
+		_timeDelay = HarmonyLib.AccessTools.Field(typeof(ErrorMessage), "timeDelay");
 
 		UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
 	}
@@ -44,8 +44,9 @@ public class Logger : ILogger
 		if (scene.name != _MAINMENU_SCENE_NAME)
 			return;
 
+		_errorMessageInstance ??= UnityEngine.Object.FindObjectOfType<ErrorMessage>();
 		UnityEngine.SceneManagement.SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
-		ErrorMessage.main.StartCoroutine(ShowMessageQueue());
+		_errorMessageInstance.StartCoroutine(ShowMessageQueue());
 	}
 
 	public void LogInGame(string message, LogLevel level = LogLevel.Info, float duration = 5f)
@@ -70,23 +71,26 @@ public class Logger : ILogger
 
 	private void AddInGameMessage(string message, float duration)
 	{
-		_errorMessageInstance ??= UnityEngine.Object.FindObjectOfType<ErrorMessage>();
-
-		float initialDuration = (float)_timeDelay.GetValue(_errorMessageInstance);
-		_timeDelay.SetValue(duration, _errorMessageInstance);
+		float initialDuration = (float)_timeDelay.GetValue(obj: _errorMessageInstance);
+		_timeDelay.SetValue(obj: _errorMessageInstance, value: duration);
 		ErrorMessage.AddMessage(message);
-		_timeDelay.SetValue(initialDuration, _errorMessageInstance);
+		_timeDelay.SetValue(obj: _errorMessageInstance, value: initialDuration);
 	}
 
 	private IEnumerator ShowMessageQueue()
 	{
 		yield return new UnityEngine.WaitForSeconds(_STARTUP_DELAY);
-		MainMenuLoaded = true;
+
+		while (_errorMessageInstance == null)
+		{
+
+		}
 
 		while (_inGameMessageQueue.Count > 0)
 		{
 			(string message, float duration) = _inGameMessageQueue.Dequeue();
 			AddInGameMessage(message, duration);
 		}
+		MainMenuLoaded = true;
 	}
 }

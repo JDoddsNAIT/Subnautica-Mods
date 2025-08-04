@@ -11,15 +11,15 @@ internal static class Utilities
 	public static string GetPluginPath(string filename = "")
 	{
 		return string.IsNullOrWhiteSpace(filename)
-			? Path.Combine(BepInEx.Paths.PluginPath, Plugin.NAME)
-			: Path.Combine(BepInEx.Paths.PluginPath, Plugin.NAME, filename);
+			? Path.Combine(BepInEx.Paths.PluginPath, PluginInfo.PLUGIN_NAME)
+			: Path.Combine(BepInEx.Paths.PluginPath, PluginInfo.PLUGIN_NAME, filename);
 	}
 
 	public static string GetConfigPath(string filename = "")
 	{
 		return string.IsNullOrWhiteSpace(filename)
-			? Path.Combine(BepInEx.Paths.ConfigPath, Plugin.NAME)
-			: Path.Combine(BepInEx.Paths.ConfigPath, Plugin.NAME, filename);
+			? Path.Combine(BepInEx.Paths.ConfigPath, PluginInfo.PLUGIN_NAME)
+			: Path.Combine(BepInEx.Paths.ConfigPath, PluginInfo.PLUGIN_NAME, filename);
 	}
 
 	public static Exception Invalid(this EffectData.Tag tag)

@@ -11,7 +11,7 @@ internal static class ChaosEffects
 	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; private set; } = ResetEffects();
 
 	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => Effects = new() {
-		[ChaosEffect.ReaperRain] = new ReaperRain(),
+		[ChaosEffect.ReaperRain] = new ReaperRain() { Height = 100, SpawnsPerSecond = 1 },
 	};
 
 	public static RandomDistribution<IChaosEffect>? RandomDistribution { get; private set; }

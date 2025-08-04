@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Utilities;
+using static FrootLuips.ChaosMod.Utilities.Utilities;
 
 namespace FrootLuips.ChaosMod;
 
@@ -21,7 +22,7 @@ internal static class ChaosMod
 	private static readonly Dictionary<ChaosEffect, UnityEngine.Coroutine> _activeEffects = new();
 	private static UnityEngine.Coroutine? _main;
 
-	public static readonly string effectsFilePath = Utilities.Utilities.GetPluginPath(EFFECTS_CONFIG);
+	public static readonly string effectsFilePath = GetPluginPath(EFFECTS_CONFIG);
 
 	public static void Start(bool showInGame = true)
 	{
@@ -79,7 +80,8 @@ internal static class ChaosMod
 
 	public static void TriggerEffect(IChaosEffect effect, bool showInGame = true)
 	{
-		Assertions.Assert(!_activeEffects.ContainsKey(effect.Id), "Two effects cannot be active at the same time");
+		if (!_activeEffects.ContainsKey(effect.Id))
+			throw new Exception("Two effects cannot be active at the same time");
 
 		var routine = UWE.CoroutineHost.StartCoroutine(effect.Activate());
 		UWE.CoroutineHost.StartCoroutine(RemoveEffectAfterDuration(effect));
