@@ -24,7 +24,7 @@ public class Logger : ILogger
 		_inGameMessageQueue = new();
 		MainMenuLoaded = false;
 
-		_timeDelay = HarmonyLib.AccessTools.Field(typeof(ErrorMessage), "timeDelay");
+		_timeDelay = HarmonyLib.AccessTools.Field(typeof(ErrorMessage), nameof(ErrorMessage.timeFadeOut));
 
 		UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
 	}
@@ -80,11 +80,6 @@ public class Logger : ILogger
 	private IEnumerator ShowMessageQueue()
 	{
 		yield return new UnityEngine.WaitForSeconds(_STARTUP_DELAY);
-
-		while (_errorMessageInstance == null)
-		{
-
-		}
 
 		while (_inGameMessageQueue.Count > 0)
 		{

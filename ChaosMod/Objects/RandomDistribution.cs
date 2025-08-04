@@ -51,7 +51,7 @@ public class RandomDistribution<T> where T : IDistributable
 	public T GetRandomItem()
 	{
 		if (Count <= 0)
-			throw new InvalidOperationException($"{nameof(RandomDistribution<T>)} has to items.");
+			throw new InvalidOperationException($"{nameof(RandomDistribution<T>)} has no items.");
 
 		int totalWeight = GetTotalWeight();
 
