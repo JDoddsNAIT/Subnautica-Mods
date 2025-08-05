@@ -10,10 +10,6 @@ namespace FrootLuips.ChaosMod;
 [BepInDependency("com.snmodding.nautilus")]
 public sealed class Plugin : BaseUnityPlugin
 {
-	public const string GUID = PluginInfo.PLUGIN_GUID;
-	public const string NAME = PluginInfo.PLUGIN_NAME;
-	public const string VERSION = PluginInfo.PLUGIN_VERSION;
-
 	private static ILogger? _logger;
 	private static ModOptions? _options;
 
@@ -27,7 +23,7 @@ public sealed class Plugin : BaseUnityPlugin
 		Logger = new Logger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
-		if (!System.IO.File.Exists(EffectManager.effectsFilePath))
+		if (!File.Exists(EffectManager.effectsFilePath))
 		{
 			Logger.LogDebug(new LogMessage(
 				notice: $"{EffectManager.EFFECTS_CONFIG} is missing.",
@@ -38,7 +34,7 @@ public sealed class Plugin : BaseUnityPlugin
 			{
 				ChaosEffects.Save(EffectManager.effectsFilePath);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				Logger.LogError(LogMessage.FromException(ex).WithNotice("Failed to generate effect data."));
 				return;
@@ -46,8 +42,8 @@ public sealed class Plugin : BaseUnityPlugin
 		}
 
 		ConsoleCommandsHandler.RegisterConsoleCommands(typeof(ConsoleCommands));
-		Harmony.CreateAndPatchAll(Assembly, GUID);
+		Harmony.CreateAndPatchAll(Assembly, PluginInfo.PLUGIN_GUID);
 
-		Logger.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: GUID));
+		Logger.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: PluginInfo.PLUGIN_GUID));
 	}
 }
