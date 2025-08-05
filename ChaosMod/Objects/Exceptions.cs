@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using FrootLuips.ChaosMod.Logging;
+﻿using FrootLuips.ChaosMod.Logging;
 
 namespace FrootLuips.ChaosMod.Objects;
 
@@ -13,11 +7,12 @@ internal class UnexpectedAttributesException : Exception
 {
 	const string _MESSAGE = "Data does not have the expected number of attributes. ";
 
-	public UnexpectedAttributesException() { }
 	public UnexpectedAttributesException(int expectedAmount)
-		: base(_MESSAGE + $"({expectedAmount})") { }
+		: base(_MESSAGE + $"({expectedAmount})")
+	{ }
 	public UnexpectedAttributesException(int expectedAmount, Exception inner)
-		: base(_MESSAGE + $"({expectedAmount})", inner) { }
+		: base(_MESSAGE + $"({expectedAmount})", inner)
+	{ }
 
 	protected UnexpectedAttributesException(
 	  System.Runtime.Serialization.SerializationInfo info,

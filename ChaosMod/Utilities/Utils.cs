@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-using FrootLuips.ChaosMod.Effects;
-using FrootLuips.ChaosMod.Logging;
+﻿using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Objects;
 
 namespace FrootLuips.ChaosMod.Utilities;
-internal static class Utilities
+internal static class Utils
 {
 	public static string GetPluginPath(string filename = "")
 	{
@@ -52,4 +47,29 @@ internal static class Utilities
 		else
 			return true;
 	}
+
+	public static Exception Invalid(this Effect.Attribute attribute)
+	{
+		return new InvalidAttributeException(attribute);
+	}
+
+	public static void ParseAttribute<T>(this Effect.Attribute attribute, Func<string, T> parseFunc, out T value)
+	{
+		try
+		{
+			value = parseFunc(attribute.Value);
+		}
+		catch (Exception ex)
+		{
+			throw new InvalidAttributeException(attribute, ex);
+		}
+	}
+
+	public static void ExpectAttributeCount(Effect.Attribute[] attributes, int count)
+	{
+		if (attributes.Length != count)
+			throw new UnexpectedAttributesException(count);
+	}
+
+	public static ActiveEffect Activate(this IChaosEffect effect) => new(effect);
 }

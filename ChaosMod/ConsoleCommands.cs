@@ -1,8 +1,6 @@
-﻿using System;
-using FrootLuips.ChaosMod.Effects;
+﻿using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
-using FrootLuips.ChaosMod.Utilities;
 using Nautilus.Commands;
 
 namespace FrootLuips.ChaosMod;
