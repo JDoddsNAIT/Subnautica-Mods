@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FrootLuips.ChaosMod.Logging;
+﻿using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
 using Nautilus.Json.ExtensionMethods;
 

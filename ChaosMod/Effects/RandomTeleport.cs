@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
 
-using static FrootLuips.ChaosMod.Utilities.Utilities;
+using static FrootLuips.ChaosMod.Utilities.Utils;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : IChaosEffect
@@ -61,7 +61,7 @@ internal class RandomTeleport : IChaosEffect
 
 	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
 	{
-		EffectHelpers.ExpectAttributeCount(attributes, count: 1);
+		ExpectAttributeCount(attributes, count: 1);
 
 		var attribute = attributes[0];
 		Exception? exception = null;

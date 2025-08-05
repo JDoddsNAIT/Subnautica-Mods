@@ -1,5 +1,4 @@
-﻿using System;
-using FrootLuips.ChaosMod.Logging;
+﻿using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
 
 namespace FrootLuips.ChaosMod.Effects;

@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Objects;
 using FrootLuips.ChaosMod.Utilities;
 
-using static FrootLuips.ChaosMod.Utilities.Utilities;
+using static FrootLuips.ChaosMod.Utilities.Utils;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : IChaosEffect
@@ -68,7 +69,7 @@ internal class ReaperRain : IChaosEffect
 
 	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
 	{
-		EffectHelpers.ExpectAttributeCount(attributes, count: 2);
+		ExpectAttributeCount(attributes, count: 2);
 
 		for (int i = 0; i < attributes.Length; i++)
 		{

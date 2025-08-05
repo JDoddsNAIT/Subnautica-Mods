@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Objects;
 using FrootLuips.ChaosMod.Utilities;
-using static FrootLuips.ChaosMod.Utilities.Utilities;
 
 namespace FrootLuips.ChaosMod;
 internal static class EffectManager
