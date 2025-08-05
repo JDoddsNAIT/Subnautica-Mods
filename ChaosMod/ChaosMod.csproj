@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>ChaosMod</AssemblyName>
+    <AssemblyName>com.frootluips.chaosmod</AssemblyName>
     <Version>1.0.0</Version>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <LangVersion>11</LangVersion>
     <RootNamespace>FrootLuips.ChaosMod</RootNamespace>
 
@@ -14,6 +14,14 @@
     </RestoreAdditionalProjectSources>
 
     <Nullable>enable</Nullable>
+
+    <Title>FrootLuips' Chaos Mod</Title>
+
+    <Product>$(Title)</Product>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

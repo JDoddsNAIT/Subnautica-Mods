@@ -6,13 +6,13 @@ using HarmonyLib;
 using Nautilus.Handlers;
 
 namespace FrootLuips.ChaosMod;
-[BepInPlugin(GUID, NAME, VERSION)]
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 [BepInDependency("com.snmodding.nautilus")]
 public sealed class Plugin : BaseUnityPlugin
 {
-	public const string GUID = "com.github.frootluips.ChaosMod";
-	public const string NAME = "FrootLuips' Chaos Mod";
-	public const string VERSION = "1.0.0";
+	public const string GUID = PluginInfo.PLUGIN_GUID;
+	public const string NAME = PluginInfo.PLUGIN_NAME;
+	public const string VERSION = PluginInfo.PLUGIN_VERSION;
 
 	private static ILogger? _logger;
 	private static ModOptions? _options;
