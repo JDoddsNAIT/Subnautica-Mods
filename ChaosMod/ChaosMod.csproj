@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>com.frootluips.chaosmod</AssemblyName>
+    <AssemblyName>FrootLuips' Chaos Mod</AssemblyName>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <LangVersion>11</LangVersion>
@@ -15,7 +15,7 @@
 
     <Nullable>enable</Nullable>
 
-    <Title>FrootLuips' Chaos Mod</Title>
+    <Title>$(AssemblyName)</Title>
 
     <Product>$(Title)</Product>
 

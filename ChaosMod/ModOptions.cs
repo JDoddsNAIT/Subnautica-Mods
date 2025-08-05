@@ -1,7 +1,8 @@
 ﻿using Nautilus.Options.Attributes;
 
 namespace FrootLuips.ChaosMod;
-[Menu(PluginInfo.PLUGIN_NAME)]
+
+[Menu(name: PluginInfo.PLUGIN_NAME)]
 internal class ModOptions : Nautilus.Json.ConfigFile
 {
 	// TODO: Add localization
@@ -47,7 +48,8 @@ internal class ModOptions : Nautilus.Json.ConfigFile
 	public FrequencyEnum Frequency { get; set; } = FrequencyEnum.FiveMinutes;
 
 	[Slider(Label = EFFECTCOUNT_LABEL, Tooltip = EFFECTCOUNT_TOOLTIP, DefaultValue = 1, Min = 1, Max = 10)]
-	public int EffectCount { get; set; }
+	public int EffectCount { get; set; } = 1;
 
+	[IgnoreMember]
 	public float Delay => (ushort)Frequency;
 }
