@@ -10,6 +10,7 @@ internal abstract class BaseChaosEffect : IChaosEffect
 	public abstract float Duration { get; set; }
 	public abstract int Weight { get; set; }
 
+	public virtual void BeforeStart() { }
 	public virtual void OnStart() { }
 	public virtual void Update(float time) { }
 	public virtual void OnStop() { }

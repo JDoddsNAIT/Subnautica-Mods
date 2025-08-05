@@ -5,6 +5,7 @@ internal interface IChaosEffect : IDistributable
 	string? Description { get; set; }
 	float Duration { get; }
 
+	void BeforeStart();
 	void OnStart();
 	void Update(float time);
 	void OnStop();

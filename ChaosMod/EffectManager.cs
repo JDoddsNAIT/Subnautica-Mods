@@ -105,6 +105,8 @@ internal static class EffectManager
 
 	private static void TriggerEffect(IChaosEffect effect)
 	{
+		effect.BeforeStart();
+
 		ActiveEffect activeEffect = new(effect);
 
 		string message = string.IsNullOrWhiteSpace(effect.Description)

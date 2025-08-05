@@ -12,7 +12,7 @@ internal static class ChaosEffects
 			Height = 100, SpawnsPerSecond = 1, SpawnRadius = 50,
 		},
 		[ChaosEffect.RandomTeleport] = new RandomTeleport() { 
-			Description = "Where were we?",
+			Description = "Teleport",
 			Biomes = new[] { BiomeType.SafeShallows_EscapePod },
 		}
 	};
@@ -91,4 +91,13 @@ internal enum ChaosEffect
 {
 	ReaperRain,
 	RandomTeleport,
+
+	/* TODO: effect ideas
+	 * (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan
+	 * (FakeTeleport) "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
+	 * (FakeCrash) "Fake Crash" - Freezes the game for the duration
+	 * (DamageVehicles) "Insurance Claim" - Damages all nearby vehicles by 50%
+	 * (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
+	 * 
+	 */
 }

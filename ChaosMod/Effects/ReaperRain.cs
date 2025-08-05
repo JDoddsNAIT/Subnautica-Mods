@@ -22,10 +22,34 @@ internal class ReaperRain : BaseChaosEffect
 
 	public float? SpawnRadius { get; set; } = null;
 
+	private float SecondsPerSpawn => 1 / SpawnsPerSecond!.Value;
+	private float _lastSpawnTime = 0;
+
+	public override void OnStart()
+	{
+		_lastSpawnTime = 0;
+	}
+
 	public override void Update(float time)
 	{
-		// TODO: Spawn a reaper in the sky at regular intervals.
-		
+		if (time - _lastSpawnTime < SecondsPerSpawn)
+			return;
+
+		EnsurePlayerExists();
+
+		_lastSpawnTime += SecondsPerSpawn;
+
+		var spawnPosition = Random.insideUnitCircle;
+		spawnPosition *= (float)SpawnRadius!;
+
+		Vector3 trueSpawnPosition = new(
+			x: spawnPosition.x,
+			y: (float)Height!,
+			z: spawnPosition.y);
+
+		trueSpawnPosition += Player.main.transform.position with { y = 0 };
+
+		InstantiateTechType(TechType.ReaperLeviathan, trueSpawnPosition);
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)

@@ -19,7 +19,6 @@ internal class UnexpectedAttributesException : Exception
 	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
-
 [Serializable]
 internal class InvalidAttributeException : Exception
 {
@@ -55,6 +54,18 @@ public class CommandFailedException : Exception
 	{ }
 
 	protected CommandFailedException(
+	  System.Runtime.Serialization.SerializationInfo info,
+	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
+
+[Serializable]
+public class PlayerNotFoundException : Exception
+{
+	public PlayerNotFoundException()
+		: base("No main player object was found. Likely at main menu.")
+	{ }
+	protected PlayerNotFoundException(
 	  System.Runtime.Serialization.SerializationInfo info,
 	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
