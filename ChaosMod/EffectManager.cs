@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using FrootLuips.ChaosMod.Effects;
-using FrootLuips.ChaosMod.Objects;
 using FrootLuips.ChaosMod.Utilities;
 
 namespace FrootLuips.ChaosMod;

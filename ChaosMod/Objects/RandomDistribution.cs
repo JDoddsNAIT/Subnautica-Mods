@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using FrootLuips.ChaosMod.Utilities;
+﻿using FrootLuips.ChaosMod.Utilities;
 using Random = UnityEngine.Random;
 
 namespace FrootLuips.ChaosMod.Objects;

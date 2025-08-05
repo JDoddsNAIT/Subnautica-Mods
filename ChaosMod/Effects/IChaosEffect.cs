@@ -1,7 +1,4 @@
-﻿using FrootLuips.ChaosMod.Logging;
-using FrootLuips.ChaosMod.Objects;
-
-namespace FrootLuips.ChaosMod.Effects;
+﻿namespace FrootLuips.ChaosMod.Effects;
 internal interface IChaosEffect : IDistributable
 {
 	ChaosEffect Id { get; }

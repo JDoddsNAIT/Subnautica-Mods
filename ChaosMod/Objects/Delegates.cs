@@ -1,6 +1,4 @@
-﻿using FrootLuips.ChaosMod.Effects;
-
-namespace FrootLuips.ChaosMod.Objects;
+﻿namespace FrootLuips.ChaosMod.Objects;
 
 public delegate bool TryFunc<in T, TResult>(T input, out TResult result);
 

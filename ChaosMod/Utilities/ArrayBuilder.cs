@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FrootLuips.ChaosMod.Utilities;
+﻿namespace FrootLuips.ChaosMod.Utilities;
 public class ArrayBuilder<T>
 {
 	private readonly List<T[]> _values = new();

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using FrootLuips.ChaosMod.Logging;
+﻿using FrootLuips.ChaosMod.Logging;
 
 namespace FrootLuips.ChaosMod.Utilities;
 

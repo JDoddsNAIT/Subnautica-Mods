@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using FrootLuips.ChaosMod.Objects;
-
-namespace FrootLuips.ChaosMod.Utilities;
+﻿namespace FrootLuips.ChaosMod.Utilities;
 /// <summary>
 /// Provides alternatives to Linq methods that uses <see langword="for"/> instead of <see langword="foreach"/> to reduce allocations.
 /// </summary>

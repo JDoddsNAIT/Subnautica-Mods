@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using FrootLuips.ChaosMod.Logging;
-using FrootLuips.ChaosMod.Objects;
-using FrootLuips.ChaosMod.Utilities;
-
-using static FrootLuips.ChaosMod.Utilities.Utils;
+﻿using FrootLuips.ChaosMod.Utilities;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : IChaosEffect

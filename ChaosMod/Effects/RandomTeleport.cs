@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using FrootLuips.ChaosMod.Logging;
-using FrootLuips.ChaosMod.Objects;
-
-using static FrootLuips.ChaosMod.Utilities.Utils;
-
-namespace FrootLuips.ChaosMod.Effects;
+﻿namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : IChaosEffect
 {
 	public const char BIOME_SEPARATOR = ',';

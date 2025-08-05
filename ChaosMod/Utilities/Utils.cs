@@ -1,5 +1,4 @@
 ﻿using FrootLuips.ChaosMod.Effects;
-using FrootLuips.ChaosMod.Objects;
 
 namespace FrootLuips.ChaosMod.Utilities;
 internal static class Utils
