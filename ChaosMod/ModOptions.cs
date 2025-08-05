@@ -4,9 +4,11 @@ namespace FrootLuips.ChaosMod;
 [Menu(Plugin.NAME)]
 internal class ModOptions : Nautilus.Json.ConfigFile
 {
+	// TODO: Add localization
 	public const string
 		FREQUENCY_LABEL = "Frequency",
 		FREQUENCY_TOOLTIP = "How often events are triggered.",
+
 		EFFECTCOUNT_LABEL = "Effects Triggered",
 		EFFECTCOUNT_TOOLTIP = "The amount of effects triggered at once. It is recommended to adjust the frequency instead to increase or reduce difficulty.";
 
