@@ -1,7 +1,7 @@
 ﻿using Nautilus.Options.Attributes;
 
 namespace FrootLuips.ChaosMod;
-[Menu(Plugin.NAME)]
+[Menu(PluginInfo.PLUGIN_NAME)]
 internal class ModOptions : Nautilus.Json.ConfigFile
 {
 	// TODO: Add localization
