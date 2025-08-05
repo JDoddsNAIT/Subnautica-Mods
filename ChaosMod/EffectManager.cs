@@ -132,6 +132,10 @@ internal static class EffectManager
 	public static void RemoveEffect(Callback callback, params ChaosEffect[] effects)
 	{
 		List<ChaosEffect> activeEffects = effects.SimpleWhere(_activeEffects.ContainsKey);
+		if (effects.Length == 0)
+		{
+			activeEffects = _activeEffects.Keys.ToList();
+		}
 
 		for (int i = 0; i < activeEffects.Count; i++)
 		{
