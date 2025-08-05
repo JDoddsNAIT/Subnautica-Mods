@@ -7,8 +7,10 @@ internal class ActiveEffect
 {
 	public float Timer { get; set; }
 	public float Duration => this.Effect.Duration;
-	public IChaosEffect Effect { get; set; }
+	public IChaosEffect Effect { get; private set; }
 	public UnityEngine.Coroutine? Coroutine { get; private set; }
+
+	public event OnEffectEnd OnEffectEnd = delegate { };
 
 	public ActiveEffect(IChaosEffect effect)
 	{
@@ -28,6 +30,7 @@ internal class ActiveEffect
 	{
 		Timer = Duration;
 		Effect.OnStop();
+		OnEffectEnd(this);
 
 		if (Coroutine != null)
 		{

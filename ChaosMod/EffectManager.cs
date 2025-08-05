@@ -110,8 +110,15 @@ internal static class EffectManager
 			: effect.Description!;
 		Plugin.Logger.LogInGame(message);
 
+		activeEffect.OnEffectEnd += OnEffectEnd;
 		_activeEffects.Add(effect.Id, activeEffect);
 		activeEffect.Start();
+	}
+
+	private static void OnEffectEnd(ActiveEffect effect)
+	{
+		_activeEffects.Remove(effect.Effect.Id);
+		effect.OnEffectEnd -= OnEffectEnd;
 	}
 
 	/// <summary>
@@ -125,8 +132,7 @@ internal static class EffectManager
 
 		for (int i = 0; i < activeEffects.Count; i++)
 		{
-			var effect = _activeEffects[activeEffects[i]];
-			effect.Timer = effect.Duration;
+			_activeEffects[activeEffects[i]].Stop();
 		}
 
 		string message = NullOrEmptyCollection(activeEffects)
@@ -143,7 +149,7 @@ internal static class EffectManager
 			? "No effects are active."
 			: $"Active effects: {string.Join(", ", result)}";
 		callback(message);
-		
+
 		return result;
 	}
 }
