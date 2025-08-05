@@ -76,6 +76,9 @@ internal static class EffectManager
 			return;
 		}
 
+		static void callback2(string message) => Plugin.Logger.LogDebug(message);
+		RemoveEffect(callback2);
+
 		UWE.CoroutineHost.StopCoroutine(_mainRoutine);
 		_mainRoutine = null;
 		callback(SHUTDOWN_MESSAGE);
