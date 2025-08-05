@@ -1,6 +1,7 @@
 ﻿using System;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Objects;
 using FrootLuips.ChaosMod.Utilities;
 using Nautilus.Commands;
 
@@ -26,7 +27,7 @@ internal static class ConsoleCommands
 		return command switch {
 			Command.Start => Start(),
 			Command.Stop => Stop(),
-			Command.List => string.Join(", ", ChaosMod.GetActiveEffectIds()),
+			Command.List => List(),
 			Command.Trigger => Trigger(arg2),
 			Command.Clear => Clear(arg2),
 			Command.Help => Help(arg2),
@@ -36,33 +37,38 @@ internal static class ConsoleCommands
 
 	public static string Start()
 	{
-		return ChaosMod.Start(showInGame: false) switch {
-			true => ChaosMod.START_MESSAGE,
-			false => "Chaos is already in progress.",
-			null => new LogMessage(notice: "Failed to start", message: "Could not load effects"),
-		};
+		string? msg = null;
+		void callback(string message) => msg = message;
+		EffectManager.StartRoutine(callback);
+		return msg ?? throw new CommandFailedException(nameof(Command.Start));
 	}
 
 	public static string Stop()
 	{
-		ChaosMod.Stop(showInGame: false);
-		return ChaosMod.STOP_MESSAGE;
+		string? msg = null;
+		void callback(string message) => msg = message;
+		EffectManager.StopRoutine(callback);
+		return msg ?? throw new CommandFailedException(nameof(Command.Stop));
+	}
+
+	public static string List()
+	{
+		string? msg = null;
+		void callback(string message) => msg = message;
+		EffectManager.GetActiveEffects(callback);
+		return msg ?? throw new CommandFailedException(nameof(Command.List));
 	}
 
 	public static string Trigger(string effect)
 	{
 		effect = effect.ToLower();
+		
 		if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect effectId))
 		{
-			try
-			{
-				ChaosMod.TriggerEffect(ChaosEffects.Effects[effectId]);
-				return $"Triggered effect {effectId.ToString().GetDisplayString()}";
-			}
-			catch (Exception ex)
-			{
-				return ex.Message;
-			}
+			string? msg = null;
+			void callback(string message) => msg = message;
+			EffectManager.AddEffect(callback, effectId);
+			return msg ?? throw new CommandFailedException(nameof(Command.Trigger) + " " + effect);
 		}
 		else
 		{
@@ -72,19 +78,23 @@ internal static class ConsoleCommands
 
 	private static string Clear(string effect)
 	{
-		if (string.IsNullOrEmpty(effect))
+		string? msg = null;
+		void callback(string message) => msg = message;
+		switch (effect)
 		{
-			ChaosMod.ClearEffects();
-			return "Cleared all chaos effects";
-		}
-		else if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect clearEffect))
-		{
-			ChaosMod.ClearEffects(clearEffect);
-			return $"Removed effect \"{clearEffect.ToString().GetDisplayString()}\"";
-		}
-		else
-		{
-			return EffectNotFound(effect);
+			case null or "":
+				EffectManager.RemoveEffect(callback);
+				return msg ?? throw new CommandFailedException(nameof(Command.Clear));
+			default:
+				if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect chaosEffect))
+				{
+					EffectManager.RemoveEffect(callback, chaosEffect);
+					return msg ?? throw new CommandFailedException(nameof(Command.Clear) + " " +  chaosEffect);
+				}
+				else
+				{
+					return EffectNotFound(effect);
+				}
 		}
 	}
 

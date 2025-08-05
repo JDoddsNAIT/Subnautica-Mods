@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FrootLuips.ChaosMod.Objects;
 
 namespace FrootLuips.ChaosMod.Utilities;
 /// <summary>
@@ -49,7 +47,17 @@ internal static class SimpleQueries
 		return results;
 	}
 
-	public delegate bool TryFunc<in T, TResult>(T input, out TResult result);
+	public static List<T> SimpleDistinct<T>(this IReadOnlyList<T> values)
+	{
+		List<T> distinct = new();
+		for (int i = 0; i < values.Count; i++)
+		{
+			if (!distinct.Contains(values[i]))
+				distinct.Add(values[i]);
+		}
+		return distinct;
+	}
+
 	public static List<TResult> TrySelect<TSource, TResult>(this IReadOnlyList<TSource> values, TryFunc<TSource, TResult> trySelector)
 	{
 		if (trySelector is null)

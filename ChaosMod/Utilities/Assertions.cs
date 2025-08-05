@@ -33,34 +33,6 @@ public static class Assertions
 			logger.LogError(LogMessage.FromException(new AssertionFailedException(message)));
 		return condition;
 	}
-
-	/// <summary>
-	/// Validates the values of an object using the give <paramref name="enumerator"/>, and throws an <see cref="AggregateException"/> if there are any issues.
-	/// </summary>
-	/// <param name="enumerator"></param>
-	/// <returns><see langword="true"/> unless an exception is thrown.</returns>
-	/// <exception cref="AggregateException"></exception>
-	public static bool Validate(IEnumerator<Exception> enumerator)
-	{
-		var errors = new List<Exception>();
-
-		try
-		{
-			while (enumerator.MoveNext())
-			{
-				errors.Add(enumerator.Current);
-			}
-		}
-		catch (Exception ex)
-		{
-			errors.Add(ex);
-		}
-
-		if (errors.Count > 0)
-			throw new AggregateException(errors.ToArray());
-		else
-			return true;
-	}
 }
 
 [Serializable]

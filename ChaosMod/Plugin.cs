@@ -27,16 +27,16 @@ public sealed class Plugin : BaseUnityPlugin
 		Logger = new Logger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
-		if (!System.IO.File.Exists(ChaosMod.effectsFilePath))
+		if (!System.IO.File.Exists(EffectManager.effectsFilePath))
 		{
 			Logger.LogDebug(new LogMessage(
-				notice: $"{ChaosMod.EFFECTS_CONFIG} is missing.",
+				notice: $"{EffectManager.EFFECTS_CONFIG} is missing.",
 				message: "Restoring..."));
 			ChaosEffects.ResetEffects();
 
 			try
 			{
-				ChaosEffects.Save(ChaosMod.effectsFilePath);
+				ChaosEffects.Save(EffectManager.effectsFilePath);
 			}
 			catch (System.Exception ex)
 			{

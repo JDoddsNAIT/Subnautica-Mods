@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
 
@@ -10,11 +9,12 @@ internal interface IChaosEffect : IDistributable
 	string? Description { get; set; }
 	float Duration { get; }
 
-	IEnumerator Activate();
+	void OnStart();
+	void Update(float time);
+	void OnStop();
 
 	Effect ToData();
 	void FromData(Effect data, StatusCallback callback);
-
 }
 
 [Serializable]

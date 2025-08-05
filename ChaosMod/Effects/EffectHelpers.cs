@@ -28,28 +28,5 @@ internal static class EffectHelpers
 			throw new UnexpectedAttributesException(count);
 	}
 
-	public delegate T? Getter<T>();
-
-	/// <summary>
-	/// Used when setting the property value of a <see cref="IChaosEffect"/> from an attribute.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="name"></param>
-	/// <param name="getter"></param>
-	/// <param name="setter"></param>
-	/// <param name="value"></param>
-	/// <exception cref="Exception"></exception>
-	public static void SetProperty<T>(string name, Getter<T> getter, Action<T> setter, T value)
-	{
-		var val = getter();
-		if (val != null)
-		{
-			setter(value);
-			throw new Exception($"	{name}' has been overwritten by another.");
-		}
-		else
-		{
-			setter(value);
-		}
-	}
+	public static ActiveEffect Activate(this IChaosEffect effect) => new(effect);
 }

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Objects;
-using FrootLuips.ChaosMod.Utilities;
+
+using static FrootLuips.ChaosMod.Utilities.Utilities;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : IChaosEffect
@@ -18,10 +19,19 @@ internal class RandomTeleport : IChaosEffect
 
 	public BiomeType[]? Biomes { get; set; } = null;
 
-	public IEnumerator Activate()
+	public void OnStart()
 	{
 		// TODO: Teleport the player to a randomly selected biome.
-		yield return null;
+	}
+
+	public void Update(float time)
+	{
+		// No-op
+	}
+
+	public void OnStop()
+	{
+		// No-op
 	}
 
 	public void FromData(Effect data, StatusCallback callback)
@@ -33,7 +43,7 @@ internal class RandomTeleport : IChaosEffect
 		List<string> errors = new();
 		try
 		{
-			Assertions.Validate(ValidateAttributes(data.Attributes));
+			Validate(ValidateAttributes(data.Attributes));
 		}
 		catch (AggregateException ex)
 		{

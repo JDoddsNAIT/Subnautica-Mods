@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FrootLuips.ChaosMod.Logging;
 
 namespace FrootLuips.ChaosMod.Objects;
 
@@ -38,6 +40,26 @@ internal class InvalidAttributeException : Exception
 	{ }
 	
 	protected InvalidAttributeException(
+	  System.Runtime.Serialization.SerializationInfo info,
+	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
+[Serializable]
+public class CommandFailedException : Exception
+{
+	const string _MESSAGE1 = "Failed to execute command",
+		_MESSAGE2 = "Callback was not executed.";
+
+	public CommandFailedException()
+		: base(new LogMessage(notice: _MESSAGE1, message: _MESSAGE2))
+	{ }
+	public CommandFailedException(string methodName)
+		: base(message: new LogMessage(
+			notice: _MESSAGE1 + $" '{ConsoleCommands.COMMAND_NAME} {methodName.ToLower()}'",
+			message: _MESSAGE2))
+	{ }
+
+	protected CommandFailedException(
 	  System.Runtime.Serialization.SerializationInfo info,
 	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }

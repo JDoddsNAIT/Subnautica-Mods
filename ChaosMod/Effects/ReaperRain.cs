@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using FrootLuips.ChaosMod.Logging;
 using FrootLuips.ChaosMod.Utilities;
 
+using static FrootLuips.ChaosMod.Utilities.Utilities;
+
 namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : IChaosEffect
 {
@@ -22,12 +24,21 @@ internal class ReaperRain : IChaosEffect
 	/// </summary>
 	public float? SpawnsPerSecond { get; set; } = null;
 
-	public IEnumerator Activate()
+	public void OnStart()
 	{
-		// TODO: Summon an amount of reapers in the sky around the player.
-		yield return null;
+		//No-op
 	}
 
+	public void Update(float time)
+	{
+		// TODO: Spawn a reaper in the sky at regular intervals.
+	}
+
+	public void OnStop()
+	{
+		// No-op
+	}
+	
 	public void FromData(Effect data, StatusCallback callback)
 	{
 		this.Duration = data.Duration;
@@ -39,7 +50,7 @@ internal class ReaperRain : IChaosEffect
 		List<string> errors = new();
 		try
 		{
-			Assertions.Validate(ValidateAttributes(data.Attributes));
+			Validate(ValidateAttributes(data.Attributes));
 		}
 		catch (AggregateException ex)
 		{

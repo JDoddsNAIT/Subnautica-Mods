@@ -4,6 +4,12 @@ namespace FrootLuips.ChaosMod;
 [Menu(Plugin.NAME)]
 internal class ModOptions : Nautilus.Json.ConfigFile
 {
+	public const string
+		FREQUENCY_LABEL = "Frequency",
+		FREQUENCY_TOOLTIP = "How often events are triggered.",
+		EFFECTCOUNT_LABEL = "Effects Triggered",
+		EFFECTCOUNT_TOOLTIP = "The amount of effects triggered at once. It is recommended to adjust the frequency instead to increase or reduce difficulty.";
+
 	/// <summary>
 	/// The frequency at which events are triggered.
 	/// </summary>
@@ -23,7 +29,8 @@ internal class ModOptions : Nautilus.Json.ConfigFile
 		OneHour = 3600,
 	}
 
-	[Choice(Label = "Frequency", Tooltip = "How often events are triggered.",
+
+	[Choice(Label = FREQUENCY_LABEL, Tooltip = FREQUENCY_TOOLTIP,
 		Options = new[] {
 			"5 Seconds",
 			"10 Seconds",
@@ -36,6 +43,9 @@ internal class ModOptions : Nautilus.Json.ConfigFile
 			"1 Hour"
 		})]
 	public FrequencyEnum Frequency { get; set; } = FrequencyEnum.FiveMinutes;
+
+	[Slider(Label = EFFECTCOUNT_LABEL, Tooltip = EFFECTCOUNT_TOOLTIP, DefaultValue = 1, Min = 1, Max = 10)]
+	public int EffectCount { get; set; }
 
 	public float Delay => (ushort)Frequency;
 }
