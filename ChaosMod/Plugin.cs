@@ -7,7 +7,7 @@ using Nautilus.Handlers;
 
 namespace FrootLuips.ChaosMod;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-[BepInDependency("com.snmodding.nautilus")]
+[BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID)]
 public sealed class Plugin : BaseUnityPlugin
 {
 	private static ILogger? _logger;

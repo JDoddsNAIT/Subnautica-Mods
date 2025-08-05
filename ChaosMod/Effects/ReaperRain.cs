@@ -1,12 +1,15 @@
 ﻿using FrootLuips.ChaosMod.Utilities;
+using UnityEngine;
+
+using Random = UnityEngine.Random;
 
 namespace FrootLuips.ChaosMod.Effects;
-internal class ReaperRain : IChaosEffect
+internal class ReaperRain : BaseChaosEffect
 {
-	public ChaosEffect Id { get; } = ChaosEffect.ReaperRain;
-	public string? Description { get; set; } = "";
-	public float Duration { get; private set; } = 30f;
-	public int Weight { get; private set; } = 100;
+	public override ChaosEffect Id { get; } = ChaosEffect.ReaperRain;
+	public override string? Description { get; set; } = "";
+	public override float Duration { get; set; } = 30f;
+	public override int Weight { get; set; } = 100;
 
 	/// <summary>
 	/// Height in metres above sea level where the reapers will spawn.
@@ -17,22 +20,15 @@ internal class ReaperRain : IChaosEffect
 	/// </summary>
 	public float? SpawnsPerSecond { get; set; } = null;
 
-	public void OnStart()
-	{
-		//No-op
-	}
+	public float? SpawnRadius { get; set; } = null;
 
-	public void Update(float time)
+	public override void Update(float time)
 	{
 		// TODO: Spawn a reaper in the sky at regular intervals.
+		
 	}
 
-	public void OnStop()
-	{
-		// No-op
-	}
-	
-	public void FromData(Effect data, StatusCallback callback)
+	public override void FromData(Effect data, StatusCallback callback)
 	{
 		this.Duration = data.Duration;
 		this.Weight = data.Weight;
@@ -54,7 +50,7 @@ internal class ReaperRain : IChaosEffect
 		}
 		finally
 		{
-			bool success = Height != null && SpawnsPerSecond != null;
+			bool success = Height != null && SpawnsPerSecond != null && SpawnRadius != null;
 			callback(errors, success);
 		}
 	}
@@ -79,6 +75,11 @@ internal class ReaperRain : IChaosEffect
 						attributes[i].ParseAttribute(float.Parse, out float spawns);
 						SpawnsPerSecond = spawns;
 						break;
+					case nameof(SpawnRadius):
+						attributes[i].ParseAttribute(float.Parse, out float radius);
+						SpawnRadius = radius;
+						break;
+
 					default:
 						throw attributes[i].Invalid();
 				}
@@ -95,7 +96,7 @@ internal class ReaperRain : IChaosEffect
 		}
 	}
 
-	public Effect ToData() => new() {
+	public override Effect ToData() => new() {
 		Id = this.Id.ToString(),
 		Duration = this.Duration,
 		Weight = this.Weight,

@@ -1,31 +1,21 @@
 ﻿namespace FrootLuips.ChaosMod.Effects;
-internal class RandomTeleport : IChaosEffect
+internal class RandomTeleport : BaseChaosEffect
 {
 	public const char BIOME_SEPARATOR = ',';
 
-	public ChaosEffect Id { get; } = ChaosEffect.RandomTeleport;
-	public string? Description { get; set; } = "";
-	public float Duration { get; set; } = 0;
-	public int Weight { get; set; } = 100;
+	public override ChaosEffect Id { get; } = ChaosEffect.RandomTeleport;
+	public override string? Description { get; set; } = "";
+	public override float Duration { get; set; } = 0;
+	public override int Weight { get; set; } = 100;
 
 	public BiomeType[]? Biomes { get; set; } = null;
 
-	public void OnStart()
+	public override void OnStart()
 	{
 		// TODO: Teleport the player to a randomly selected biome.
 	}
 
-	public void Update(float time)
-	{
-		// No-op
-	}
-
-	public void OnStop()
-	{
-		// No-op
-	}
-
-	public void FromData(Effect data, StatusCallback callback)
+	public override void FromData(Effect data, StatusCallback callback)
 	{
 		this.Duration = data.Duration;
 		this.Weight = data.Weight;
@@ -99,7 +89,7 @@ internal class RandomTeleport : IChaosEffect
 			yield return exception;
 	}
 
-	public Effect ToData()
+	public override Effect ToData()
 	{
 		return new Effect() {
 			Id = this.Id.ToString(),

@@ -9,7 +9,7 @@ internal static class ChaosEffects
 	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => Effects = new() {
 		[ChaosEffect.ReaperRain] = new ReaperRain() {
 			Description = "It's raining reapers!",
-			Height = 100, SpawnsPerSecond = 1
+			Height = 100, SpawnsPerSecond = 1, SpawnRadius = 50,
 		},
 		[ChaosEffect.RandomTeleport] = new RandomTeleport() { 
 			Description = "Where were we?",
