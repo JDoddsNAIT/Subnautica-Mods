@@ -102,16 +102,22 @@ internal static class ConsoleCommands
 			$"Use \"{COMMAND_NAME} help {{CommandName}}\" to show more details about that command, or \"{COMMAND_NAME} help effects\" to list all effect IDs.";
 
 		return help switch {
-			_ when Enum.TryParse(help, ignoreCase: true, out Command command) => command switch {
-				Command.Start => "Enables the mod.",
-				Command.Stop => "Disables the mod.",
-				Command.List => "Lists all active chaos effects.",
-				Command.Trigger => "Triggers the specified effect.",
-				Command.Clear => "Stops the specific effect. Stops all if none specified.",
-				Command.Help => "Shows details on all commands.",
-				_ => defaultMessage,
-			},
+			_ when Enum.TryParse(help, ignoreCase: true, out Command command) => GetCommandInfo(defaultMessage, command),
 			"effects" => "Effect IDs: " + string.Join(", ", Enum.GetNames(typeof(ChaosEffect))),
+			_ => defaultMessage,
+		};
+	}
+
+	private static string GetCommandInfo(string defaultMessage, Command command)
+	{
+		string message = $"{COMMAND_NAME} {command}";
+		return message + command switch {
+			Command.Start => ": Enables the mod.",
+			Command.Stop => ": Disables the mod.",
+			Command.List => ": Lists all active chaos effects.",
+			Command.Trigger => " {EffectID}: Triggers the specified effect.",
+			Command.Clear => " <EffectID>: Stops the an effect. Stops all if none specified.",
+			Command.Help => " <Command>: Shows details about a command, or lists all commands if none specified.",
 			_ => defaultMessage,
 		};
 	}
