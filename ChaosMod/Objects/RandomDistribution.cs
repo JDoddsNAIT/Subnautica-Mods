@@ -20,6 +20,11 @@ public class RandomDistribution<T> where T : IDistributable
 		_items = new(items);
 	}
 
+	public RandomDistribution(IEnumerable<T> values)
+	{
+		_items = new(values);
+	}
+
 	public void AddItems(params T[] items)
 	{
 		for (int i = 0; i < items.Length; i++)

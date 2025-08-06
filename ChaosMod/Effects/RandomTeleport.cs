@@ -1,92 +1,79 @@
-﻿namespace FrootLuips.ChaosMod.Effects;
+﻿using Nautilus.Json.ExtensionMethods;
+
+namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : BaseChaosEffect
 {
-	public const char BIOME_SEPARATOR = ',';
+	public const string TELEPORTS = "teleports.json";
+
+	public static readonly string teleportsPath = GetPluginPath(TELEPORTS);
 
 	public override ChaosEffect Id { get; } = ChaosEffect.RandomTeleport;
 	public override string? Description { get; set; } = "";
 	public override float Duration { get; set; } = 0;
 	public override int Weight { get; set; } = 100;
 
-	public BiomeType[]? Biomes { get; set; } = null;
+	private RandomDistribution<Objects.TeleportPosition>? Distribution { get; set; } = null;
+
+	/*
+	 * Teleports:
+	 * safe1: 0, 0, 0
+	 * safe2: 22, -16, 240
+	 * safe3: 56, -13, -72
+	 * kelp1: 313, -50, -60
+	 * kelp2: -325, -115, 270
+	 * kelp3: -37, -10, 418
+	 * grassy1: -688, -105, -51
+	 * grassy2: 339, -100, 316
+	 * jellyshroom: -715, -178, 7
+	 * sparse: -684, -221, -686
+	 * grand: -396, -360, -1344
+	 * mushroom: -837, -115, 564
+	 * auroraback: 575, 0, -612
+	 * koosh: 1251, -215, 606
+	 * underisles: -40, -174, 746
+	 * bloodkelp: -467, -500, 1337
+	 * 
+	 * gargantuanfossil: -780, -746, -239
+	 * 
+	 * precursorbase_gun: 
+	 * precursorbase_lost: -230, -789, 315
+	 * precursorbase_lava: 169, -1247, 278
+	 * precursorcache1: -1252, -397, 1094
+	 * precursorcache2: 
+	 * precursorcache3: 
+	 * 
+	 * degasi1: -761, 15, -1105
+	 * degasi2: 100, -250, -350
+	 * degasi3: -645, -500, -954
+	 */
 
 	public override void OnStart()
 	{
-		// TODO: Teleport the player to a randomly selected biome.
+		GotoConsoleCommand.main.GotoPosition(Distribution!.GetRandomItem().position);
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
 		this.Duration = data.Duration;
 		this.Weight = data.Weight;
+		this.Distribution = null;
 
-		Biomes = null;
 		List<string> errors = new();
 		try
 		{
-			Validate(ValidateAttributes(data.Attributes));
-		}
-		catch (AggregateException ex)
-		{
-			for (int i = 0; i < ex.InnerExceptions.Count; i++)
-			{
-				errors.Add(ex.InnerExceptions[i].Message);
-			}
-		}
-		finally
-		{
-			bool success = Biomes != null && Biomes.Length > 0;
-			callback(errors, success);
-		}
-	}
-
-	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
-	{
-		ExpectAttributeCount(attributes, count: 1);
-
-		var attribute = attributes[0];
-		Exception? exception = null;
-		try
-		{
-			List<BiomeType> biomes = new();
-			List<Exception> errors = new();
-			string[] parts = attribute.Value.Split(BIOME_SEPARATOR);
-
-			for (int i = 0; i < parts.Length; i++)
-			{
-				try
-				{
-					var biome = (BiomeType)Enum.Parse(typeof(BiomeType), parts[i]);
-					biomes.Add(biome);
-				}
-				catch (Exception ex)
-				{
-					errors.Add(ex);
-					continue;
-				}
-			}
-
-			if (biomes.Count == 0)
-				throw new InvalidAttributeException(attribute);
-			Biomes = biomes.ToArray();
-
-			if (errors.Count > 0)
-				throw new AggregateException(errors);
+			var positions = new List<Objects.TeleportPosition>();
+			positions.LoadJson(teleportsPath);
+			this.Distribution = new(positions);
 		}
 		catch (Exception ex)
 		{
-			exception = ex;
+			errors.Add(ex.Message);
 		}
-
-		if (exception is AggregateException agg)
+		finally
 		{
-			for (int i = 0; i < agg.InnerExceptions.Count; i++)
-			{
-				yield return agg.InnerExceptions[i];
-			}
+			bool success = this.Distribution != null;
+			callback(errors, success);
 		}
-		else if (exception is not null)
-			yield return exception;
 	}
 
 	public override Effect ToData()
@@ -95,9 +82,6 @@ internal class RandomTeleport : BaseChaosEffect
 			Id = this.Id.ToString(),
 			Duration = this.Duration,
 			Weight = this.Weight,
-			Attributes = new[] {
-				new Effect.Attribute(nameof(Biomes), string.Join(BIOME_SEPARATOR.ToString(), Biomes))
-			}
 		};
 	}
 }

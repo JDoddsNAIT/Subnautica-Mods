@@ -40,7 +40,7 @@ internal class ActiveEffect
 	{
 		while (Timer < Duration)
 		{
-			yield return null;
+			yield return UWE.CoroutineUtils.waitForNextFrame;
 			try
 			{
 				Effect.Update(Timer);

@@ -1,6 +1,8 @@
 ﻿using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Utilities;
 using Nautilus.Commands;
+using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.ChaosMod;
 
@@ -11,6 +13,13 @@ internal static class ConsoleCommands
 	public enum Command
 	{
 		Start, Stop, List, Trigger, Clear, Help
+	}
+
+	[ConsoleCommand("saveteleports")]
+	public static string GetTeleports()
+	{
+		GotoConsoleCommand.main.data.locations.SimpleSelect(Utilities.Utils.ToPosition).SaveJson(RandomTeleport.teleportsPath);
+		return "Saved to " + RandomTeleport.teleportsPath;
 	}
 
 	[ConsoleCommand(COMMAND_NAME)]

@@ -23,6 +23,14 @@ public sealed class Plugin : BaseUnityPlugin
 		Logger = new Logger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
+		if (!File.Exists(RandomTeleport.teleportsPath))
+		{
+			Logger.LogDebug(new LogMessage(
+				notice: $"{RandomTeleport.TELEPORTS} is missing.",
+				message: "Restoring..."));
+			ConsoleCommands.GetTeleports();
+		}
+
 		if (!File.Exists(EffectManager.effectsFilePath))
 		{
 			Logger.LogDebug(new LogMessage(

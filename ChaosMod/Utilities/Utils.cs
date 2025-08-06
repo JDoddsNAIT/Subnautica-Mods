@@ -102,4 +102,13 @@ internal static class Utils
 		CrafterLogic.NotifyCraftEnd(clone, techType);
 		clone.SendMessage("StartConstruction", SendMessageOptions.DontRequireReceiver);
 	}
+
+	public static Objects.TeleportPosition ToPosition(this global::TeleportPosition position)
+	{
+		return new Objects.TeleportPosition() {
+			name = position.name,
+			position = position.position,
+			weight = position.name.EndsWith("event", StringComparison.OrdinalIgnoreCase) ? 0 : 1
+		};
+	}
 }

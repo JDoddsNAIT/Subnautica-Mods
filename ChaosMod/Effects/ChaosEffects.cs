@@ -13,7 +13,6 @@ internal static class ChaosEffects
 		},
 		[ChaosEffect.RandomTeleport] = new RandomTeleport() { 
 			Description = "Teleport",
-			Biomes = new[] { BiomeType.SafeShallows_EscapePod },
 		}
 	};
 
