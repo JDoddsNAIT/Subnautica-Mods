@@ -13,7 +13,10 @@ internal static class ChaosEffects
 		},
 		[ChaosEffect.RandomTeleport] = new RandomTeleport() { 
 			Description = "Teleport",
-		}
+		},
+		[ChaosEffect.ExplodeShip] = new ExplodeShip() {
+			Description = "Explode the Aurora",
+		},
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -90,8 +93,10 @@ internal enum ChaosEffect
 {
 	ReaperRain,
 	RandomTeleport,
+	ExplodeShip,
 
 	/* TODO: effect ideas
+	 * (ExplodeShip) "Exploded the Aurora" - explodes the aurora
 	 * (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan
 	 * (FakeTeleport) "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
 	 * (FakeCrash) "Fake Crash" - Freezes the game for the duration

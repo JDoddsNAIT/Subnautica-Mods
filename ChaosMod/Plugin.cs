@@ -31,7 +31,8 @@ public sealed class Plugin : BaseUnityPlugin
 			ConsoleCommands.GetTeleports();
 		}
 
-		if (!File.Exists(EffectManager.effectsFilePath))
+		// TODO: fix this
+		if (true || !File.Exists(EffectManager.effectsFilePath))
 		{
 			Logger.LogDebug(new LogMessage(
 				notice: $"{EffectManager.EFFECTS_CONFIG} is missing.",

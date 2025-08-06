@@ -15,6 +15,18 @@ internal abstract class BaseChaosEffect : IChaosEffect
 	public virtual void Update(float time) { }
 	public virtual void OnStop() { }
 
-	public abstract void FromData(Effect data, StatusCallback callback);
-	public abstract Effect ToData();
+	public virtual void FromData(Effect data, StatusCallback callback)
+	{
+		this.Duration = data.Duration;
+		this.Weight = data.Weight;
+	}
+
+	public virtual Effect ToData()
+	{
+		return new Effect() {
+			Id = this.Id.ToString(),
+			Duration = this.Duration,
+			Weight = this.Weight,
+		};
+	}
 }
