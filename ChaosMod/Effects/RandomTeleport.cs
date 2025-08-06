@@ -14,41 +14,11 @@ internal class RandomTeleport : BaseChaosEffect
 
 	private RandomDistribution<Objects.TeleportPosition>? Distribution { get; set; } = null;
 
-	/*
-	 * Teleports:
-	 * safe1: 0, 0, 0
-	 * safe2: 22, -16, 240
-	 * safe3: 56, -13, -72
-	 * kelp1: 313, -50, -60
-	 * kelp2: -325, -115, 270
-	 * kelp3: -37, -10, 418
-	 * grassy1: -688, -105, -51
-	 * grassy2: 339, -100, 316
-	 * jellyshroom: -715, -178, 7
-	 * sparse: -684, -221, -686
-	 * grand: -396, -360, -1344
-	 * mushroom: -837, -115, 564
-	 * auroraback: 575, 0, -612
-	 * koosh: 1251, -215, 606
-	 * underisles: -40, -174, 746
-	 * bloodkelp: -467, -500, 1337
-	 * 
-	 * gargantuanfossil: -780, -746, -239
-	 * 
-	 * precursorbase_gun: 
-	 * precursorbase_lost: -230, -789, 315
-	 * precursorbase_lava: 169, -1247, 278
-	 * precursorcache1: -1252, -397, 1094
-	 * precursorcache2: 
-	 * precursorcache3: 
-	 * 
-	 * degasi1: -761, 15, -1105
-	 * degasi2: 100, -250, -350
-	 * degasi3: -645, -500, -954
-	 */
-
 	public override void OnStart()
 	{
+		if (Distribution == null)
+			LoadDistribution();
+
 		GotoConsoleCommand.main.GotoPosition(Distribution!.GetRandomItem().position);
 	}
 
@@ -61,9 +31,7 @@ internal class RandomTeleport : BaseChaosEffect
 		List<string> errors = new();
 		try
 		{
-			var positions = new List<Objects.TeleportPosition>();
-			positions.LoadJson(teleportsPath);
-			this.Distribution = new(positions);
+			this.LoadDistribution();
 		}
 		catch (Exception ex)
 		{
@@ -74,6 +42,13 @@ internal class RandomTeleport : BaseChaosEffect
 			bool success = this.Distribution != null;
 			callback(errors, success);
 		}
+	}
+
+	private void LoadDistribution()
+	{
+		var positions = new List<Objects.TeleportPosition>();
+		positions.LoadJson(teleportsPath);
+		this.Distribution = new(positions);
 	}
 
 	public override Effect ToData()
