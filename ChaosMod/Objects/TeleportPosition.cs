@@ -13,6 +13,7 @@ public class TeleportPosition : IDistributable
 	public int Weight => weight;
 }
 
+// This class exists only because the json serializer doesn't understand unity's vectors.
 [Serializable]
 public struct Position
 {

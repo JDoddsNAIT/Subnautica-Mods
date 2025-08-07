@@ -51,8 +51,7 @@ internal class ReaperRain : BaseChaosEffect
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
-		this.Duration = data.Duration;
-		this.Weight = data.Weight;
+		base.FromData(data, callback);
 
 		Height = null;
 		SpawnsPerSecond = null;
@@ -62,11 +61,11 @@ internal class ReaperRain : BaseChaosEffect
 		{
 			Validate(ValidateAttributes(data.Attributes));
 		}
-		catch (AggregateException ex)
+		catch (AggregateException agg)
 		{
-			foreach (var item in ex.InnerExceptions)
+			foreach (var ex in agg)
 			{
-				errors.Add(item.Message);
+				errors.Add(ex.Message);
 			}
 		}
 		finally

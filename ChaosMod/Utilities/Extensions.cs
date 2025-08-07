@@ -68,4 +68,12 @@ internal static class Extensions
 
 	public static char ToUpper(this char c) => char.ToUpper(c);
 	public static char ToLower(this char c) => char.ToLower(c);
+
+	public static IEnumerator<Exception> GetEnumerator(this AggregateException aggregate)
+	{
+		for (int i = 0; i < aggregate.InnerExceptions.Count; i++)
+		{
+			yield return aggregate.InnerExceptions[i];
+		}
+	}
 }

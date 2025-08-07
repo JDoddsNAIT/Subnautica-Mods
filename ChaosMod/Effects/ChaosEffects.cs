@@ -17,6 +17,10 @@ internal static class ChaosEffects
 		[ChaosEffect.ExplodeShip] = new ExplodeShip() {
 			Description = "Explode the Aurora",
 		},
+		[ChaosEffect.SpawnGhost] = new SpawnGhost() {
+			Description = "Say hi to Casper",
+			SpawnDistance = 12f
+		},
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -102,13 +106,13 @@ internal enum ChaosEffect
 	ExplodeShip,
 	// (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
 	SpawnGhost,
-	// (SuperSpeed) "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	// TODO: (SuperSpeed) "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	SpuperSpeed,
-	// (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
+	// TODO: (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
-	// (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
+	// TODO: (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	RainbowVehicles,
-	// (Fly) "Fly" - Enables the 'Fly' cheat for some time
+	// TODO: (Fly) "Fly" - Enables the 'Fly' cheat for some time
 	Fly,
 
 	/* TODO: effect ideas
