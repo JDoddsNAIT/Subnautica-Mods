@@ -9,13 +9,13 @@ internal class DamageVehicles : BaseChaosEffect
 
 	public override void OnStart()
 	{
-		// TODO: fix this. this doesnt actually damage any vehicles.
 		var vehicles = UnityEngine.Object.FindObjectsOfType<global::Vehicle>();
 		for (int i = 0; i < vehicles.Length; i++)
 		{
 			var live = vehicles[i].liveMixin;
 			float damage = live.maxHealth * (float)(DamageDealt! / 100f);
-			live.TakeDamage(damage, type: DamageType.Pressure);
+			live.TakeDamage(damage, vehicles[i].transform.position, type: DamageType.Pressure, null);
+			vehicles[i].crushDamage.soundOnDamage.Play();
 		}
 	}
 
