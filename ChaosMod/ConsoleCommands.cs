@@ -67,41 +67,38 @@ internal static class ConsoleCommands
 
 	public static string Trigger(string effect)
 	{
-		effect = effect.ToLower();
-		
-		if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect effectId))
-		{
-			string? msg = null;
-			void callback(string message) => msg = message;
-			EffectManager.AddEffect(callback, effectId);
-			return msg ?? throw new CommandFailedException(nameof(Command.Trigger) + " " + effect);
-		}
-		else
-		{
-			return EffectNotFound(effect);
-		}
+		var ex = CommandFailed(Command.Trigger, effect);
+		return effect.ToLower() switch {
+			null or "" or "random" => AddEffect() ?? throw ex,
+			_ when ChaosEffects.TryGetEffect(effect, out var effectId) => AddEffect(effectId) ?? throw ex,
+			_ => EffectNotFound(effect)
+		};
+	}
+
+	private static string? AddEffect(params ChaosEffect[] effects)
+	{
+		string? msg = null;
+		void callback(string message) => msg = message;
+		EffectManager.AddEffect(callback, effects);
+		return msg;
 	}
 
 	private static string Clear(string effect)
 	{
+		var ex = CommandFailed(Command.Clear, effect);
+		return effect.ToLower() switch {
+			null or "" or "all" => RemoveEffect() ?? throw ex,
+			_ when ChaosEffects.TryGetEffect(effect, out var effectId) => RemoveEffect(effectId) ?? throw ex,
+			_ => EffectNotFound(effect)
+		};
+	}
+
+	private static string? RemoveEffect(params ChaosEffect[] effects)
+	{
 		string? msg = null;
 		void callback(string message) => msg = message;
-		switch (effect)
-		{
-			case null or "":
-				EffectManager.RemoveEffect(callback);
-				return msg ?? throw new CommandFailedException(nameof(Command.Clear));
-			default:
-				if (Enum.TryParse(effect, ignoreCase: true, out ChaosEffect chaosEffect))
-				{
-					EffectManager.RemoveEffect(callback, chaosEffect);
-					return msg ?? throw new CommandFailedException(nameof(Command.Clear) + " " +  chaosEffect);
-				}
-				else
-				{
-					return EffectNotFound(effect);
-				}
-		}
+		EffectManager.RemoveEffect(callback, effects);
+		return msg;
 	}
 
 	private static string Help(string help)
@@ -111,7 +108,7 @@ internal static class ConsoleCommands
 
 		return help switch {
 			_ when Enum.TryParse(help, ignoreCase: true, out Command command) => GetCommandInfo(defaultMessage, command),
-			"effects" => "Effect IDs: " + string.Join(", ", Enum.GetNames(typeof(ChaosEffect))),
+			"effects" => "Effect IDs: " + string.Join(", ", ChaosEffects.Effects.Keys),
 			_ => defaultMessage,
 		};
 	}
@@ -123,11 +120,19 @@ internal static class ConsoleCommands
 			Command.Start => ": Enables the mod.",
 			Command.Stop => ": Disables the mod.",
 			Command.List => ": Lists all active chaos effects.",
-			Command.Trigger => " {EffectID}: Triggers the specified effect.",
-			Command.Clear => " <EffectID>: Stops the an effect. Stops all if none specified.",
+			Command.Trigger => " <EffectID>: Triggers an effect. Triggers a random one if none specified.",
+			Command.Clear => " <EffectID>: Stops an effect. Stops all if none specified.",
 			Command.Help => " <Command>: Shows details about a command, or lists all commands if none specified.",
 			_ => defaultMessage,
 		};
+	}
+
+	private static Exception CommandFailed(Command command, string? arg2 = null)
+	{
+		string commandString = string.IsNullOrWhiteSpace(arg2)
+			? command + ""
+			: command + " " + arg2;
+		return new CommandFailedException(commandString);
 	}
 
 	private static LogMessage CommandNotFound(string command)

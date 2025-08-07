@@ -87,18 +87,31 @@ internal static class ChaosEffects
 		var effects = Effects.Values.Select(static v => v.ToData());
 		effects.SaveJson(filePath);
 	}
+
+	public static bool TryGetEffect(string effect, out ChaosEffect effectId)
+	{
+		return Enum.TryParse(effect, ignoreCase: true, out effectId) && ChaosEffects.Effects.ContainsKey(effectId);
+	}
 }
 
 internal enum ChaosEffect
 {
 	ReaperRain,
 	RandomTeleport,
+	// (ExplodeShip) "Explode the Aurora" - explodes the aurora
 	ExplodeShip,
+	// (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
+	SpawnGhost,
+	// (SuperSpeed) "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	SpuperSpeed,
+	// (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
+	Mushrooms,
+	// (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
+	RainbowVehicles,
+	// (Fly) "Fly" - Enables the 'Fly' cheat for some time
+	Fly,
 
 	/* TODO: effect ideas
-	 * [DONE] (ExplodeShip) "Exploded the Aurora" - explodes the aurora
-	 * (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
-	 * (FastMove) "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	 * (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	 * (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	 * (DamageVehicles) "Insurance Claim" - Damages all nearby vehicles by 50%

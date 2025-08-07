@@ -52,8 +52,7 @@ internal static class EffectManager
 			yield return new UnityEngine.WaitForSeconds(Plugin.Options.Delay);
 			try
 			{
-				ChaosEffects.GetRandomDistribution(exclusions: _activeEffects.Keys);
-				TriggerEffect(ChaosEffects.RandomDistribution.GetRandomItem());
+				AddEffect(null);
 			}
 			catch (Exception ex)
 			{
@@ -84,13 +83,26 @@ internal static class EffectManager
 	}
 
 	/// <summary>
-	/// Adds all the given <paramref name="effects"/>.
+	/// Adds all the given <paramref name="effects"/>. Adds a random one if none are specified.
 	/// </summary>
 	/// <param name="effect"></param>
 	/// <param name="callback"></param>
-	public static void AddEffect(Callback callback, params ChaosEffect[] effects)
+	public static void AddEffect(Callback? callback, params ChaosEffect[] effects)
 	{
-		var inactiveEffects = effects.SimpleWhere(e => !_activeEffects.ContainsKey(e)).SimpleDistinct();
+		List<ChaosEffect> inactiveEffects;
+
+		if (effects.Length > 0)
+		{
+			inactiveEffects = effects.SimpleWhere(e => !_activeEffects.ContainsKey(e)).SimpleDistinct();
+		}
+		else
+		{
+			ChaosEffects.GetRandomDistribution(exclusions: _activeEffects.Keys);
+			var effect = ChaosEffects.RandomDistribution.GetRandomItem().Id;
+			inactiveEffects = new List<ChaosEffect>() {
+				effect
+			};
+		}
 
 		for (int i = 0; i < inactiveEffects.Count; i++)
 		{
@@ -100,7 +112,7 @@ internal static class EffectManager
 		string message = NullOrEmptyCollection(inactiveEffects)
 			? "No effects were triggered. Two of the same effect cannot be active at the same time."
 			: $"Triggered effect(s): {string.Join(", ", inactiveEffects)}";
-		callback(message);
+		callback?.Invoke(message);
 	}
 
 	private static void TriggerEffect(IChaosEffect effect)
@@ -130,7 +142,7 @@ internal static class EffectManager
 	/// </summary>
 	/// <param name="callback"></param>
 	/// <param name="effects"></param>
-	public static void RemoveEffect(Callback callback, params ChaosEffect[] effects)
+	public static void RemoveEffect(Callback? callback, params ChaosEffect[] effects)
 	{
 		List<ChaosEffect> activeEffects = effects.SimpleWhere(_activeEffects.ContainsKey);
 		if (effects.Length == 0)
@@ -146,17 +158,17 @@ internal static class EffectManager
 		string message = NullOrEmptyCollection(activeEffects)
 			? "No effects were removed."
 			: $"Effects removed: {string.Join(", ", activeEffects)}";
-		callback(message);
+		callback?.Invoke(message);
 	}
 
-	public static IEnumerable<ChaosEffect> GetActiveEffects(Callback callback)
+	public static IEnumerable<ChaosEffect> GetActiveEffects(Callback? callback)
 	{
 		var result = _activeEffects.Keys;
 
 		string message = NullOrEmptyCollection(_activeEffects)
 			? "No effects are active."
 			: $"Active effects: {string.Join(", ", result)}";
-		callback(message);
+		callback?.Invoke(message);
 
 		return result;
 	}
