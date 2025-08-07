@@ -3,14 +3,11 @@
 namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : BaseChaosEffect
 {
+	public RandomTeleport() : base(ChaosEffect.RandomTeleport) { }
+
 	public const string TELEPORTS = "teleports.json";
 
 	public static readonly string teleportsPath = GetPluginPath(TELEPORTS);
-
-	public override ChaosEffect Id { get; } = ChaosEffect.RandomTeleport;
-	public override string? Description { get; set; } = "";
-	public override float Duration { get; set; } = 0;
-	public override int Weight { get; set; } = 100;
 
 	private RandomDistribution<Objects.TeleportPosition>? Distribution { get; set; } = null;
 

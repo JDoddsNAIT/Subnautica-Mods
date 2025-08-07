@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FrootLuips.ChaosMod.Effects;
+﻿namespace FrootLuips.ChaosMod.Effects;
 internal class ExplodeShip : BaseChaosEffect
 {
-	private const string _EXPLODE_SHIP = "OnConsoleCommand_explodeship";
+	public ExplodeShip() : base(ChaosEffect.ExplodeShip) { }
 
-	public override ChaosEffect Id { get; } = ChaosEffect.ExplodeShip;
-	public override string? Description { get; set; } = "";
-	public override float Duration { get; set; } = 0;
-	public override int Weight { get; set; } = 100;
+	private static readonly System.Reflection.FieldInfo _monitor = HarmonyLib.AccessTools.Field(typeof(CrashedShipExploder), "timeMonitor");
 
 	public override void OnStart()
 	{
-		var info = HarmonyLib.AccessTools.Method(typeof(CrashedShipExploder), name: _EXPLODE_SHIP);
-		HarmonyLib.AccessTools.MethodDelegate<Action>(info, CrashedShipExploder.main).Invoke();
+		var obj = CrashedShipExploder.main;
+		obj.timeToStartCountdown = ((global::Utils.ScalarMonitor)_monitor.GetValue(obj)).Get() - 25f + 1f;
+		obj.timeToStartWarning = obj.timeToStartCountdown - 1f;
 	}
 }

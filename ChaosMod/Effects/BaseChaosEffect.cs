@@ -5,10 +5,18 @@
 /// </summary>
 internal abstract class BaseChaosEffect : IChaosEffect
 {
-	public abstract ChaosEffect Id { get; }
-	public abstract string? Description { get; set; }
-	public abstract float Duration { get; set; }
-	public abstract int Weight { get; set; }
+	public ChaosEffect Id { get; }
+	public string? Description { get; set; }
+	public float Duration { get; set; }
+	public int Weight { get; set; }
+
+	protected BaseChaosEffect(ChaosEffect id, float duation = 0, int weight = 100)
+	{
+		Id = id;
+		Description = "";
+		Duration = duation;
+		Weight = weight;
+	}
 
 	public virtual void BeforeStart() { }
 	public virtual void OnStart() { }

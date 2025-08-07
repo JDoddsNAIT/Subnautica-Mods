@@ -6,10 +6,7 @@ using Random = UnityEngine.Random;
 namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : BaseChaosEffect
 {
-	public override ChaosEffect Id { get; } = ChaosEffect.ReaperRain;
-	public override string? Description { get; set; } = "";
-	public override float Duration { get; set; } = 30f;
-	public override int Weight { get; set; } = 100;
+	public ReaperRain() : base(ChaosEffect.ReaperRain, duation: 30f) { }
 
 	/// <summary>
 	/// Height in metres above sea level where the reapers will spawn.
