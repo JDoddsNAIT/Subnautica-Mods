@@ -9,14 +9,16 @@ internal class SuperSpeed : BaseChaosEffect
 
 	public override void OnStart()
 	{
+		throw new NotImplementedException();
 		EnsurePlayerExists();
-		Player.main.movementSpeed *= (float)Multiplier!;
+		MultiplySpeeds(Player.main.playerController, (float)Multiplier!);
 	}
 
 	public override void OnStop()
 	{
+		throw new NotImplementedException();
 		EnsurePlayerExists();
-		Player.main.movementSpeed /= (float)Multiplier!;
+		MultiplySpeeds(Player.main.playerController, 1f / (float)Multiplier!);
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)
@@ -85,6 +87,35 @@ internal class SuperSpeed : BaseChaosEffect
 				new Effect.Attribute(nameof(Multiplier), Multiplier!.ToString()),
 			}
 		};
+	}
+
+	public static void MultiplySpeeds(PlayerController controller, float multiplier)
+	{
+		// Swim speeds
+		controller.swimForwardMaxSpeed *= multiplier;
+		controller.swimBackwardMaxSpeed *= multiplier;
+		controller.swimStrafeMaxSpeed *= multiplier;
+		controller.swimVerticalMaxSpeed *= multiplier;
+
+		controller.swimWaterAcceleration *= multiplier;
+		controller.defaultSwimDrag *= multiplier;
+
+		// Seaglide speeds
+		controller.seaglideForwardMaxSpeed *= multiplier;
+		controller.seaglideBackwardMaxSpeed *= multiplier;
+		controller.seaglideStrafeMaxSpeed *= multiplier;
+		controller.seaglideVerticalMaxSpeed *= multiplier;
+
+		controller.seaglideWaterAcceleration *= multiplier;
+		controller.seaglideSwimDrag *= multiplier;
+
+		// Walk/Run speeds
+		controller.walkRunForwardMaxSpeed *= multiplier;
+		controller.walkRunBackwardMaxSpeed *= multiplier;
+		controller.walkRunStrafeMaxSpeed *= multiplier;
+
+		// Update speeds
+		Player.main.UpdateMotorMode();
 	}
 }
 
