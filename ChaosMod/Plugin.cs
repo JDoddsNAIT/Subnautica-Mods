@@ -32,7 +32,7 @@ public sealed class Plugin : BaseUnityPlugin
 		}
 
 		// TODO: fix this
-		if (true || !File.Exists(EffectManager.effectsFilePath))
+		if (Options.DebugResetEffects || !File.Exists(EffectManager.effectsFilePath))
 		{
 			Logger.LogDebug(new LogMessage(
 				notice: $"{EffectManager.EFFECTS_CONFIG} is missing.",

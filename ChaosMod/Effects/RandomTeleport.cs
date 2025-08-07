@@ -16,7 +16,7 @@ internal class RandomTeleport : BaseChaosEffect
 		if (Distribution == null)
 			LoadDistribution();
 
-		GotoConsoleCommand.main.GotoPosition(Distribution!.GetRandomItem().position);
+		GotoConsoleCommand.main.GotoPosition(Distribution!.GetRandomItem().position, gotoImmediate: true);
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)
@@ -44,16 +44,7 @@ internal class RandomTeleport : BaseChaosEffect
 	private void LoadDistribution()
 	{
 		var positions = new List<Objects.TeleportPosition>();
-		positions.LoadJson(teleportsPath);
+		positions.LoadJson(teleportsPath, createIfNotExist: false);
 		this.Distribution = new(positions);
-	}
-
-	public override Effect ToData()
-	{
-		return new Effect() {
-			Id = this.Id.ToString(),
-			Duration = this.Duration,
-			Weight = this.Weight,
-		};
 	}
 }

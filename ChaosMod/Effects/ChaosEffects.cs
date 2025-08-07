@@ -96,12 +96,16 @@ internal enum ChaosEffect
 	ExplodeShip,
 
 	/* TODO: effect ideas
-	 * (ExplodeShip) "Exploded the Aurora" - explodes the aurora
-	 * (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan
+	 * [DONE] (ExplodeShip) "Exploded the Aurora" - explodes the aurora
+	 * (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
+	 * (FastMove) "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	 * (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
+	 * (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
+	 * (DamageVehicles) "Insurance Claim" - Damages all nearby vehicles by 50%
+	 * (Fly) "Fly" - Enables the 'Fly' cheat for some time
+	 * 
+
 	 * (FakeTeleport) "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
 	 * (FakeCrash) "Fake Crash" - Freezes the game for the duration
-	 * (DamageVehicles) "Insurance Claim" - Damages all nearby vehicles by 50%
-	 * (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
-	 * 
 	 */
 }

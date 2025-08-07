@@ -50,6 +50,9 @@ internal class ModOptions : Nautilus.Json.ConfigFile
 	[Slider(Label = EFFECTCOUNT_LABEL, Tooltip = EFFECTCOUNT_TOOLTIP, DefaultValue = 1, Min = 1, Max = 10)]
 	public int EffectCount { get; set; } = 1;
 
+	[Toggle(Label = "(Debug) Reset Effects", Tooltip = $"Debug option to always regenerate {EffectManager.EFFECTS_CONFIG} when starting the game.")]
+	public bool DebugResetEffects { get; set; } = true;
+
 	[IgnoreMember]
 	public float Delay => (ushort)Frequency;
 }

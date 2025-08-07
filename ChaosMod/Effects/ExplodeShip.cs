@@ -1,4 +1,6 @@
-﻿namespace FrootLuips.ChaosMod.Effects;
+﻿using ScalarMonitor = global::Utils.ScalarMonitor;
+
+namespace FrootLuips.ChaosMod.Effects;
 internal class ExplodeShip : BaseChaosEffect
 {
 	public ExplodeShip() : base(ChaosEffect.ExplodeShip) { }
@@ -8,7 +10,7 @@ internal class ExplodeShip : BaseChaosEffect
 	public override void OnStart()
 	{
 		var obj = CrashedShipExploder.main;
-		obj.timeToStartCountdown = ((global::Utils.ScalarMonitor)_monitor.GetValue(obj)).Get() - 25f + 1f;
+		obj.timeToStartCountdown = ((ScalarMonitor)_monitor.GetValue(obj)).Get() - 25f + 1f;
 		obj.timeToStartWarning = obj.timeToStartCountdown - 1f;
 	}
 }
