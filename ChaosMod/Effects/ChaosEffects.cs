@@ -21,6 +21,12 @@ internal static class ChaosEffects
 			Description = "Say hi to Casper",
 			SpawnDistance = 12f
 		},
+		[ChaosEffect.Mushrooms] = new Mushrooms() {
+			Description = "Oops, all mushrooms!"
+		},
+		[ChaosEffect.Fly] = new Fly() {
+			Description = "Enable Fly cheat"
+		},
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -102,17 +108,17 @@ internal enum ChaosEffect
 {
 	ReaperRain,
 	RandomTeleport,
-	// (ExplodeShip) "Explode the Aurora" - explodes the aurora
+	// "Explode the Aurora" - explodes the aurora
 	ExplodeShip,
-	// (SpawnGhost) "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
+	// "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
 	SpawnGhost,
-	// TODO: (SuperSpeed) "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	// TODO: "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	SpuperSpeed,
-	// TODO: (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
+	// "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
 	// TODO: (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	RainbowVehicles,
-	// TODO: (Fly) "Fly" - Enables the 'Fly' cheat for some time
+	// (Fly) "Fly" - Enables the 'Fly' cheat for some time
 	Fly,
 
 	/* TODO: effect ideas
