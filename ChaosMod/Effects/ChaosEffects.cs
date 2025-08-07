@@ -35,7 +35,10 @@ internal static class ChaosEffects
 			Description = "Insurance Claim",
 			DamageDealt = 50f
 		},
-		//[ChaosEffect.RainbowVehicles]
+		[ChaosEffect.RainbowVehicles] = new RainbowVehicles() {
+			Description = "Rainbow Vehicles",
+			Speed = 5f
+		},
 		//[ChaosEffect.MoistPercent]
 		//[ChaosEffect.Lootbox]
 		//[ChaosEffect.FakeTeleport]

@@ -22,6 +22,7 @@ internal class DamageVehicles : BaseChaosEffect
 	public override void FromData(Effect data, StatusCallback callback)
 	{
 		base.FromData(data, callback);
+		DamageDealt = null;
 
 		List<string> errors = new();
 		try
