@@ -25,7 +25,7 @@ internal static class ChaosEffects
 			Description = "Oops, all mushrooms!"
 		},
 		[ChaosEffect.Fly] = new Fly() {
-			Description = "Enable Fly cheat"
+			Description = "Enable fly cheat"
 		},
 	};
 
@@ -116,19 +116,18 @@ internal enum ChaosEffect
 	SpuperSpeed,
 	// "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
+	// "Fly" - Enables the 'Fly' cheat for some time
+	Fly,
+	// TODO: "Insurance claim" - Deals 50% damage to all vehicles on the map
+	DamageVehicles,
 	// TODO: (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	RainbowVehicles,
-	// (Fly) "Fly" - Enables the 'Fly' cheat for some time
-	Fly,
-
-	/* TODO: effect ideas
-	 * (Mushrooms) "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
-	 * (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
-	 * (DamageVehicles) "Insurance Claim" - Damages all nearby vehicles by 50%
-	 * (Fly) "Fly" - Enables the 'Fly' cheat for some time
-	 * 
-
-	 * (FakeTeleport) "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
-	 * (FakeCrash) "Fake Crash" - Freezes the game for the duration
-	 */
+	// TODO: "Moist%" - Turns off the water for the duration
+	MoistPercent,
+	// TODO: "Lootbox" - Spawn and pickup a time capsule in front of the player
+	Lootbox,
+	// TODO: "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
+	FakeTeleport,
+	// TODO: "Fake Crash" - Freezes the game for the duration
+	FakeCrash,
 }

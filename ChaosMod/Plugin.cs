@@ -31,7 +31,6 @@ public sealed class Plugin : BaseUnityPlugin
 			ConsoleCommands.GetTeleports();
 		}
 
-		// TODO: fix this
 		if (Options.DebugResetEffects || !File.Exists(EffectManager.effectsFilePath))
 		{
 			Logger.LogDebug(new LogMessage(

@@ -5,7 +5,6 @@ namespace FrootLuips.ChaosMod;
 [Menu(name: PluginInfo.PLUGIN_NAME)]
 internal class ModOptions : Nautilus.Json.ConfigFile
 {
-	// TODO: Add localization
 	public const string
 		FREQUENCY_LABEL = "Frequency",
 		FREQUENCY_TOOLTIP = "How often events are triggered.",
