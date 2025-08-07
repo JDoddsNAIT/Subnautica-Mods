@@ -21,17 +21,25 @@ internal static class ChaosEffects
 			Description = "Say hi to Casper",
 			SpawnDistance = 12f
 		},
-		//[ChaosEffect.SuperSpeed]
+		[ChaosEffect.SuperSpeed] = new SuperSpeed() {
+			Description = "Activate Super Speed",
+			Multiplier = 5f
+		},
 		[ChaosEffect.Mushrooms] = new Mushrooms() {
 			Description = "Oops, all mushrooms!"
 		},
 		[ChaosEffect.Fly] = new Fly() {
-			Description = "Enable fly cheat"
+			Description = "Enable fly cheat",
 		},
 		[ChaosEffect.DamageVehicles] = new DamageVehicles() {
 			Description = "Insurance Claim",
 			DamageDealt = 50f
 		},
+		//[ChaosEffect.RainbowVehicles]
+		//[ChaosEffect.MoistPercent]
+		//[ChaosEffect.Lootbox]
+		//[ChaosEffect.FakeTeleport]
+		//[ChaosEffect.FakeCrash]
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -117,7 +125,7 @@ internal enum ChaosEffect
 	ExplodeShip,
 	// "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
 	SpawnGhost,
-	// TODO: "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	// "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	SuperSpeed,
 	// "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
