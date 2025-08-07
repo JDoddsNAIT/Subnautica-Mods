@@ -1,4 +1,5 @@
 ﻿using Nautilus.Json.ExtensionMethods;
+using UnityEngine;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : BaseChaosEffect
@@ -16,8 +17,17 @@ internal class RandomTeleport : BaseChaosEffect
 		if (Distribution == null)
 			LoadDistribution();
 
-		// TODO: fix the issue where when the player is teleported while in a vehicle, they get stuck in the vehicle
-		GotoConsoleCommand.main.GotoPosition(Distribution!.GetRandomItem().position, gotoImmediate: true);
+		Vector3 position = Distribution!.GetRandomItem().position;
+		Vehicle vehicle = Player.main.currentMountedVehicle;
+
+		if (vehicle != null)
+		{
+			vehicle.TeleportVehicle(position, vehicle.transform.rotation);
+		}
+		else
+		{
+			GotoConsoleCommand.main.GotoPosition(position, gotoImmediate: true);
+		}
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)

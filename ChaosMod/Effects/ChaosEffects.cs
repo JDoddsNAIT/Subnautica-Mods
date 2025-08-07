@@ -21,11 +21,16 @@ internal static class ChaosEffects
 			Description = "Say hi to Casper",
 			SpawnDistance = 12f
 		},
+		//[ChaosEffect.SuperSpeed]
 		[ChaosEffect.Mushrooms] = new Mushrooms() {
 			Description = "Oops, all mushrooms!"
 		},
 		[ChaosEffect.Fly] = new Fly() {
 			Description = "Enable fly cheat"
+		},
+		[ChaosEffect.DamageVehicles] = new DamageVehicles() {
+			Description = "Insurance Claim",
+			DamageDealt = 50f
 		},
 	};
 
@@ -113,12 +118,12 @@ internal enum ChaosEffect
 	// "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
 	SpawnGhost,
 	// TODO: "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
-	SpuperSpeed,
+	SuperSpeed,
 	// "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
 	// "Fly" - Enables the 'Fly' cheat for some time
 	Fly,
-	// TODO: "Insurance claim" - Deals 50% damage to all vehicles on the map
+	// "Insurance claim" - Deals 50% damage to all vehicles on the map
 	DamageVehicles,
 	// TODO: (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	RainbowVehicles,
