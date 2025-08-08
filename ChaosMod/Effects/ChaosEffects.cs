@@ -37,7 +37,7 @@ internal static class ChaosEffects
 		},
 		[ChaosEffect.RainbowVehicles] = new RainbowVehicles() {
 			Description = "Rainbow Vehicles",
-			Speed = 5f
+			Speed = 1f
 		},
 		//[ChaosEffect.MoistPercent]
 		//[ChaosEffect.Lootbox]

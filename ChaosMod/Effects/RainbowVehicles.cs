@@ -1,4 +1,5 @@
 ﻿using FrootLuips.ChaosMod.Utilities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace FrootLuips.ChaosMod.Effects;
@@ -9,23 +10,24 @@ internal class RainbowVehicles : BaseChaosEffect
 	public float? Speed { get; set; } = null;
 
 	private Vehicle[]? _vehicles;
-	private float[][]? _hues;
+	private float3[][]? _hsv;
 	private float _hueShift = 0;
 
 	public override void OnStart()
 	{
 		_vehicles = UnityEngine.Object.FindObjectsOfType<global::Vehicle>();
-		_hues = new float[_vehicles.Length][];
+		_hsv = new float3[_vehicles.Length][];
 		_hueShift = 0;
 
 		for (int i = 0; i < _vehicles.Length; i++)
 		{
 			var colors = _vehicles[i].subName.GetColors();
-			_hues[i] = new float[colors.Length];
+			_hsv[i] = new float3[colors.Length];
 			for (int j = 0; j < colors.Length; j++)
 			{
 				var color = new Color(colors[j].x, colors[j].y, colors[j].z);
-				Color.RGBToHSV(color, out _hues[i][j], out _, out _);
+				Color.RGBToHSV(color, out var h, out var s, out var v);
+				_hsv[i][j] = new float3(h, s, v);
 			}
 		}
 	}
@@ -33,21 +35,31 @@ internal class RainbowVehicles : BaseChaosEffect
 	public override void Update(float time)
 	{
 		_hueShift += (float)(Speed! * Time.deltaTime);
+		this.SetHues();
+	}
 
+	private void SetHues(bool preserveSV = false)
+	{
 		for (int i = 0; i < _vehicles!.Length; i++)
 		{
-			for (int j = 0; j < _hues![i].Length; j++)
+			for (int j = 0; j < _hsv![i].Length; j++)
 			{
-				_vehicles[i].subName.SetColor(j, Vector3.one, Color.HSVToRGB(_hueShift + _hues[i][j], 1, 1));
+				var hsv = _hsv![i][j];
+				float hue = Mathf.Repeat(_hueShift + hsv.x, 1f);
+				float sat = preserveSV ? hsv.y : 1;
+				float val = preserveSV ? hsv.z : 1;
+				_vehicles[i].subName.SetColor(j, Vector3.one, Color.HSVToRGB(hue, sat, val));
 			}
 		}
 	}
 
 	public override void OnStop()
 	{
-		_vehicles = null;
-		_hues = null;
 		_hueShift = 0;
+		SetHues(preserveSV: true);
+
+		_vehicles = null;
+		_hsv = null;
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)
