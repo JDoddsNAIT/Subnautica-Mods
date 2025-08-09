@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FrootLuips.Subnautica.Logging;
 
 namespace FrootLuips.Subnautica;
-public static class Validation
+public static partial class Validation
 {
 	/// <summary>
 	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, throwing an <see cref="AssertionFailedException"/> if not.
@@ -39,7 +39,16 @@ public static class Validation
 		}
 	}
 
-	public static ValidationResult Validate(IEnumerator<Exception> validator, Func<bool>? callback = null)
+	/// <summary>
+	/// Iterates over <paramref name="validator"/>, and adds all errors to a list.
+	/// </summary>
+	/// <remarks>
+	/// Successful validation is determined by whether any issues were found, or the result of <paramref name="callback"/> if one is provided.
+	///  </remarks>
+	/// <param name="validator"></param>
+	/// <param name="callback"></param>
+	/// <returns>Whether validation succeeded or not, along with any issues that may have occurred.</returns>
+	public static Result Validate(IEnumerator<Exception> validator, Func<bool>? callback = null)
 	{
 		var errors = new List<Exception>();
 		callback ??= () => errors.Count == 0;
@@ -54,7 +63,7 @@ public static class Validation
 		{
 			errors.Add(ex);
 		}
-		return new ValidationResult(callback(), errors);
+		return new Result(callback(), errors);
 	}
 
 	public static AggregateException ToAggregate(this IEnumerable<Exception> exceptions, string? message = null)
@@ -88,19 +97,4 @@ public class AssertionFailedException : Exception
 	protected AssertionFailedException(
 	  System.Runtime.Serialization.SerializationInfo info,
 	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-}
-
-public readonly record struct ValidationResult(bool Success, List<Exception> Errors)
-{
-	public static implicit operator (bool result, List<Exception> errors)(ValidationResult value)
-	{
-		return (value.Success, value.Errors);
-	}
-
-	public static implicit operator ValidationResult((bool result, List<Exception> errors) value)
-	{
-		return new ValidationResult(value.result, value.errors);
-	}
-
-	public static implicit operator bool(ValidationResult obj) { return obj.Success; }
 }
