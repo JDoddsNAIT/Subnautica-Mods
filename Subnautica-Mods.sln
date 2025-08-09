@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraft3Remake", "Custo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChaosMod", "ChaosMod\ChaosMod.csproj", "{12951E72-C783-9A89-A9C0-6C899AAB38D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{DF3E4202-7E01-4D4A-B45F-212068988E36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{12951E72-C783-9A89-A9C0-6C899AAB38D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12951E72-C783-9A89-A9C0-6C899AAB38D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12951E72-C783-9A89-A9C0-6C899AAB38D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF3E4202-7E01-4D4A-B45F-212068988E36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF3E4202-7E01-4D4A-B45F-212068988E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF3E4202-7E01-4D4A-B45F-212068988E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3E4202-7E01-4D4A-B45F-212068988E36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
