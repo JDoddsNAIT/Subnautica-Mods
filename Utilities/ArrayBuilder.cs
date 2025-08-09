@@ -36,3 +36,11 @@ public class ArrayBuilder<T>
 }
 
 public class ArrayBuilder : ArrayBuilder<object> { }
+
+public class FilePathBuilder : ArrayBuilder<string>
+{
+	public override string ToString()
+	{
+		return System.IO.Path.Combine(this.ToArray());
+	}
+}

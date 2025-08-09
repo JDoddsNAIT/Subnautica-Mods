@@ -44,9 +44,8 @@ public class Logger : ILogger
 		// Wait for the menu to become visible to the player
 		yield return new UnityEngine.WaitForSeconds(_STARTUP_DELAY);
 
-		while (_messageQueue.Count > 0)
+		while (_messageQueue.TryDequeue(out var message))
 		{
-			var message = _messageQueue.Dequeue();
 			AddInGameMessage(message.Text, message.Level);
 			yield return UWE.CoroutineUtils.waitForNextFrame;
 		}
