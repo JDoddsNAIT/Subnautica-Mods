@@ -10,7 +10,7 @@ namespace FrootLuips.Subnautica.Logging;
 public class Logger : ILogger
 {
 	private const float _STARTUP_DELAY = 3.0f;
-	private const string _MAIN_MENU_SCENE = "XMenu";
+	private const string _MAIN_MENU = "XMenu";
 
 	private ManualLogSource _logSource;
 	private readonly Queue<Message> _messageQueue = new();
@@ -32,7 +32,7 @@ public class Logger : ILogger
 
 	private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode mode)
 	{
-		if (scene.name != _MAIN_MENU_SCENE)
+		if (scene.name != _MAIN_MENU)
 			return;
 
 		SceneManager.sceneLoaded -= this.SceneManager_sceneLoaded;

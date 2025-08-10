@@ -25,4 +25,19 @@ public partial class Extensions
 		}
 		return contains;
 	}
+
+	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b)
+		where T : IEquatable<T>
+	{
+		bool equals = a.Count == b.Count;
+		
+		if (!equals)
+			return false;
+
+		for (int i = 0; i < a.Count && equals; i++)
+		{
+			equals &= a[i] != null && b[i] != null && a[i]!.Equals(b[i]!);
+		}
+		return equals;
+	}
 }

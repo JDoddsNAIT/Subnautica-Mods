@@ -7,7 +7,9 @@ namespace FrootLuips.Subnautica;
 /// </summary>
 public static class Queries
 {
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, T2[] destination)
+	public static bool NotNull<T>(T? value) => value != null;
+
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, ref T2[] destination)
 	{
 		if (destination.Length != source.Count)
 			destination = new T2[source.Count];
@@ -23,26 +25,39 @@ public static class Queries
 		destination.Capacity = source.Count;
 		for (int i = 0; i < source.Count; i++)
 		{
-			destination.Add(selector(source[i]));
+			destination[i] = selector(source[i]);
 		}
 	}
 
-	public static void Copy<T>(IReadOnlyList<T> source, T[] destination)
+	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination)
 	{
-		Queries.Convert<T, T>(source, selector: obj => obj, destination);
+		Queries.Convert<T, T>(source, selector: static obj => obj, ref destination);
 	}
 
 	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
 	{
-		Queries.Convert<T, T>(source, selector: obj => obj, destination);
+		Queries.Convert<T, T>(source, selector: static obj => obj, destination);
 	}
 
 	public static void Filter<T>(IList<T> list, Predicate<T> predicate)
 	{
-		for (int i = list.Count - 1; i >= 0; i--)
+		if (list is T[] arr)
 		{
-			if (!predicate(list[i]))
-				list.RemoveAt(i);
+			var newList = new List<T>(capacity: arr.Length);
+			for (int i = 0; i < newList.Capacity; i++)
+			{
+				if (predicate(arr[i]))
+					newList.Add(arr[i]);
+			}
+			Queries.Copy(newList, ref arr);
+		}
+		else
+		{
+			for (int i = list.Count - 1; i >= 0; i--)
+			{
+				if (!predicate(list[i]))
+					list.RemoveAt(i);
+			}
 		}
 	}
 
