@@ -163,13 +163,18 @@ internal static class EffectManager
 
 	public static IEnumerable<ChaosEffect> GetActiveEffects(Callback? callback)
 	{
-		var result = _activeEffects.Keys;
+		var result = _activeEffects.Select(kvp => new EffectString(kvp.Key, kvp.Value.Timer));
 
 		string message = NullOrEmptyCollection(_activeEffects)
 			? "No effects are active."
 			: $"Active effects: {string.Join(", ", result)}";
 		callback?.Invoke(message);
 
-		return result;
+		return _activeEffects.Keys;
+	}
+
+	internal readonly record struct EffectString(ChaosEffect Effect, float Duration)
+	{
+		public override string ToString() => $"{Effect} ({Duration:0.00}s remaining)";
 	}
 }
