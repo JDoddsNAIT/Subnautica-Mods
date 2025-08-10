@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
+﻿using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica.Tests;
 
@@ -13,6 +8,7 @@ internal class Queries_Tests : ITestContainer
 	{
 		yield return TestResult.Assert(nameof(FilterArray), FilterArray);
 		yield return TestResult.Assert(nameof(FilterList), FilterList);
+		yield return TestResult.Assert(nameof(ConvertList), ConvertList);
 	}
 
 	private bool FilterArray(out string message)
@@ -39,5 +35,19 @@ internal class Queries_Tests : ITestContainer
 		message = string.Join(", ", ints);
 
 		return ints.CompareValues(expected);
+	}
+
+	private bool ConvertList(out string message)
+	{
+		int[] ints = new[] { -2, -1, 0, 1, 2 };
+		List<bool> destination = new(capacity: 5);
+		List<bool> expected = new() { false, false, false, true, true };
+
+		static bool toBool(int value) => value > 0;
+
+		Queries.Convert(ints, toBool, destination);
+
+		TestResult.GetResult(out message, string.Join(", ", expected), string.Join(", ", destination));
+		return destination.CompareValues(expected);
 	}
 }

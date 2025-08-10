@@ -31,6 +31,12 @@ internal readonly record struct TestResult(string Name, bool Passed, string Mess
 		return new TestResult(name, passed, message);
 	}
 
+	public static bool GetResult(out string message, string expected, string actual)
+	{
+		message = $"Result is '{actual}', expected '{expected}'.";
+		return actual == expected;
+	}
+
 	public override string ToString()
 	{
 		var provider = new LogMessage.FormatProvider(notice: "{0}:");

@@ -4,17 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FrootLuips.Subnautica.Logging;
+using static FrootLuips.Subnautica.Tests.TestResult;
 
 namespace FrootLuips.Subnautica.Tests;
 internal class LogMessage_Tests : ITestContainer
 {
 	public IEnumerator<TestResult> GetResults()
 	{
-		yield return TestResult.Assert(nameof(ToString), ToString);
-		yield return TestResult.Assert(nameof(NoContext), NoContext);
-		yield return TestResult.Assert(nameof(NoNotice), NoNotice);
-		yield return TestResult.Assert(nameof(NoMessage), NoMessage);
-		yield return TestResult.Assert(nameof(NoRemarks), NoRemarks);
+		yield return Assert(nameof(ToString), ToString);
+		yield return Assert(nameof(NoContext), NoContext);
+		yield return Assert(nameof(NoNotice), NoNotice);
+		yield return Assert(nameof(NoMessage), NoMessage);
+		yield return Assert(nameof(NoRemarks), NoRemarks);
 	}
 
 	private bool ToString(out string message)
@@ -71,11 +72,5 @@ internal class LogMessage_Tests : ITestContainer
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - Message";
 		return GetResult(out message, expected, actual);
-	}
-
-	private static bool GetResult(out string message, string expected, string actual)
-	{
-		message = $"Result is '{actual}', expected '{expected}'.";
-		return actual == expected;
 	}
 }
