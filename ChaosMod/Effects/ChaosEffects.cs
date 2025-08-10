@@ -130,7 +130,7 @@ internal enum ChaosEffect
 	ExplodeShip,
 	// "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
 	SpawnGhost,
-	// "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	// TODO: "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	SuperSpeed,
 	// "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
@@ -140,7 +140,7 @@ internal enum ChaosEffect
 	DamageVehicles,
 	// TODO: (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	RainbowVehicles,
-	// TODO: "Moist%" - Turns off the water for the duration
+	// "Moist%" - Turns off the water for the duration
 	MoistPercent,
 	// TODO: "Lootbox" - Spawn and pickup a time capsule in front of the player
 	Lootbox,
