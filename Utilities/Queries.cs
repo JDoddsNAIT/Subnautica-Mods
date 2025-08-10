@@ -9,18 +9,18 @@ public static class Queries
 {
 	public static bool NotNull<T>(T? value) => value != null;
 
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, ref T2[] destination)
+	public static void Convert<T1, T2>(T1[] source, Func<T1, T2> selector, T2[] destination)
 	{
-		if (destination.Length != source.Count)
-			destination = new T2[source.Count];
+		if (destination.Length != source.Length)
+			destination = new T2[source.Length];
 
-		for (int i = 0; i < source.Count; i++)
+		for (int i = 0; i < source.Length; i++)
 		{
 			destination[i] = selector(source[i]);
 		}
 	}
 
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, List<T2> destination)
+	public static void Convert<T1, T2>(List<T1> source, Func<T1, T2> selector, List<T2> destination)
 	{
 		destination.Capacity = source.Count;
 		for (int i = 0; i < source.Count; i++)
@@ -29,39 +29,33 @@ public static class Queries
 		}
 	}
 
-	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination)
-	{
-		Queries.Convert<T, T>(source, selector: static obj => obj, ref destination);
-	}
-
-	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
+	public static void Copy<T>(T[] source, T[] destination)
 	{
 		Queries.Convert<T, T>(source, selector: static obj => obj, destination);
 	}
 
-	public static void Filter<T>(IList<T> list, Predicate<T> predicate)
+	public static void Copy<T>(List<T> source, List<T> destination)
 	{
-		if (list is T[] arr)
+		Queries.Convert<T, T>(source, selector: static obj => obj, destination);
+	}
+
+	public static void Filter<T>(ref T[] array, Predicate<T> filter)
+	{
+		List<T> result = new(array);
+		Queries.Filter(result, filter);
+		array = result.ToArray();
+	}
+
+	public static void Filter<T>(List<T> list, Predicate<T> filter)
+	{
+		for (int i = list.Count - 1; i >= 0; i--)
 		{
-			var newList = new List<T>(capacity: arr.Length);
-			for (int i = 0; i < newList.Capacity; i++)
-			{
-				if (predicate(arr[i]))
-					newList.Add(arr[i]);
-			}
-			Queries.Copy(newList, ref arr);
-		}
-		else
-		{
-			for (int i = list.Count - 1; i >= 0; i--)
-			{
-				if (!predicate(list[i]))
-					list.RemoveAt(i);
-			}
+			if (!filter(list[i]))
+				list.RemoveAt(i);
 		}
 	}
 
-	public static void FilterDuplicates<T>(IList<T> list)
+	public static void FilterDuplicates<T>(List<T> list)
 	{
 		var duplicates = new List<T>(capacity: list.Count);
 		bool isUnique(T value)
@@ -76,6 +70,6 @@ public static class Queries
 				return true;
 			}
 		}
-		Queries.Filter<T>(list, predicate: isUnique);
+		Queries.Filter<T>(list, filter: isUnique);
 	}
 }

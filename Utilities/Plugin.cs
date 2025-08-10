@@ -19,7 +19,8 @@ public sealed class Plugin : BaseUnityPlugin
 
 	public static new ILogger Logger { get => _logger!; private set => _logger = value; }
 
-	internal static ITestContainer[] Tests { get; } = new[] {
+	internal static ITestContainer[] Tests { get; } = new ITestContainer[] {
+		new LogMessage_Tests(),
 		new Queries_Tests(),
 	};
 

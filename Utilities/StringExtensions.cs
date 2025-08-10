@@ -8,6 +8,13 @@ public static partial class Extensions
 	/// <returns></returns>
 	public static string TrimAll(this string text)
 	{
-		return string.Join(" ", text.Split(' '));
+		string result = "";
+		for (int i = 0; i < text.Length; i++)
+		{
+			if (text[i] == ' ' && (i == 0 || text[i - 1] == ' '))
+				continue;
+			result += text[i];
+		}
+		return result.Trim();
 	}
 }
