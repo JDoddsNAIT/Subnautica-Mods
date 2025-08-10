@@ -39,11 +39,13 @@ public static class Queries
 	/// <param name="destination"></param>
 	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, List<T2> destination)
 	{
-		destination.Capacity = source.Count;
-		for (int i = 0; i < source.Count; i++)
+		for (int i = 0; i < Math.Max(source.Count, destination.Count); i++)
 		{
 			T2? item = selector(source[i]);
-			if (i < destination.Count)
+
+			if (i >= source.Count && i < destination.Count)
+				destination.RemoveAt(i);
+			else if (i < destination.Count)
 				destination[i] = item;
 			else
 				destination.Add(item);
@@ -146,18 +148,12 @@ public static class Queries
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="array"></param>
-	public static void FilterNulls<T>(ref T[] array)
-	{
-		Filter(ref array, filter: NotNull);
-	}
+	public static void FilterNulls<T>(ref T[] array) => Filter(ref array, filter: NotNull);
 
 	/// <summary>
 	/// Filters <see langword="null"/> values out of the <paramref name="list"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="list"></param>
-	public static void FilterNulls<T>(List<T> list)
-	{
-		Filter(list, filter: NotNull);
-	}
+	public static void FilterNulls<T>(List<T> list) => Filter(list, filter: NotNull);
 }
