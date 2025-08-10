@@ -22,7 +22,6 @@ internal static class ConsoleCommands
 		return "Saved to " + RandomTeleport.teleportsPath;
 	}
 
-	[ConsoleCommand(COMMAND_NAME)]
 	public static string ChaosCommand(string arg1, string arg2 = "")
 	{
 		if (!Enum.TryParse(arg1, ignoreCase: true, out Command command))
@@ -120,9 +119,9 @@ internal static class ConsoleCommands
 			Command.Start => ": Enables the mod.",
 			Command.Stop => ": Disables the mod.",
 			Command.List => ": Lists all active chaos effects.",
-			Command.Trigger => " <EffectID>: Triggers an effect. Triggers a random one if none specified.",
-			Command.Clear => " <EffectID>: Stops an effect. Stops all if none specified.",
-			Command.Help => " <Command>: Shows details about a command, or lists all commands if none specified.",
+			Command.Trigger => " [EffectID]: Triggers an effect. Triggers a random one if none specified.",
+			Command.Clear => " [EffectID]: Stops an effect. Stops all if none specified.",
+			Command.Help => " [Command]: Shows details about a command, or lists all commands if none specified.",
 			_ => defaultMessage,
 		};
 	}
