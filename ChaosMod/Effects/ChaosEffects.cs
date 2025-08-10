@@ -21,10 +21,10 @@ internal static class ChaosEffects
 			Description = "Say hi to Casper",
 			SpawnDistance = 12f
 		},
-		[ChaosEffect.SuperSpeed] = new SuperSpeed() {
-			Description = "Activate Super Speed",
-			Multiplier = 5f
-		},
+		//[ChaosEffect.SuperSpeed] = new SuperSpeed() {
+		//	Description = "Activate Super Speed",
+		//	Multiplier = 5f
+		//},
 		[ChaosEffect.Mushrooms] = new Mushrooms() {
 			Description = "Oops, all mushrooms!"
 		},
@@ -39,7 +39,9 @@ internal static class ChaosEffects
 			Description = "Rainbow Vehicles",
 			Speed = 1f
 		},
-		//[ChaosEffect.MoistPercent]
+		[ChaosEffect.MoistPercent] = new MoistPercent() {
+			Description = "Moist%",
+		},
 		//[ChaosEffect.Lootbox]
 		//[ChaosEffect.FakeTeleport]
 		//[ChaosEffect.FakeCrash]
