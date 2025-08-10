@@ -11,9 +11,9 @@ internal interface ITestContainer
 	IEnumerator<TestResult> GetResults();
 }
 
-internal readonly record struct TestResult(string Name, bool Passed, string Message = "")
+internal readonly record struct TestResult(string Group, string Name, bool Passed, string Message = "")
 {
-	public static TestResult Assert(string name, Test test)
+	public static TestResult Assert(string name, Test test, string group = "")
 	{
 		string message;
 		bool passed;
@@ -28,10 +28,10 @@ internal readonly record struct TestResult(string Name, bool Passed, string Mess
 			passed = false;
 		}
 
-		return new TestResult(name, passed, message);
+		return new TestResult(group, name, passed, message);
 	}
 
-	public static bool GetResult(out string message, string expected, string actual)
+	public static bool GetResult(out string message, string actual, string expected)
 	{
 		message = $"Result is '{actual}', expected '{expected}'.";
 		return actual == expected;
@@ -40,7 +40,9 @@ internal readonly record struct TestResult(string Name, bool Passed, string Mess
 	public override string ToString()
 	{
 		var provider = new LogMessage.FormatProvider(notice: "{0}:");
-		var message = new LogMessage().WithNotice("Test ", Name);
+		var message = new LogMessage()
+			.WithContext(Group)
+			.WithNotice("Test ", Name);
 		if (Passed)
 		{
 			message.WithMessage("Passed");

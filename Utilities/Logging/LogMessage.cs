@@ -95,6 +95,11 @@ public partial class LogMessage
 	{
 		for (int i = 0; i < values.Length; i++)
 		{
+			if (values[i] is null)
+				continue;
+			if (values[i] is string str && str.Length == 0)
+				continue;
+
 			stringBuilder.Append(values[i]);
 		}
 	}

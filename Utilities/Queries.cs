@@ -15,9 +15,9 @@ public static class Queries
 	/// <typeparam name="T1"></typeparam>
 	/// <typeparam name="T2"></typeparam>
 	/// <param name="source"></param>
-	/// <param name="selector"></param>
+	/// <param name="converter"></param>
 	/// <param name="destination"></param>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, ref T2[] destination)
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Converter<T1, T2> converter, ref T2[] destination)
 	{
 		int length = source.Count;
 		if (destination.Length != length)
@@ -25,7 +25,7 @@ public static class Queries
 
 		for (int i = 0; i < length; i++)
 		{
-			destination[i] = selector(source[i]);
+			destination[i] = converter(source[i]);
 		}
 	}
 
@@ -35,13 +35,13 @@ public static class Queries
 	/// <typeparam name="T1"></typeparam>
 	/// <typeparam name="T2"></typeparam>
 	/// <param name="source"></param>
-	/// <param name="selector"></param>
+	/// <param name="converter"></param>
 	/// <param name="destination"></param>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Func<T1, T2> selector, List<T2> destination)
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Converter<T1, T2> converter, List<T2> destination)
 	{
 		for (int i = 0; i < Math.Max(source.Count, destination.Count); i++)
 		{
-			T2? item = selector(source[i]);
+			T2? item = converter(source[i]);
 
 			if (i >= source.Count && i < destination.Count)
 				destination.RemoveAt(i);
@@ -60,7 +60,7 @@ public static class Queries
 	/// <param name="destination"></param>
 	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination)
 	{
-		Convert(source, selector: static obj => obj, ref destination);
+		Convert(source, converter: static obj => obj, ref destination);
 	}
 
 	/// <summary>
@@ -71,7 +71,7 @@ public static class Queries
 	/// <param name="destination"></param>
 	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
 	{
-		Convert(source, selector: static obj => obj, destination);
+		Convert(source, converter: static obj => obj, destination);
 	}
 
 	/// <summary>
@@ -140,7 +140,7 @@ public static class Queries
 				return true;
 			}
 		}
-		Filter<T>(list, filter: isUnique);
+		Filter(list, filter: isUnique);
 	}
 
 	/// <summary>

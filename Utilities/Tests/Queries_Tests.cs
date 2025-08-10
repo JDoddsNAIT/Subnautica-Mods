@@ -6,9 +6,10 @@ internal class Queries_Tests : ITestContainer
 {
 	public IEnumerator<TestResult> GetResults()
 	{
-		yield return TestResult.Assert(nameof(FilterArray), FilterArray);
-		yield return TestResult.Assert(nameof(FilterList), FilterList);
-		yield return TestResult.Assert(nameof(ConvertList), ConvertList);
+		var group = nameof(Queries_Tests);
+		yield return TestResult.Assert(nameof(FilterArray), FilterArray, group);
+		yield return TestResult.Assert(nameof(FilterList), FilterList, group);
+		yield return TestResult.Assert(nameof(ConvertList), ConvertList, group);
 	}
 
 	private bool FilterArray(out string message)
@@ -47,7 +48,7 @@ internal class Queries_Tests : ITestContainer
 
 		Queries.Convert(ints, toBool, destination);
 
-		TestResult.GetResult(out message, string.Join(", ", expected), string.Join(", ", destination));
+		TestResult.GetResult(out message, string.Join(", ", destination), string.Join(", ", expected));
 		return destination.CompareValues(expected);
 	}
 }

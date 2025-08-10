@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BepInEx;
-using BepInEx.Logging;
+﻿using BepInEx;
 using FrootLuips.Subnautica.Logging;
 using FrootLuips.Subnautica.Tests;
-using Nautilus;
 
 namespace FrootLuips.Subnautica;
 
@@ -22,6 +15,7 @@ public sealed class Plugin : BaseUnityPlugin
 	internal static ITestContainer[] Tests { get; } = new ITestContainer[] {
 		new LogMessage_Tests(),
 		new Queries_Tests(),
+		new StringExtensions_Tests(),
 	};
 
 	private void Awake()

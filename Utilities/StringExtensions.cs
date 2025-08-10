@@ -1,4 +1,6 @@
-﻿namespace FrootLuips.Subnautica;
+﻿using System;
+
+namespace FrootLuips.Subnautica;
 public static partial class Extensions
 {
 	/// <summary>
@@ -16,5 +18,59 @@ public static partial class Extensions
 			result += text[i];
 		}
 		return result.Trim();
+	}
+
+	/// <summary>
+	/// Returns a substring of <paramref name="text"/>, from the start to the first instance of the <paramref name="substring"/>.
+	/// </summary>
+	/// <param name="text"></param>
+	/// <param name="to"></param>
+	/// <param name="inclusive">Whether to include the <paramref name="substring"/> in the result.</param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentOutOfRangeException"/>
+	public static string FromStartTo(this string text, string substring, bool inclusive = false)
+	{
+		if (text == substring)
+			return inclusive ? text : string.Empty;
+
+		for (int i = text.Length - 1; i >= 0; i--)
+		{
+			if (text[..i].EndsWith(substring))
+			{
+				if (!inclusive)
+					i -= substring.Length;
+				return text[..i];
+			}
+		}
+
+		var message = string.Format("Substring '{0}' does not exist within '{1}'.", substring, text);
+		throw new ArgumentOutOfRangeException(nameof(substring), message);
+	}
+
+	/// <summary>
+	/// Returns a substring of <paramref name="text"/>, from the last instance of the <paramref name="substring"/> to the end.
+	/// </summary>
+	/// <param name="text"></param>
+	/// <param name="substring"></param>
+	/// <param name="inclusive">Whether to include the <paramref name="substring"/> in the result.</param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentOutOfRangeException"/>
+	public static string ToEndFrom(this string text, string substring, bool inclusive = true)
+	{
+		if (text == substring)
+			return inclusive ? text : string.Empty;
+
+		for (int i = 0; i < text.Length; i++)
+		{
+			if (text[i..].StartsWith(substring))
+			{
+				if (!inclusive)
+					i += substring.Length;
+				return text[i..];
+			}
+		}
+
+		var message = string.Format("Substring '{0}' does not exist within '{1}'.", substring, text);
+		throw new ArgumentOutOfRangeException(nameof(substring), message);
 	}
 }

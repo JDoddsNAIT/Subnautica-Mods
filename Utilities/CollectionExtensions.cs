@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica;
 public partial class Extensions
@@ -19,25 +15,65 @@ public partial class Extensions
 	public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
 	{
 		bool contains = dict.ContainsKey(key);
-		if (contains)
+		if (!contains)
 		{
 			dict.Add(key, value);
 		}
 		return contains;
 	}
 
+	/// <summary>
+	/// Compares two lists of <typeparamref name="T"/> vaules by each element.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="a"></param>
+	/// <param name="b"></param>
+	/// <returns><see langword="true"/> if both list have all the same elements.</returns>
 	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b)
-		where T : IEquatable<T>
 	{
-		bool equals = a.Count == b.Count;
-		
-		if (!equals)
+		if (a is null || b is null)
 			return false;
 
-		for (int i = 0; i < a.Count && equals; i++)
+		if (a.Count != b.Count)
+			return false;
+
+		for (int i = 0; i < a.Count; i++)
 		{
-			equals &= a[i] != null && b[i] != null && a[i]!.Equals(b[i]!);
+			if (!Equals(a[i], b[i]))
+				return false;
 		}
-		return equals;
+		return true;
+	}
+
+	/// <summary>
+	/// Compares two lists of <typeparamref name="T"/> vaules by each element using a <paramref name="comparer"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="a"></param>
+	/// <param name="b"></param>
+	/// <param name="comparer"></param>
+	/// <returns><see langword="true"/> if both list have all the same elements.</returns>
+	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b, IEqualityComparer<T> comparer)
+	{
+		if (a.Count != b.Count)
+			return false;
+
+		for (int i = 0; i < a.Count; i++)
+		{
+			if (!comparer.Equals(a[i], b[i]))
+				return false;
+		}
+		return true;
+	}
+
+	/// <summary>
+	/// Evaluates whether the <paramref name="collection"/> is null or empty.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="collection"></param>
+	/// <returns></returns>
+	public static bool IsNullOrEmpty<T>(this IReadOnlyCollection<T> collection)
+	{
+		return collection is null || collection.Count == 0;
 	}
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using FrootLuips.Subnautica.Logging;
 using static FrootLuips.Subnautica.Tests.TestResult;
 
@@ -11,11 +7,12 @@ internal class LogMessage_Tests : ITestContainer
 {
 	public IEnumerator<TestResult> GetResults()
 	{
-		yield return Assert(nameof(ToString), ToString);
-		yield return Assert(nameof(NoContext), NoContext);
-		yield return Assert(nameof(NoNotice), NoNotice);
-		yield return Assert(nameof(NoMessage), NoMessage);
-		yield return Assert(nameof(NoRemarks), NoRemarks);
+		var group = nameof(LogMessage_Tests);
+		yield return Assert(nameof(ToString), ToString, group);
+		yield return Assert(nameof(NoContext), NoContext, group);
+		yield return Assert(nameof(NoNotice), NoNotice, group);
+		yield return Assert(nameof(NoMessage), NoMessage, group);
+		yield return Assert(nameof(NoRemarks), NoRemarks, group);
 	}
 
 	private bool ToString(out string message)
@@ -27,7 +24,7 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - Message (Remarks)";
-		return GetResult(out message, expected, actual);
+		return GetResult(out message, actual, expected);
 	}
 
 	private bool NoContext(out string message)
@@ -38,7 +35,7 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "Notice - Message (Remarks)";
-		return GetResult(out message, expected, actual);
+		return GetResult(out message, actual, expected);
 	}
 
 	private bool NoNotice(out string message)
@@ -49,7 +46,7 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string expected = "[Context] Message (Remarks)";
 		string actual = logMessage.ToString();
-		return GetResult(out message, expected, actual);
+		return GetResult(out message, actual, expected);
 	}
 
 	private bool NoMessage(out string message)
@@ -60,7 +57,7 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - (Remarks)";
-		return GetResult(out message, expected, actual);
+		return GetResult(out message, actual, expected);
 	}
 
 	private bool NoRemarks(out string message)
@@ -71,6 +68,6 @@ internal class LogMessage_Tests : ITestContainer
 			.WithMessage("Message");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - Message";
-		return GetResult(out message, expected, actual);
+		return GetResult(out message, actual, expected);
 	}
 }
