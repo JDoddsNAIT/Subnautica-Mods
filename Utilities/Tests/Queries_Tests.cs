@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using FrootLuips.Subnautica.Extensions;
+
 namespace FrootLuips.Subnautica.Tests;
 
 internal class Queries_Tests : ITestContainer

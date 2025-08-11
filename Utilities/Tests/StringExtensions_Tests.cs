@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FrootLuips.Subnautica.Extensions;
 
 namespace FrootLuips.Subnautica.Tests;
 internal class StringExtensions_Tests : ITestContainer

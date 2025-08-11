@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace FrootLuips.Subnautica;
-public static partial class Extensions
+namespace FrootLuips.Subnautica.Extensions;
+public static class StringExtensions
 {
 	/// <summary>
 	/// Removes all repeating spaces.

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using BepInEx.Logging;
+using FrootLuips.Subnautica.Extensions;
 
 namespace FrootLuips.Subnautica.Logging;
 /// <summary>

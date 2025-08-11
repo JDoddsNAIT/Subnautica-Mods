@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace FrootLuips.Subnautica;
-public partial class Extensions
+namespace FrootLuips.Subnautica.Extensions;
+public static class CollectionExtensions
 {
 	public static bool TryDequeue<T>(this Queue<T> queue, out T? value)
 	{

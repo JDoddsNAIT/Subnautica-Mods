@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using BepInEx.Logging;
 
+using FrootLuips.Subnautica.Extensions;
+
 namespace FrootLuips.Subnautica.Logging;
 /// <summary>
 /// Provides a default implementation of the <see cref="ILogger"/> interface.
