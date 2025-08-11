@@ -51,6 +51,14 @@ internal static class ChaosEffects
 				new ScaleData(0.5f, 50),
 				new ScaleData(2.0f, 50),
 			}
+		},
+		[ChaosEffect.ScaleCreatures] = new ScaleCreatures() {
+			Description = "{0} Nearby Creatures",
+			Scales = new[] {
+				new ScaleData(0.5f, 50),
+				new ScaleData(2.0f, 50),
+			},
+			Range = 7.5f
 		}
 	};
 
@@ -161,8 +169,8 @@ internal enum ChaosEffect
 	FakeTeleport,
 	// TODO: "Fake Crash" - Freezes the game for the duration
 	FakeCrash,
-	// "Shrink/Grow Nearby Creatures" - scales all nearby creatures.
-	ScaleCreatures,
 	// "Shrink/Grow Player" - Scales the player
 	ScalePlayer,
+	// "Shrink/Grow Nearby Creatures" - scales all nearby creatures.
+	ScaleCreatures,
 }

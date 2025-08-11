@@ -1,13 +1,18 @@
-﻿namespace FrootLuips.ChaosMod.Effects;
-internal class ScalePlayer : BaseChaosEffect
+﻿using FrootLuips.ChaosMod.Utilities;
+using UnityEngine;
+
+namespace FrootLuips.ChaosMod.Effects;
+internal class ScaleCreatures : BaseChaosEffect
 {
-	public ScalePlayer() : base(ChaosEffect.ScalePlayer, attributesExpected: 1, duration: 60f) { }
+	public ScaleCreatures() : base(ChaosEffect.ScaleCreatures, attributesExpected: 2) { }
 
 	public ScaleData[]? Scales { get; set; } = null;
+	public float? Range { get; set; } = null;
 
 	private RandomDistribution<ScaleData>? RandomDistribution { get; set; } = null;
-
 	private float _activeScale = 1;
+
+	private List<Creature> _creatures = new();
 
 	public override string BeforeStart()
 	{
@@ -19,26 +24,36 @@ internal class ScalePlayer : BaseChaosEffect
 	{
 		EnsurePlayerExists();
 
-		Player.mainObject.transform.localScale *= _activeScale;
+		// TODO: Improve efficiency
+		bool withinRange(Creature c) => Vector3.Distance(c.transform.position, GetPlayerPosition()) < Range;
+		_creatures = UnityEngine.Object.FindObjectsOfType<Creature>().SimpleWhere(withinRange);
+
+		for (int i = 0; i < _creatures.Count; i++)
+		{
+			_creatures[i].transform.localScale *= _activeScale;
+		}
 	}
 
 	public override void OnStop()
 	{
+		if (Duration <= 0)
+			return;
+
 		EnsurePlayerExists();
 
-		if (Duration > 0)
+		for (int i = 0; i < _creatures.Count; i++)
 		{
-			Player.mainObject.transform.localScale /= _activeScale;
-		}
-		else
-		{
-			Plugin.Logger.LogWarn("Player will not automatically return to the default size.");
+			_creatures[i].transform.localScale /= _activeScale;
 		}
 	}
+
+	private static Vector3 GetPlayerPosition() => Player.main.transform.position;
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
 		Scales = null;
+		Range = null;
+		RandomDistribution = null;
 		base.FromData(data, callback);
 	}
 
@@ -51,12 +66,19 @@ internal class ScalePlayer : BaseChaosEffect
 				Scales = scales;
 				RandomDistribution = new RandomDistribution<ScaleData>(Scales);
 				break;
+			case nameof(Range):
+				attribute.ParseAttribute(float.Parse, out var range);
+				Range = range;
+				break;
 			default:
 				throw attribute.Invalid();
 		}
 	}
 
-	protected override bool GetSuccess() => Scales != null && RandomDistribution != null;
+	protected override bool GetSuccess()
+	{
+		return Scales != null && Range != null && RandomDistribution != null;
+	}
 
 	public override Effect ToData()
 	{
@@ -66,6 +88,7 @@ internal class ScalePlayer : BaseChaosEffect
 			Weight = this.Weight,
 			Attributes = new[] {
 				new Effect.Attribute(nameof(Scales), string.Join(ScaleData.DELIMITER.ToString(), (object[])Scales!)),
+				new Effect.Attribute(nameof(Range), Range.ToString())
 			}
 		};
 	}
