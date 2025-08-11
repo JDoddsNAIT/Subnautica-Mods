@@ -39,7 +39,7 @@ internal static class ChaosEffects
 			Description = "Rainbow Vehicles",
 			Speed = 1f
 		},
-		[ChaosEffect.MoistPercent] = new MoistPercent() {
+		[ChaosEffect.Moist] = new MoistPercent() {
 			Description = "Moist%",
 		},
 		//[ChaosEffect.Lootbox]
@@ -77,11 +77,17 @@ internal static class ChaosEffects
 			}
 			else
 			{
+				bool calledBack = false;
 				Effects[effect].FromData(effects[i], statusCallback);
+				if (!calledBack)
+				{
+					Plugin.Logger.LogWarn($"No callback received from '{effect}'. Data integrity is unknown.");
+				}
 				continue;
 
 				void statusCallback(List<string> issues, bool status)
 				{
+					calledBack = true;
 					LogMessage message = new(context: context);
 					if (status)
 					{
@@ -141,11 +147,15 @@ internal enum ChaosEffect
 	// "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
 	RainbowVehicles,
 	// "Moist%" - Turns off the water for the duration
-	MoistPercent,
+	Moist,
 	// TODO: "Lootbox" - Spawn and pickup a time capsule in front of the player
 	Lootbox,
 	// TODO: "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
 	FakeTeleport,
 	// TODO: "Fake Crash" - Freezes the game for the duration
 	FakeCrash,
+	// "Shrink/Grow Nearby Creatures" - scales all nearby creatures.
+	ScaleCreatures,
+	// "Shrink/Grow Player" - Scales the player
+	ScalePlayer,
 }

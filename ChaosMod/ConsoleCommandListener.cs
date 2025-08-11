@@ -9,6 +9,11 @@ internal class ConsoleCommandListener : MonoBehaviour
 		DevConsole.RegisterConsoleCommand(this, ConsoleCommands.COMMAND_NAME, false, false);
 	}
 
+	public void OnDestroy()
+	{
+		ConsoleCommands.Stop();
+	}
+
 	public void OnConsoleCommand_chaosmod(NotificationCenter.Notification n)
 	{
 		if (n.data == null)
@@ -22,6 +27,5 @@ internal class ConsoleCommandListener : MonoBehaviour
 
 			Plugin.Logger.LogInGame(ConsoleCommands.ChaosCommand(arg1 ?? "", arg2 ?? ""));
 		}
-
 	}
 }

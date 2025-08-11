@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FrootLuips.ChaosMod.Effects;
 internal class SpawnGhost : BaseChaosEffect
 {
-	public SpawnGhost() : base(ChaosEffect.SpawnGhost) { }
+	public SpawnGhost() : base(ChaosEffect.SpawnGhost, attributesExpected: 1) { }
 
 	public float? SpawnDistance { get; set; } = null;
 
@@ -30,61 +30,26 @@ internal class SpawnGhost : BaseChaosEffect
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
-		base.FromData(data, callback);
-
 		SpawnDistance = null;
-
-		List<string> errors = new();
-		try
-		{
-			Validate(ValidateAttributes(data.Attributes));
-		}
-		catch (AggregateException agg)
-		{
-			foreach (var ex in agg)
-			{
-				errors.Add(ex.Message);
-			}
-		}
-		catch (Exception ex)
-		{
-			errors.Add(ex.Message);
-		}
-		finally
-		{
-			bool success = SpawnDistance != null;
-			callback(errors, success);
-		}
+		base.FromData(data, callback);
 	}
 
-	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
+	protected override void ParseAttribute(Effect.Attribute attribute)
 	{
-		ExpectAttributeCount(attributes, count: 1);
-		var attribute = attributes[0];
-
-		Exception? exception = null;
-		try
+		switch (attribute.Name)
 		{
-			switch (attribute.Name)
-			{
-				case nameof(SpawnDistance):
-					attribute.ParseAttribute(float.Parse, out float distance);
-					if (distance <= 0)
-						throw new Exception($"Attribute '{attribute.Name}' must have a float value greater than 0.");
-					SpawnDistance = distance;
-					break;
-				default:
-					throw attribute.Invalid();
-			}
+			case nameof(SpawnDistance):
+				attribute.ParseAttribute(float.Parse, out float distance);
+				if (distance <= 0)
+					throw new Exception($"Attribute '{attribute.Name}' must have a float value greater than 0.");
+				SpawnDistance = distance;
+				break;
+			default:
+				throw attribute.Invalid();
 		}
-		catch (Exception ex)
-		{
-			exception = ex;
-		}
-
-		if (exception != null)
-			yield return exception;
 	}
+
+	protected override bool GetSuccess() => SpawnDistance != null;
 
 	public override Effect ToData() => new() {
 		Id = this.Id.ToString(),

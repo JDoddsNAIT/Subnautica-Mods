@@ -5,7 +5,7 @@ using UnityEngine;
 namespace FrootLuips.ChaosMod.Effects;
 internal class RainbowVehicles : BaseChaosEffect
 {
-	public RainbowVehicles() : base(ChaosEffect.RainbowVehicles, duation: 60f) { }
+	public RainbowVehicles() : base(ChaosEffect.RainbowVehicles, attributesExpected: 1, duration: 60f) { }
 
 	public float? Speed { get; set; } = null;
 
@@ -64,58 +64,24 @@ internal class RainbowVehicles : BaseChaosEffect
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
-		base.FromData(data, callback);
 		Speed = null;
-
-		List<string> errors = new();
-		try
-		{
-			Validate(ValidateAttributes(data.Attributes));
-		}
-		catch (AggregateException agg)
-		{
-			foreach (var ex in agg)
-			{
-				errors.Add(ex.Message);
-			}
-		}
-		catch (Exception ex)
-		{
-			errors.Add(ex.Message);
-		}
-		finally
-		{
-			bool success = Speed != null;
-			callback(errors, success);
-		}
+		base.FromData(data, callback);
 	}
 
-	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
+	protected override void ParseAttribute(Effect.Attribute attribute)
 	{
-		ExpectAttributeCount(attributes, count: 1);
-
-		var attribute = attributes[0];
-		Exception? exception = null;
-		try
+		switch (attribute.Name)
 		{
-			switch (attribute.Name)
-			{
-				case nameof(Speed):
-					attribute.ParseAttribute(float.Parse, out var speed);
-					Speed = speed;
-					break;
-				default:
-					throw attribute.Invalid();
-			}
+			case nameof(Speed):
+				attribute.ParseAttribute(float.Parse, out var speed);
+				Speed = speed;
+				break;
+			default:
+				throw attribute.Invalid();
 		}
-		catch (Exception ex)
-		{
-			exception = ex;
-		}
-
-		if (exception != null)
-			yield return exception;
 	}
+
+	protected override bool GetSuccess() => this.Speed != null;
 
 	public override Effect ToData() => new() {
 		Id = this.Id.ToString(),

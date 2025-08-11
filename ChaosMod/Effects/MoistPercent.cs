@@ -3,7 +3,7 @@
 namespace FrootLuips.ChaosMod.Effects;
 internal class MoistPercent : BaseChaosEffect
 {
-	public MoistPercent() : base(ChaosEffect.MoistPercent, duation: 60f) { }
+	public MoistPercent() : base(ChaosEffect.Moist, attributesExpected: 0, duration: 60f) { }
 
 	public static Ocean? Ocean {
 		get => _ocean;
@@ -42,4 +42,7 @@ internal class MoistPercent : BaseChaosEffect
 			_started = false;
 		}
 	}
+
+	protected override void ParseAttribute(Effect.Attribute attribute) { }
+	protected override bool GetSuccess() => true;
 }

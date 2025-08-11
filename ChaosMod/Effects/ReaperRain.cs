@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 namespace FrootLuips.ChaosMod.Effects;
 internal class ReaperRain : BaseChaosEffect
 {
-	public ReaperRain() : base(ChaosEffect.ReaperRain, duation: 30f) { }
+	public ReaperRain() : base(ChaosEffect.ReaperRain, attributesExpected: 3, duration: 30f) { }
 
 	/// <summary>
 	/// Height in metres above sea level where the reapers will spawn.
@@ -51,69 +51,37 @@ internal class ReaperRain : BaseChaosEffect
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
-		base.FromData(data, callback);
-
 		Height = null;
 		SpawnsPerSecond = null;
+		SpawnRadius = null;
+		base.FromData(data, callback);
+	}
 
-		List<string> errors = new();
-		try
+	protected override void ParseAttribute(Effect.Attribute attribute)
+	{
+		switch (attribute.Name)
 		{
-			Validate(ValidateAttributes(data.Attributes));
-		}
-		catch (AggregateException agg)
-		{
-			foreach (var ex in agg)
-			{
-				errors.Add(ex.Message);
-			}
-		}
-		finally
-		{
-			bool success = Height != null && SpawnsPerSecond != null && SpawnRadius != null;
-			callback(errors, success);
+			case nameof(Height):
+				attribute.ParseAttribute(int.Parse, out int height);
+				Height = height;
+				break;
+			case nameof(SpawnsPerSecond):
+				attribute.ParseAttribute(float.Parse, out float spawns);
+				SpawnsPerSecond = spawns;
+				break;
+			case nameof(SpawnRadius):
+				attribute.ParseAttribute(float.Parse, out float radius);
+				SpawnRadius = radius;
+				break;
+
+			default:
+				throw attribute.Invalid();
 		}
 	}
 
-	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
+	protected override bool GetSuccess()
 	{
-		ExpectAttributeCount(attributes, count: 2);
-
-		for (int i = 0; i < attributes.Length; i++)
-		{
-			Exception? exception = null;
-
-			try
-			{
-				switch (attributes[i].Name)
-				{
-					case nameof(Height):
-						attributes[i].ParseAttribute(int.Parse, out int height);
-						Height = height;
-						break;
-					case nameof(SpawnsPerSecond):
-						attributes[i].ParseAttribute(float.Parse, out float spawns);
-						SpawnsPerSecond = spawns;
-						break;
-					case nameof(SpawnRadius):
-						attributes[i].ParseAttribute(float.Parse, out float radius);
-						SpawnRadius = radius;
-						break;
-
-					default:
-						throw attributes[i].Invalid();
-				}
-			}
-			catch (Exception ex)
-			{
-				exception = ex;
-			}
-
-			if (exception != null)
-				yield return exception;
-
-			continue;
-		}
+		return Height != null && SpawnsPerSecond != null && SpawnRadius != null;
 	}
 
 	public override Effect ToData() => new() {
