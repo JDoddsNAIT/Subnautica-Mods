@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#pragma warning disable IDE1006 // Naming Styles
+using HarmonyLib;
 
 namespace FrootLuips.ChaosMod.Patchers;
 

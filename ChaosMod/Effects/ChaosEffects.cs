@@ -45,6 +45,13 @@ internal static class ChaosEffects
 		//[ChaosEffect.Lootbox]
 		//[ChaosEffect.FakeTeleport]
 		//[ChaosEffect.FakeCrash]
+		[ChaosEffect.ScalePlayer] = new ScalePlayer() {
+			Description = "{0} Player",
+			Scales = new[] {
+				new ScaleData(0.5f, 50),
+				new ScaleData(2.0f, 50),
+			}
+		}
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -134,7 +141,7 @@ internal enum ChaosEffect
 	RandomTeleport,
 	// "Explode the Aurora" - explodes the aurora
 	ExplodeShip,
-	// "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
+	// "Say Hi to Casper!" - spawns a ghost leviathan in front of the player
 	SpawnGhost,
 	// TODO: "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	SuperSpeed,
@@ -144,7 +151,7 @@ internal enum ChaosEffect
 	Fly,
 	// "Insurance claim" - Deals 50% damage to all vehicles on the map
 	DamageVehicles,
-	// "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
+	// "Rainbow Vehicles" - All vehicles continuously change colours for some time.
 	RainbowVehicles,
 	// "Moist%" - Turns off the water for the duration
 	Moist,

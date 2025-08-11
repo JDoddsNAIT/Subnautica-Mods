@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable IDE0060 // Remove unused parameter
+
+using HarmonyLib;
 using UnityEngine;
 
 namespace FrootLuips.ChaosMod.Patchers;

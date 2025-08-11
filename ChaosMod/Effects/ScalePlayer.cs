@@ -56,7 +56,7 @@ internal class ScalePlayer : BaseChaosEffect
 		}
 	}
 
-	protected override bool GetSuccess() => Scales != null;
+	protected override bool GetSuccess() => Scales != null && RandomDistribution != null;
 
 	public override Effect ToData()
 	{
