@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using FrootLuips.Subnautica.Logging;
 using FrootLuips.Subnautica.Tests;
+using Nautilus.Handlers;
 
 namespace FrootLuips.Subnautica;
 
@@ -9,7 +10,6 @@ namespace FrootLuips.Subnautica;
 public sealed class Plugin : BaseUnityPlugin
 {
 	private static ILogger? _logger;
-
 	public static new ILogger Logger { get => _logger!; private set => _logger = value; }
 
 	internal static ITestContainer[] Tests { get; } = new ITestContainer[] {
@@ -22,23 +22,24 @@ public sealed class Plugin : BaseUnityPlugin
 	{
 		Logger = new Logging.Logger(base.Logger);
 
-		foreach (var container in Tests)
-		{
-			RunTests(container);
-		}
+		ConsoleCommandsHandler.RegisterConsoleCommand<System.Func<string>>("testutils", RunTests);
 	}
 
-	internal static void RunTests(ITestContainer container)
+	internal static string RunTests()
 	{
-		var enumerator = container.GetResults();
-
-		while (enumerator.MoveNext())
+		foreach (var container in Tests)
 		{
-			var result = enumerator.Current;
-			if (result)
-				Logger.LogMessage(result.ToString());
-			else
-				Logger.LogError(result.ToString());
+			var enumerator = container.GetResults();
+
+			while (enumerator.MoveNext())
+			{
+				var result = enumerator.Current;
+				if (result)
+					Logger.LogMessage(result.ToString());
+				else
+					Logger.LogError(result.ToString());
+			}
 		}
+		return "Test results logged to console.";
 	}
 }

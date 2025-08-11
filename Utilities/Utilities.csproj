@@ -16,6 +16,10 @@
     <Nullable>enable</Nullable>
 
     <Title>Subnautica Modding Utilities</Title>
+
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+    <DocumentationFile>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\$(TargetName)</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
