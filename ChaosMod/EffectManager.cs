@@ -117,13 +117,13 @@ internal static class EffectManager
 
 	private static void TriggerEffect(IChaosEffect effect)
 	{
-		effect.BeforeStart();
+		string description = effect.BeforeStart();
 
 		ActiveEffect activeEffect = new(effect);
 
-		string message = string.IsNullOrWhiteSpace(effect.Description)
+		string message = string.IsNullOrWhiteSpace(description)
 			? effect.Id.ToString()
-			: effect.Description!;
+			: description;
 		Plugin.Logger.LogInGame(message);
 
 		activeEffect.OnEffectEnd += OnEffectEnd;

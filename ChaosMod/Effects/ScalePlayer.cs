@@ -9,14 +9,10 @@ internal class ScalePlayer : BaseChaosEffect
 
 	private float _activeScale = 1;
 
-	public override void BeforeStart()
+	public override string BeforeStart()
 	{
 		_activeScale = RandomDistribution!.GetRandomItem().Scale;
-
-		string desc = _activeScale < 1f
-			? "Shrink" : "Grow";
-		desc += " Player";
-		Description = desc;
+		return string.Format(Description, _activeScale < 1 ? "Shrink" : "Grow");
 	}
 
 	public override void OnStart()

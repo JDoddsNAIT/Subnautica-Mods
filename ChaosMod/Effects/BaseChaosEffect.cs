@@ -21,7 +21,7 @@ internal abstract class BaseChaosEffect : IChaosEffect
 		Weight = weight;
 	}
 
-	public virtual void BeforeStart() { }
+	public virtual string BeforeStart() => this.Description!;
 	public virtual void OnStart() { }
 	public virtual void Update(float time) { }
 	public virtual void OnStop() { }
@@ -49,7 +49,7 @@ internal abstract class BaseChaosEffect : IChaosEffect
 		}
 		finally
 		{
-			bool success = this.GetSuccess();
+			bool success = Description != null && this.GetSuccess();
 			callback(errors, success);
 		}
 	}
