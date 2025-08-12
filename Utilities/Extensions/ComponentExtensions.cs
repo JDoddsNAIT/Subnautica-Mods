@@ -13,20 +13,25 @@ public static class ComponentExtensions
 	internal static List<ComponentQuery> QueryPool { get; } = new(capacity: 2);
 	internal static ComponentQuery GetQuery(GameObject go)
 	{
-		for (int i = 0; i < QueryPool.Count; i++)
+		ComponentQuery query = null;
+
+		for (int i = 0; i < QueryPool.Count && query == null; i++)
 		{
 			if (QueryPool[i].gameObject == null)
 			{
 				QueryPool[i].gameObject = go;
-				return QueryPool[i];
+				query = QueryPool[i];
 			}
 		}
 
-		var q = new ComponentQuery() {
-			gameObject = go
-		};
-		QueryPool.Add(q);
-		return q;
+		if (query == null)
+		{
+			query = new ComponentQuery() {
+				gameObject = go
+			};
+			QueryPool.Add(query);
+		}
+		return query;
 	}
 
 	/// <summary>
@@ -36,7 +41,7 @@ public static class ComponentExtensions
 	/// <returns></returns>
 	public static ComponentQuery Get(this GameObject gameObject) => GetQuery(gameObject);
 	/// <summary>
-	/// Begins a component query for a <paramref name="gameObject"/>.
+	/// Begins a component query for a <paramref name="component"/>.
 	/// </summary>
 	/// <param name="component"></param>
 	/// <returns></returns>
