@@ -93,7 +93,9 @@ internal static class EffectManager
 
 		if (effects.Length > 0)
 		{
-			inactiveEffects = effects.SimpleWhere(e => !_activeEffects.ContainsKey(e)).SimpleDistinct();
+			inactiveEffects = new List<ChaosEffect>(effects);
+			SimpleQueries.Filter(inactiveEffects, static e => !_activeEffects.ContainsKey(e));
+			SimpleQueries.FilterDuplicates(inactiveEffects);
 		}
 		else
 		{
@@ -144,20 +146,25 @@ internal static class EffectManager
 	/// <param name="effects"></param>
 	public static void RemoveEffect(Callback? callback, params ChaosEffect[] effects)
 	{
-		List<ChaosEffect> activeEffects = effects.SimpleWhere(_activeEffects.ContainsKey);
+		List<ChaosEffect> effectsToClear;
 		if (effects.Length == 0)
 		{
-			activeEffects = _activeEffects.Keys.ToList();
+			effectsToClear = _activeEffects.Keys.ToList();
 		}
-
-		for (int i = 0; i < activeEffects.Count; i++)
+		else
 		{
-			_activeEffects[activeEffects[i]].Stop();
+			effectsToClear = new(effects);
+			SimpleQueries.Filter(effectsToClear, _activeEffects.ContainsKey);
 		}
 
-		string message = NullOrEmptyCollection(activeEffects)
+		for (int i = 0; i < effectsToClear.Count; i++)
+		{
+			_activeEffects[effectsToClear[i]].Stop();
+		}
+
+		string message = NullOrEmptyCollection(effectsToClear)
 			? "No effects were removed."
-			: $"Effects removed: {string.Join(", ", activeEffects)}";
+			: $"Effects removed: {string.Join(", ", effectsToClear)}";
 		callback?.Invoke(message);
 	}
 

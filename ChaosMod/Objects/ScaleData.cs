@@ -22,15 +22,29 @@ internal class ScaleData : IDistributable
 		return $"{Scale},{Weight}";
 	}
 
-	public static ScaleData Parse(string text)
+	public static ScaleData? Parse(string text)
 	{
-		var parts = text.Split(',');
+		try
+		{
+			var parts = text.Split(',');
 
-		return new ScaleData() {
-			Scale = float.Parse(parts[0]),
-			Weight = int.Parse(parts[1])
-		};
+			return new ScaleData() {
+				Scale = float.Parse(parts[0]),
+				Weight = int.Parse(parts[1])
+			};
+		}
+		catch (Exception)
+		{
+			return default;
+		}
 	}
 
-	public static ScaleData[] ParseMany(string text) => text.Split(DELIMITER).SimpleSelect(Parse);
+	public static ScaleData[] ParseMany(string text)
+	{
+		var parts = text.Split(DELIMITER);
+		var results = new ScaleData?[parts.Length];
+		SimpleQueries.Convert(parts, converter: Parse, ref results);
+		SimpleQueries.FilterNulls(ref results);
+		return results!;
+	}
 }

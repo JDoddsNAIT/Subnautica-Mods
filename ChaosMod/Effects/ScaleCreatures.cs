@@ -24,10 +24,9 @@ internal class ScaleCreatures : BaseChaosEffect
 	{
 		EnsurePlayerExists();
 
-		// TODO: Improve efficiency
 		bool withinRange(Creature c) => Vector3.Distance(c.transform.position, GetPlayerPosition()) < Range;
-		EntityDB<Creature>.Entities.CopyItems(to: ref _creatures);
-		_creatures = _creatures.SimpleWhere(withinRange);
+		SimpleQueries.Copy(EntityDB<Creature>.Entities, _creatures);
+		SimpleQueries.Filter(_creatures, withinRange);
 
 		for (int i = 0; i < _creatures.Count; i++)
 		{
