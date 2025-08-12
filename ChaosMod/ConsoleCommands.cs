@@ -18,7 +18,10 @@ internal static class ConsoleCommands
 	[ConsoleCommand("saveteleports")]
 	public static string GetTeleports()
 	{
-		GotoConsoleCommand.main.data.locations.SimpleSelect(Utilities.Utils.ToPosition).SaveJson(RandomTeleport.teleportsPath);
+		var locations = GotoConsoleCommand.main.data.locations;
+		List<Objects.TeleportPosition> positions = new(capacity: locations.Length);
+		SimpleQueries.Convert(locations, converter: Utilities.Utils.ToPosition, positions);
+		positions.SaveJson(RandomTeleport.teleportsPath);
 		return "Saved to " + RandomTeleport.teleportsPath;
 	}
 
