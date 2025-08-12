@@ -32,7 +32,7 @@ internal class SuperSpeed : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(Multiplier):
-				attribute.ParseAttribute(float.Parse, out var mult);
+				attribute.ParseValue(float.Parse, out var mult);
 				Multiplier = mult;
 				break;
 			default:

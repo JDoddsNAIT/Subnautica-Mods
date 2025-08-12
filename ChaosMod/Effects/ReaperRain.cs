@@ -62,15 +62,15 @@ internal class ReaperRain : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(Height):
-				attribute.ParseAttribute(int.Parse, out int height);
+				attribute.ParseValue(int.Parse, out int height);
 				Height = height;
 				break;
 			case nameof(SpawnsPerSecond):
-				attribute.ParseAttribute(float.Parse, out float spawns);
+				attribute.ParseValue(float.Parse, out float spawns);
 				SpawnsPerSecond = spawns;
 				break;
 			case nameof(SpawnRadius):
-				attribute.ParseAttribute(float.Parse, out float radius);
+				attribute.ParseValue(float.Parse, out float radius);
 				SpawnRadius = radius;
 				break;
 

@@ -39,7 +39,7 @@ internal class SpawnGhost : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(SpawnDistance):
-				attribute.ParseAttribute(float.Parse, out float distance);
+				attribute.ParseValue(float.Parse, out float distance);
 				if (distance <= 0)
 					throw new Exception($"Attribute '{attribute.Name}' must have a float value greater than 0.");
 				SpawnDistance = distance;

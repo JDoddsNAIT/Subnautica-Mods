@@ -7,15 +7,19 @@ internal class DamageVehicles : BaseChaosEffect
 
 	public float? DamageDealt { get; set; } = null;
 
+	private readonly List<Vehicle> _vehicles = new();
+
 	public override void OnStart()
 	{
-		var vehicles = UnityEngine.Object.FindObjectsOfType<global::Vehicle>();
-		for (int i = 0; i < vehicles.Length; i++)
+		SimpleQueries.Copy(EntityDB<Vehicle>.Entities, _vehicles);
+
+		int length = _vehicles.Count;
+		for (int i = 0; i < length; i++)
 		{
-			var live = vehicles[i].liveMixin;
+			var live = _vehicles[i].liveMixin;
 			float damage = live.maxHealth * (float)(DamageDealt! / 100f);
-			live.TakeDamage(damage, vehicles[i].transform.position, type: DamageType.Pressure, null);
-			vehicles[i].crushDamage.soundOnDamage.Play();
+			live.TakeDamage(damage, _vehicles[i].transform.position, type: DamageType.Pressure, null);
+			_vehicles[i].crushDamage.soundOnDamage.Play();
 		}
 	}
 
@@ -30,7 +34,7 @@ internal class DamageVehicles : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(DamageDealt):
-				attribute.ParseAttribute(float.Parse, out float damage);
+				attribute.ParseValue(float.Parse, out float damage);
 				if (damage is not >= 0 and <= 100)
 					throw new Exception($"Attribute '{attribute.Name}' must have a float value between 0 and 100.");
 				DamageDealt = damage;

@@ -47,7 +47,7 @@ internal class ScalePlayer : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(Scales):
-				attribute.ParseAttribute(ScaleData.ParseMany, out var scales);
+				attribute.ParseValue(ScaleData.ParseMany, out var scales);
 				Scales = scales;
 				RandomDistribution = new RandomDistribution<ScaleData>(Scales);
 				break;

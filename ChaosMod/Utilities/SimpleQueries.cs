@@ -42,16 +42,19 @@ internal static class SimpleQueries
 	/// <param name="destination"></param>
 	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Converter<T1, T2> converter, List<T2> destination)
 	{
-		for (int i = 0; i < Math.Max(source.Count, destination.Count); i++)
+		for (int i = 0; i < source.Count; i++)
 		{
 			T2? item = converter(source[i]);
 
-			if (i >= source.Count && i < destination.Count)
-				destination.RemoveAt(i);
-			else if (i < destination.Count)
+			if (i < destination.Count)
 				destination[i] = item;
 			else
 				destination.Add(item);
+		}
+
+		for (int i = destination.Count - 1; destination.Count > source.Count && i >= 0; i--)
+		{
+			destination.RemoveAt(i);
 		}
 	}
 

@@ -53,7 +53,7 @@ internal static class Utils
 		return new InvalidAttributeException(attribute);
 	}
 
-	public static void ParseAttribute<T>(this Effect.Attribute attribute, Func<string, T> parseFunc, out T value)
+	public static void ParseValue<T>(this Effect.Attribute attribute, Func<string, T> parseFunc, out T value)
 	{
 		try
 		{

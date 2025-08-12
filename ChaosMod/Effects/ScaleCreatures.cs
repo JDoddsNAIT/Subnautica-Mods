@@ -12,7 +12,7 @@ internal class ScaleCreatures : BaseChaosEffect
 	private RandomDistribution<ScaleData>? RandomDistribution { get; set; } = null;
 	private float _activeScale = 1;
 
-	private List<Creature> _creatures = new();
+	private readonly List<Creature> _creatures = new();
 
 	public override string BeforeStart()
 	{
@@ -62,12 +62,12 @@ internal class ScaleCreatures : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(Scales):
-				attribute.ParseAttribute(ScaleData.ParseMany, out var scales);
+				attribute.ParseValue(ScaleData.ParseMany, out var scales);
 				Scales = scales;
 				RandomDistribution = new RandomDistribution<ScaleData>(Scales);
 				break;
 			case nameof(Range):
-				attribute.ParseAttribute(float.Parse, out var range);
+				attribute.ParseValue(float.Parse, out var range);
 				Range = range;
 				break;
 			default:

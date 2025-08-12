@@ -1,5 +1,4 @@
 ﻿using FrootLuips.ChaosMod.Utilities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace FrootLuips.ChaosMod.Effects;
@@ -9,57 +8,32 @@ internal class RainbowVehicles : BaseChaosEffect
 
 	public float? Speed { get; set; } = null;
 
-	private Vehicle[]? _vehicles;
-	private float3[][]? _hsv;
+	private readonly List<VehicleColours> _vehicleColours = new();
 	private float _hueShift = 0;
 
 	public override void OnStart()
 	{
-		_vehicles = UnityEngine.Object.FindObjectsOfType<global::Vehicle>();
-		_hsv = new float3[_vehicles.Length][];
 		_hueShift = 0;
 
-		for (int i = 0; i < _vehicles.Length; i++)
-		{
-			var colors = _vehicles[i].subName.GetColors();
-			_hsv[i] = new float3[colors.Length];
-			for (int j = 0; j < colors.Length; j++)
-			{
-				var color = new Color(colors[j].x, colors[j].y, colors[j].z);
-				Color.RGBToHSV(color, out var h, out var s, out var v);
-				_hsv[i][j] = new float3(h, s, v);
-			}
-		}
+		static VehicleColours converter(Vehicle vehicle) => new(vehicle, vehicle.subName.GetColors());
+		SimpleQueries.Convert(EntityDB<Vehicle>.Entities, converter, _vehicleColours);
 	}
 
 	public override void Update(float time)
 	{
-		_hueShift += (float)(Speed! * Time.deltaTime);
-		this.SetHues();
-	}
+		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.Vehicle));
 
-	private void SetHues(bool preserveSV = false)
-	{
-		for (int i = 0; i < _vehicles!.Length; i++)
-		{
-			for (int j = 0; j < _hsv![i].Length; j++)
-			{
-				var hsv = _hsv![i][j];
-				float hue = Mathf.Repeat(_hueShift + hsv.x, 1f);
-				float sat = preserveSV ? hsv.y : 1;
-				float val = preserveSV ? hsv.z : 1;
-				_vehicles[i].subName.SetColor(j, Vector3.one, Color.HSVToRGB(hue, sat, val));
-			}
-		}
+		_hueShift += (float)(Speed! * Time.deltaTime);
+		SetVehicleColours(_vehicleColours, _hueShift);
 	}
 
 	public override void OnStop()
 	{
-		_hueShift = 0;
-		SetHues(preserveSV: true);
+		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.Vehicle));
 
-		_vehicles = null;
-		_hsv = null;
+		_hueShift = 0;
+		SetVehicleColours(_vehicleColours, _hueShift);
+		_vehicleColours.Clear();
 	}
 
 	public override void FromData(Effect data, StatusCallback callback)
@@ -73,7 +47,7 @@ internal class RainbowVehicles : BaseChaosEffect
 		switch (attribute.Name)
 		{
 			case nameof(Speed):
-				attribute.ParseAttribute(float.Parse, out var speed);
+				attribute.ParseValue(float.Parse, out var speed);
 				Speed = speed;
 				break;
 			default:
@@ -91,4 +65,53 @@ internal class RainbowVehicles : BaseChaosEffect
 			new Effect.Attribute(nameof(Speed), Speed.ToString()),
 		}
 	};
+
+	private static void SetVehicleColours(IReadOnlyList<VehicleColours> colours, float hueShift)
+	{
+		for (int i = 0; i < colours.Count; i++)
+		{
+			for (int j = 0; j < colours[i].Colours.Length; j++)
+			{
+				var vehicle = colours[i].Vehicle;
+				vehicle.subName.SetColor(j, colours[i][j].Shift(h: hueShift), Color.white);
+			}
+		}
+	}
+
+	private record struct VehicleColours(Vehicle Vehicle)
+	{
+		public ColorHSV[] Colours { get; set; } = Array.Empty<ColorHSV>();
+
+		public readonly ColorHSV this[int index] => Colours[index];
+
+		public VehicleColours(Vehicle vehicle, Vector3[] hsv) : this(vehicle)
+		{
+			var colours = new ColorHSV[hsv.Length];
+			SimpleQueries.Convert(hsv, converter: c => (ColorHSV)c, ref colours);
+			Colours = colours;
+		}
+	}
+	private record struct ColorHSV(float H, float S, float V)
+	{
+		public ColorHSV Shift(float h = 0, float s = 0, float v = 0)
+		{
+			h = Mathf.Repeat(H + h, 1f);
+			s = Mathf.Repeat(S + s, 1f);
+			v = Mathf.Repeat(V + v, 1f);
+			return this with { H = h, S = s, V = v };
+		}
+
+		public static implicit operator ColorHSV(Vector3 vector)
+			=> new(H:  vector.x, S: vector.y, V: vector.z);
+		public static implicit operator Vector3(ColorHSV colour)
+			=> new(colour.H, colour.S, colour.V);
+
+		public static implicit operator ColorHSV(Color color)
+		{
+			Color.RGBToHSV(color, out var h, out var s, out var v);
+			return new(h, s, v);
+		}
+		public static implicit operator Color(ColorHSV colour)
+			=> Color.HSVToRGB(colour.H, colour.S, colour.V);
+	}
 }
