@@ -11,6 +11,7 @@ internal class DamageVehicles : BaseChaosEffect
 
 	public override void OnStart()
 	{
+		EntityDB<Vehicle>.Update();
 		SimpleQueries.Copy(EntityDB<Vehicle>.Entities, _vehicles);
 
 		int length = _vehicles.Count;

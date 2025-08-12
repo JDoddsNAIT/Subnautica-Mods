@@ -4,6 +4,8 @@ using Nautilus.Json.ExtensionMethods;
 namespace FrootLuips.ChaosMod.Effects;
 internal static class ChaosEffects
 {
+	public static bool EffectsLoaded { get; private set; } = false;
+
 	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; private set; } = ResetEffects();
 
 	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => Effects = new() {
@@ -103,30 +105,36 @@ internal static class ChaosEffects
 				void statusCallback(List<string> issues, bool status)
 				{
 					calledBack = true;
-					LogMessage message = new(context: context);
-					if (status)
-					{
-						message.WithNotice("Loaded settings for effect '", effect, "'");
-						if (issues.Count > 0)
-						{
-							message.WithMessage("Some issues occurred.").WithRemarks(string.Join("\n", issues));
-							Plugin.Logger.LogWarn(message);
-						}
-						else
-						{
-							message.WithMessage("No issues");
-							Plugin.Logger.LogInfo(message);
-						}
-					}
-					else
-					{
-						message.WithNotice("Failed to load settings for '", effect, "'")
-							.WithMessage("Skipping")
-							.WithRemarks(string.Join("\n", issues));
-						Plugin.Logger.LogError(message);
-					}
+					StatusCallback(issues, status, context, effect);
 				}
 			}
+		}
+		EffectsLoaded = true;
+	}
+
+	private static void StatusCallback(List<string> issues, bool status, string context, ChaosEffect effect)
+	{
+		LogMessage message = new(context: context);
+		if (status)
+		{
+			message.WithNotice("Loaded settings for effect '", effect, "'");
+			if (issues.Count > 0)
+			{
+				message.WithMessage("Some issues occurred.").WithRemarks(string.Join("\n", issues));
+				Plugin.Logger.LogWarn(message);
+			}
+			else
+			{
+				message.WithMessage("No issues");
+				Plugin.Logger.LogInfo(message);
+			}
+		}
+		else
+		{
+			message.WithNotice("Failed to load settings for '", effect, "'")
+				.WithMessage("Skipping")
+				.WithRemarks(string.Join("\n", issues));
+			Plugin.Logger.LogError(message);
 		}
 	}
 

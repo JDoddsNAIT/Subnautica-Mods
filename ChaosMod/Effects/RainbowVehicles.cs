@@ -16,6 +16,7 @@ internal class RainbowVehicles : BaseChaosEffect
 		_hueShift = 0;
 
 		static VehicleColours converter(Vehicle vehicle) => new(vehicle, vehicle.subName.GetColors());
+		EntityDB<Vehicle>.Update();
 		SimpleQueries.Convert(EntityDB<Vehicle>.Entities, converter, _vehicleColours);
 	}
 

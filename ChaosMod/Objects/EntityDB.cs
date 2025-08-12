@@ -13,8 +13,26 @@ internal static class EntityDB<T> where T : Component
 		return _entities.TryAdd(entity);
 	}
 
+	public static void Update()
+	{
+		SimpleQueries.FilterNulls(_entities);
+	}
+
 	public static bool Deregister(T entity)
 	{
 		return _entities.Remove(entity);
+	}
+}
+
+internal static class EntityDB
+{
+	public static bool Register<T>(T entity) where T : Component
+	{
+		return EntityDB<T>.Register(entity);
+	}
+
+	public static bool Deregister<T>(T entity) where T : Component
+	{
+		return EntityDB<T>.Deregister(entity);
 	}
 }
