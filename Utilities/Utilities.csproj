@@ -19,7 +19,7 @@
 
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
 
-    <DocumentationFile>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\$(TargetName)</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

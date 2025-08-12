@@ -40,6 +40,6 @@ public sealed class Plugin : BaseUnityPlugin
 					Logger.LogError(result.ToString());
 			}
 		}
-		return "Test results logged to console.";
+		return "Test results output to log.";
 	}
 }
