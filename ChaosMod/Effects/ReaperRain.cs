@@ -91,6 +91,7 @@ internal class ReaperRain : BaseChaosEffect
 		Attributes = new[] {
 			new Effect.Attribute(nameof(Height), Height.ToString()),
 			new Effect.Attribute(nameof(SpawnsPerSecond), SpawnsPerSecond.ToString()),
+			new Effect.Attribute(nameof(SpawnRadius), SpawnRadius.ToString())
 		},
 	};
 }
