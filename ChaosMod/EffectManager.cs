@@ -28,21 +28,31 @@ internal static class EffectManager
 			return;
 		}
 
+		if (!LoadEffects(callback))
+			return;
+
+		_mainRoutine = UWE.CoroutineHost.StartCoroutine(MainRoutine());
+		callback(STARTUP_MESSAGE);
+	}
+
+	private static bool LoadEffects(Callback callback)
+	{
+		if (ChaosEffects.EffectsLoaded)
+			return true;
+
 		Plugin.Logger.LogDebug("Loading Effects...");
 		try
 		{
 			ChaosEffects.Load(effectsFilePath);
 			Plugin.Logger.LogDebug("Loaded effects!");
+			return true;
 		}
 		catch (Exception ex)
 		{
 			callback(Logging.LogMessage.FromException(ex)
 				.WithNotice("Failed to load effects, Mod could not be started."));
-			return;
+			return false;
 		}
-
-		_mainRoutine = UWE.CoroutineHost.StartCoroutine(MainRoutine());
-		callback(STARTUP_MESSAGE);
 	}
 
 	private static IEnumerator MainRoutine()
@@ -87,7 +97,7 @@ internal static class EffectManager
 	/// </summary>
 	/// <param name="effect"></param>
 	/// <param name="callback"></param>
-	public static void AddEffect(Callback? callback, params ChaosEffect[] effects)
+	public static void AddEffect(Callback callback, params ChaosEffect[] effects)
 	{
 		List<ChaosEffect> inactiveEffects;
 
@@ -105,6 +115,9 @@ internal static class EffectManager
 				effect
 			};
 		}
+
+		if (!LoadEffects(callback))
+			return;
 
 		for (int i = 0; i < inactiveEffects.Count; i++)
 		{
