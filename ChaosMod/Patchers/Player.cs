@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace FrootLuips.ChaosMod.Patchers;
 
-[HarmonyPatch(declaringType: typeof(global::Player), methodName: "Awake")]
-internal class Player_Awake
+[HarmonyPatch(typeof(global::Player))]
+internal class Player
 {
-	[HarmonyPrefix]
-	public static void Prefix(Player __instance)
+	[HarmonyPatch(nameof(global::Player.Awake)), HarmonyPrefix]
+	public static void Awake_Prefix(global::Player __instance)
 	{
 		new GameObject().AddComponent<ConsoleCommandListener>();
 	}

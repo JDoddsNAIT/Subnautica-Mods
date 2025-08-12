@@ -76,4 +76,17 @@ internal static class Extensions
 			yield return aggregate.InnerExceptions[i];
 		}
 	}
+
+	public static bool TryAdd<T>(this List<T> list, T? item)
+	{
+		if (item == null || list.Contains(item))
+		{
+			return false;
+		}
+		else
+		{
+			list.Add(item);
+			return true;
+		}
+	}
 }
