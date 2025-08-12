@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica;
 public class ArrayBuilder<T>
 {
-	private readonly List<T[]> _values = new();
+	private readonly List<T[]> _values;
+
+	public ArrayBuilder(int capacity) => _values = new List<T[]>(capacity);
+	public ArrayBuilder() => _values = new List<T[]>();
 
 	public int Count { get; private set; } = 0;
 
@@ -32,6 +36,30 @@ public class ArrayBuilder<T>
 			}
 		}
 		return result;
+	}
+
+	public List<T> ToList()
+	{
+		var result = new List<T>();
+		for (int i = 0; i < _values.Count; i++)
+		{
+			for (int j = 0; j < _values[i].Length; j++)
+			{
+				result.Add(_values[i][j]);
+			}
+		}
+		return result;
+	}
+
+	public IEnumerable<T> ToEnumerable()
+	{
+		for (int i = 0; i < _values.Count; i++)
+		{
+			for (int j = 0; j < _values[i].Length; j++)
+			{
+				yield return _values[i][j];
+			}
+		}
 	}
 }
 

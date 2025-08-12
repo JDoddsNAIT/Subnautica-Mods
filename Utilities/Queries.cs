@@ -109,15 +109,7 @@ public static class Queries
 	/// <param name="array"></param>
 	public static void FilterDuplicates<T>(ref T[] array)
 	{
-		var duplicates = new List<T>(capacity: array.Length);
-		for (int i = 0; i < array.Length; i++)
-		{
-			if (!duplicates.Contains(array[i]))
-				duplicates.Add(array[i]);
-			else
-				continue;
-		}
-		Copy(duplicates, ref array);
+		Copy(GetUniqueItems(array), ref array);
 	}
 
 	/// <summary>
@@ -127,20 +119,19 @@ public static class Queries
 	/// <param name="list"></param>
 	public static void FilterDuplicates<T>(List<T> list)
 	{
-		var duplicates = new List<T>(capacity: list.Count);
-		bool isUnique(T value)
+		Copy(GetUniqueItems(list), list);
+	}
+
+	private static IReadOnlyList<T> GetUniqueItems<T>(IReadOnlyList<T> values)
+	{
+		var uniqueItems = new List<T>(capacity: values.Count);
+		for (int i = 0; i < values.Count; i++)
 		{
-			if (duplicates.Contains(value))
-			{
-				return false;
-			}
-			else
-			{
-				duplicates.Add(value);
-				return true;
-			}
+			if (!uniqueItems.Contains(values[i]))
+				uniqueItems.Add(values[i]);
+			else continue;
 		}
-		Filter(list, filter: isUnique);
+		return uniqueItems;
 	}
 
 	/// <summary>
