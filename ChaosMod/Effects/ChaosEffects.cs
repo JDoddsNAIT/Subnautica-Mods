@@ -58,7 +58,7 @@ internal static class ChaosEffects
 				new ScaleData(0.5f, 50),
 				new ScaleData(2.0f, 50),
 			},
-			Range = 7.5f
+			Range = 20f
 		}
 	};
 

@@ -89,4 +89,61 @@ internal static class Extensions
 			return true;
 		}
 	}
+
+	public static bool CopyItems<T>(this IReadOnlyList<T> from, ref T[] to, CopyMode mode = CopyMode.Replace)
+	{
+		int length = from.Count;
+		int offset = 0;
+		switch (mode)
+		{
+			case CopyMode.Replace:
+				if (to.Length != length)
+					Array.Resize(ref to, length);
+				break;
+			case CopyMode.Append:
+				offset = to.Length;
+				Array.Resize(ref to, to.Length + offset);
+				break;
+			default:
+				return false;
+		}
+
+		for (int i = 0; i < length; i++)
+		{
+			to[i + offset] = from[i];
+		}
+		return true;
+	}
+
+	public static bool CopyItems<T>(this IReadOnlyList<T> from, ref List<T> to, CopyMode mode = CopyMode.Replace)
+	{
+		if (mode is not CopyMode.Replace or CopyMode.Append)
+			return false;
+
+		int length = from.Count;
+
+		for (int i = 0; i < length; i++)
+		{
+			if (mode is CopyMode.Replace && i < to.Count)
+				to[i] = from[i];
+			else
+				to.Add(from[i]);
+		}
+		return true;
+	}
+}
+
+/// <summary>
+/// Determines how the CopyItems extension methods will function.
+/// </summary>
+public enum CopyMode
+{
+	/// <summary>
+	/// Replace all elements in destination with elements from source
+	/// </summary>
+	Replace,
+	/// <summary>
+	/// Append elements from source to destination
+	/// </summary>
+	Append,
 }

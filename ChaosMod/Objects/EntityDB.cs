@@ -17,15 +17,4 @@ internal static class EntityDB<T> where T : Component
 	{
 		return _entities.Remove(entity);
 	}
-
-	public static void GetEntities(ref T[] values)
-	{
-		if (values.Length != Count)
-			Array.Resize(ref values, Count);
-
-		for (int i = 0; i < Count; i++)
-		{
-			values[i] = _entities[i];
-		}
-	}
 }
