@@ -7,6 +7,12 @@ namespace FrootLuips.Subnautica;
 /// </summary>
 public static class Queries
 {
+	/// <summary>
+	/// Evaluates if a <paramref name="value"/> is not <see langword="null"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="value"></param>
+	/// <returns></returns>
 	public static bool NotNull<T>(T? value) => value != null;
 
 	/// <summary>
