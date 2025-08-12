@@ -15,14 +15,13 @@ internal class RainbowVehicles : BaseChaosEffect
 	{
 		_hueShift = 0;
 
-		static VehicleColours converter(Vehicle vehicle) => new(vehicle, vehicle.subName.GetColors());
-		EntityDB<Vehicle>.Update();
-		SimpleQueries.Convert(EntityDB<Vehicle>.Entities, converter, _vehicleColours);
+		static VehicleColours converter(SubName name) => new(name, name.GetColors());
+		SimpleQueries.Convert(EntityDB<SubName>.Entities, converter, _vehicleColours);
 	}
 
 	public override void Update(float time)
 	{
-		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.Vehicle));
+		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.SubName));
 
 		_hueShift += (float)(Speed! * Time.deltaTime);
 		SetVehicleColours(_vehicleColours, _hueShift);
@@ -30,7 +29,7 @@ internal class RainbowVehicles : BaseChaosEffect
 
 	public override void OnStop()
 	{
-		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.Vehicle));
+		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.SubName));
 
 		_hueShift = 0;
 		SetVehicleColours(_vehicleColours, _hueShift);
@@ -73,19 +72,19 @@ internal class RainbowVehicles : BaseChaosEffect
 		{
 			for (int j = 0; j < colours[i].Colours.Length; j++)
 			{
-				var vehicle = colours[i].Vehicle;
-				vehicle.subName.SetColor(j, colours[i][j].Shift(h: hueShift), Color.white);
+				var name = colours[i].SubName;
+				name.SetColor(j, Vector3.one, colours[i][j].Shift(h: hueShift));
 			}
 		}
 	}
 
-	private record struct VehicleColours(Vehicle Vehicle)
+	private record struct VehicleColours(SubName SubName)
 	{
 		public ColorHSV[] Colours { get; set; } = Array.Empty<ColorHSV>();
 
 		public readonly ColorHSV this[int index] => Colours[index];
 
-		public VehicleColours(Vehicle vehicle, Vector3[] hsv) : this(vehicle)
+		public VehicleColours(SubName subName, Vector3[] hsv) : this(subName)
 		{
 			var colours = new ColorHSV[hsv.Length];
 			SimpleQueries.Convert(hsv, converter: c => (ColorHSV)c, ref colours);
@@ -94,12 +93,17 @@ internal class RainbowVehicles : BaseChaosEffect
 	}
 	private record struct ColorHSV(float H, float S, float V)
 	{
-		public ColorHSV Shift(float h = 0, float s = 0, float v = 0)
+		public readonly ColorHSV Shift(float h = 0, float s = 0, float v = 0)
 		{
-			h = Mathf.Repeat(H + h, 1f);
-			s = Mathf.Repeat(S + s, 1f);
-			v = Mathf.Repeat(V + v, 1f);
-			return this with { H = h, S = s, V = v };
+			return new(ShiftScalar(H, by: h), ShiftScalar(S, by: s), ShiftScalar(V, by: v));
+		}
+
+		private static float ShiftScalar(float value, float by)
+		{
+			value += by;
+			while (value is < 0f or > 1f)
+				value -= Mathf.Sign(value);
+			return value;
 		}
 
 		public static implicit operator ColorHSV(Vector3 vector)
