@@ -76,8 +76,8 @@ internal abstract class BaseChaosEffect : IChaosEffect
 		}
 	}
 
-	protected abstract void ParseAttribute(Effect.Attribute attribute);
-	protected abstract bool GetSuccess();
+	protected virtual void ParseAttribute(Effect.Attribute attribute) => throw attribute.Invalid();
+	protected virtual bool GetSuccess() => _expectedAttributeCount == 0;
 
 	public virtual Effect ToData()
 	{
