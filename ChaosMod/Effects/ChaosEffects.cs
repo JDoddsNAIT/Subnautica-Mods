@@ -47,7 +47,8 @@ internal static class ChaosEffects
 		//[ChaosEffect.Lootbox]
 		//[ChaosEffect.FakeTeleport]
 		[ChaosEffect.FakeCrash] = new FakeCrash() {
-			Description = "Fake Crash"
+			Description = "Fake Crash",
+			MinDuration = 3f, MaxDuration = 6f,
 		},
 		[ChaosEffect.ScalePlayer] = new ScalePlayer() {
 			Description = "{0} Player",
