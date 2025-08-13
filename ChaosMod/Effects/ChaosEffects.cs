@@ -1,4 +1,5 @@
 ﻿using FrootLuips.ChaosMod.Logging;
+using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal static class ChaosEffects
@@ -45,7 +46,9 @@ internal static class ChaosEffects
 		},
 		//[ChaosEffect.Lootbox]
 		//[ChaosEffect.FakeTeleport]
-		//[ChaosEffect.FakeCrash]
+		[ChaosEffect.FakeCrash] = new FakeCrash() {
+			Description = "Fake Crash"
+		},
 		[ChaosEffect.ScalePlayer] = new ScalePlayer() {
 			Description = "{0} Player",
 			Scales = new[] {
@@ -174,7 +177,7 @@ internal enum ChaosEffect
 	Lootbox,
 	// TODO: "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
 	FakeTeleport,
-	// TODO: "Fake Crash" - Freezes the game for the duration
+	// "Fake Crash" - Freezes the game for the duration
 	FakeCrash,
 	// "Shrink/Grow Player" - Scales the player
 	ScalePlayer,
