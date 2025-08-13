@@ -11,6 +11,12 @@ internal static class SimpleQueries
 	/// <param name="value"></param>
 	/// <returns></returns>
 	public static bool NotNull<T>(T? value) => value != null;
+	/// <summary>
+	/// Evaluates if a string has any text; that is not null, not empty, and does not consist of only whitespace characters.
+	/// </summary>
+	/// <param name="str"></param>
+	/// <returns></returns>
+	public static bool NotNullOrWhiteSpace(this string str) => !string.IsNullOrWhiteSpace(str);
 
 	/// <summary>
 	/// Converts a <typeparamref name="T1"/> collection into a <typeparamref name="T2"/> array.

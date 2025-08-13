@@ -24,7 +24,7 @@ internal class RainbowVehicles : BaseChaosEffect
 		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.SubName));
 
 		_hueShift += (float)(Speed! * Time.deltaTime);
-		SetVehicleColours(_vehicleColours, _hueShift);
+		SetColours(_vehicleColours, _hueShift);
 	}
 
 	public override void OnStop()
@@ -32,7 +32,7 @@ internal class RainbowVehicles : BaseChaosEffect
 		SimpleQueries.Filter(_vehicleColours, filter: vc => SimpleQueries.NotNull(vc.SubName));
 
 		_hueShift = 0;
-		SetVehicleColours(_vehicleColours, _hueShift);
+		ResetColours(_vehicleColours);
 		_vehicleColours.Clear();
 	}
 
@@ -66,14 +66,24 @@ internal class RainbowVehicles : BaseChaosEffect
 		}
 	};
 
-	private static void SetVehicleColours(IReadOnlyList<VehicleColours> colours, float hueShift)
+	private static void SetColours(IReadOnlyList<VehicleColours> colours, float hueShift)
 	{
 		for (int i = 0; i < colours.Count; i++)
 		{
 			for (int j = 0; j < colours[i].Colours.Length; j++)
 			{
-				var name = colours[i].SubName;
-				name.SetColor(j, Vector3.one, colours[i][j].Shift(h: hueShift));
+				colours[i].SubName.SetColor(j, Vector3.one, colours[i][j].Shift(h: hueShift));
+			}
+		}
+	}
+
+	private static void ResetColours(IReadOnlyList<VehicleColours> colours)
+	{
+		for (int i = 0; i < colours.Count; i++)
+		{
+			for (int j = 0; j < colours.Count; j++)
+			{
+				colours[i].SubName.SetColor(j, colours[i][j], colours[i][j]);
 			}
 		}
 	}

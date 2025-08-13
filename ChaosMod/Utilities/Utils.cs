@@ -4,18 +4,24 @@ using UnityEngine;
 namespace FrootLuips.ChaosMod.Utilities;
 internal static class Utils
 {
-	public static string GetPluginPath(string filename = "")
+	public static string GetPluginPath(params string[] path)
 	{
-		return string.IsNullOrWhiteSpace(filename)
-			? Path.Combine(BepInEx.Paths.PluginPath, PluginInfo.PLUGIN_GUID)
-			: Path.Combine(BepInEx.Paths.PluginPath, PluginInfo.PLUGIN_GUID, filename);
+		string root = BepInEx.Paths.PluginPath;
+		return GetPath(root, path);
 	}
 
-	public static string GetConfigPath(string filename = "")
+	public static string GetConfigPath(params string[] path)
 	{
-		return string.IsNullOrWhiteSpace(filename)
-			? Path.Combine(BepInEx.Paths.ConfigPath, PluginInfo.PLUGIN_GUID)
-			: Path.Combine(BepInEx.Paths.ConfigPath, PluginInfo.PLUGIN_GUID, filename);
+		string root = BepInEx.Paths.ConfigPath;
+		return GetPath(root, path);
+	}
+
+	public static string GetPath(string root, string[] path)
+	{
+		return new PathBuilder(capacity: 2)
+			.Append(root, PluginInfo.PLUGIN_GUID)
+			.Append(path)
+			.Combine(removeWhiteSpace: true);
 	}
 
 	public static bool NullOrEmptyCollection<T>(IReadOnlyCollection<T>? list) => list == null || list.Count is 0;

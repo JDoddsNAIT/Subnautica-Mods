@@ -1,5 +1,4 @@
 ﻿using FrootLuips.ChaosMod.Logging;
-using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.ChaosMod.Effects;
 internal static class ChaosEffects
@@ -37,10 +36,10 @@ internal static class ChaosEffects
 			Description = "Insurance Claim",
 			DamageDealt = 50f
 		},
-		[ChaosEffect.RainbowVehicles] = new RainbowVehicles() {
-			Description = "Rainbow Vehicles",
-			Speed = 1f
-		},
+		//[ChaosEffect.RainbowVehicles] = new RainbowVehicles() {
+		//	Description = "Rainbow Vehicles",
+		//	Speed = 1f
+		//},
 		[ChaosEffect.Moist] = new MoistPercent() {
 			Description = "Moist%",
 		},
