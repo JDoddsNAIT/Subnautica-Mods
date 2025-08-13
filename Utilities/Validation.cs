@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using FrootLuips.Subnautica.Logging;
 
 namespace FrootLuips.Subnautica;
+/// <summary>
+/// Helper class used for validation.
+/// </summary>
 public static partial class Validation
 {
 	/// <summary>
@@ -66,6 +69,12 @@ public static partial class Validation
 		return new Result(callback(), errors);
 	}
 
+	/// <summary>
+	/// Creates an <see cref="AggregateException"/> from a collection of <paramref name="exceptions"/>.
+	/// </summary>
+	/// <param name="exceptions"></param>
+	/// <param name="message"></param>
+	/// <returns></returns>
 	public static AggregateException ToAggregate(this IEnumerable<Exception> exceptions, string? message = null)
 	{
 		return string.IsNullOrWhiteSpace(message)
@@ -74,26 +83,42 @@ public static partial class Validation
 	}
 }
 
-
+/// <summary>
+/// The exception thrown when the condition of an Assertion fails.
+/// </summary>
 [Serializable]
 public class AssertionFailedException : Exception
 {
 	private const string _MESSAGE = "Assertion failed";
 
-	static string GetMessage(string? msg)
+	private static string GetMessage(string? msg)
 	{
 		return _MESSAGE + (string.IsNullOrWhiteSpace(msg) ? "" : ": " + msg);
 	}
 
+	/// <summary>
+	/// Creates a new <see cref="AssertionFailedException"/>.
+	/// </summary>
 	public AssertionFailedException()
 		: base(_MESSAGE)
 	{ }
+	/// <summary>
+	/// Creates a new <see cref="AssertionFailedException"/> with a <paramref name="message"/> detailing what went wrong.
+	/// </summary>
+	/// <param name="message"></param>
 	public AssertionFailedException(string? message)
 		: base(GetMessage(message))
 	{ }
+	/// <summary>
+	/// <inheritdoc cref="AssertionFailedException(string?)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inner"></param>
 	public AssertionFailedException(string? message, Exception inner)
 		: base(GetMessage(message), inner)
 	{ }
+	/// <param name="info"></param>
+	/// <param name="context"></param>
 	protected AssertionFailedException(
 	  System.Runtime.Serialization.SerializationInfo info,
 	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }

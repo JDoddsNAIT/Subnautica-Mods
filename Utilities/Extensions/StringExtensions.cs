@@ -21,6 +21,41 @@ public static class StringExtensions
 	}
 
 	/// <summary>
+	/// Evaluates if a given string has any whitespace characters.
+	/// </summary>
+	/// <param name="str"></param>
+	/// <returns></returns>
+	public static bool ContainsWhitespace(this string str)
+	{
+		for (int i = 0; i < str.Length; i++)
+		{
+			if (char.IsWhiteSpace(str, i))
+				return true;
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// Evaluate if a given string contains any of the specified <paramref name="characters"/>.
+	/// </summary>
+	/// <param name="str"></param>
+	/// <param name="characters"></param>
+	/// <returns></returns>
+	public static bool ContainsAny(this string str, params char[] characters)
+	{
+		if (characters.Length <= 0)
+			return false;
+
+		bool contains = false;
+		for (int i = 0; i < str.Length && !contains; i++)
+		{
+			if (Array.IndexOf(characters, str[i]) == -1)
+				contains = true;
+		}
+		return contains;
+	}
+
+	/// <summary>
 	/// Returns a substring of <paramref name="text"/>, from the start to the first instance of the <paramref name="substring"/>.
 	/// </summary>
 	/// <param name="text"></param>
