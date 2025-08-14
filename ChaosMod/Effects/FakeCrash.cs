@@ -10,7 +10,7 @@ internal class FakeCrash : BaseChaosEffect
 	public override string BeforeStart()
 	{
 		float duration = UnityEngine.Random.Range((float)MinDuration!, (float)MaxDuration!);
-		Plugin.Logger.LogDebug($"Initiating fake crash, duration {duration} seconds.");
+		Plugin.Console.LogDebug($"Initiating fake crash, duration {duration} seconds.");
 		var timer = System.Diagnostics.Stopwatch.StartNew();
 		while (timer.Elapsed.TotalSeconds < duration)
 		{

@@ -28,7 +28,7 @@ internal class ActiveEffect
 		}
 		catch (Exception ex)
 		{
-			Plugin.Logger.LogWarn(Logging.LogMessage.FromException(ex)
+			Plugin.Console.LogWarning(Logging.LogMessage.FromException(ex)
 				.WithContext(Effect.Id)
 				.WithNotice("An error occurred while triggering the effect"));
 		}
@@ -47,7 +47,7 @@ internal class ActiveEffect
 			}
 			catch (Exception ex)
 			{
-				Plugin.Logger.LogError(Logging.LogMessage.FromException(ex)
+				Plugin.Console.LogError(Logging.LogMessage.FromException(ex)
 					.WithContext(Effect.Id)
 					.WithNotice("An error occurred while updating the effect"));
 				Stop();
@@ -70,7 +70,7 @@ internal class ActiveEffect
 		}
 		catch (Exception ex)
 		{
-			Plugin.Logger.LogWarn(Logging.LogMessage.FromException(ex)
+			Plugin.Console.LogWarning(Logging.LogMessage.FromException(ex)
 				.WithContext(Effect.Id)
 				.WithNotice("An error occurred while stopping the effect"));
 		}
