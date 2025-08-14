@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable CS1591 // Missing XML comment
+using System;
 using System.Globalization;
 
 namespace FrootLuips.Subnautica.Logging;
@@ -11,17 +12,17 @@ public partial class LogMessage
 	{
 		public static FormatProvider Default { get; } = new FormatProvider();
 
-		public readonly string Context, Notice, Message, Remarks;
+		public readonly string Context, Message, Notice, Remarks;
 
 		public FormatProvider(
 			string context = "[{0}]",
-			string notice = "{0} -",
-			string message = "{0}",
+			string message = "{0} -",
+			string notice = "{0}",
 			string remarks = "({0})")
 		{
 			Context = context.Trim();
-			Notice = notice.Trim();
 			Message = message.Trim();
+			Notice = notice.Trim();
 			Remarks = remarks.Trim();
 		}
 
@@ -37,13 +38,12 @@ public partial class LogMessage
 
 		public string Format(string format, object arg, IFormatProvider formatProvider)
 		{
-			string ufmt = format.ToUpperInvariant();
 			bool emptyArg = string.IsNullOrWhiteSpace(arg.ToString());
-			return ufmt switch {
-				"C" or "N" or "M" or "R" when emptyArg => string.Empty,
+			return format.ToUpperInvariant() switch {
+				"C" or "M" or "N" or "R" when emptyArg => string.Empty,
 				"C" => string.Format(Context, arg),
-				"N" => string.Format(Notice, arg),
 				"M" => string.Format(Message, arg),
+				"N" => string.Format(Notice, arg),
 				"R" => string.Format(Remarks, arg),
 				_ => HandleOthers(format, arg),
 			};

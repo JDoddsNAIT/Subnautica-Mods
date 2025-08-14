@@ -39,17 +39,17 @@ internal readonly record struct TestResult(string Group, string Name, bool Passe
 
 	public override string ToString()
 	{
-		var provider = new LogMessage.FormatProvider(notice: "{0}:");
+		var provider = new LogMessage.FormatProvider(message: "{0}:");
 		var message = new LogMessage()
 			.WithContext(Group)
-			.WithNotice("Test ", Name);
+			.WithMessage("Test ", Name);
 		if (Passed)
 		{
-			message.WithMessage("Passed");
+			message.WithNotice("Passed");
 		}
 		else
 		{
-			message.WithMessage("Failed");
+			message.WithNotice("Failed");
 		}
 		message.WithRemarks(Message);
 		return message.ToString(provider);

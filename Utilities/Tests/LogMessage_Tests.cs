@@ -19,8 +19,8 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithNotice("Notice")
-			.WithMessage("Message")
+			.WithMessage("Notice")
+			.WithNotice("Message")
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - Message (Remarks)";
@@ -30,8 +30,8 @@ internal class LogMessage_Tests : ITestContainer
 	private bool NoContext(out string message)
 	{
 		var logMessage = new LogMessage()
-			.WithNotice("Notice")
-			.WithMessage("Message")
+			.WithMessage("Notice")
+			.WithNotice("Message")
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "Notice - Message (Remarks)";
@@ -42,7 +42,7 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithMessage("Message")
+			.WithNotice("Message")
 			.WithRemarks("Remarks");
 		string expected = "[Context] Message (Remarks)";
 		string actual = logMessage.ToString();
@@ -53,7 +53,7 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithNotice("Notice")
+			.WithMessage("Notice")
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - (Remarks)";
@@ -64,8 +64,8 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithNotice("Notice")
-			.WithMessage("Message");
+			.WithMessage("Notice")
+			.WithNotice("Message");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Notice - Message";
 		return GetResult(out message, actual, expected);

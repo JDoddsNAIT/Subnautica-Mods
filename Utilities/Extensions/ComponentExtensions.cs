@@ -6,8 +6,24 @@ using UnityEngine;
 
 namespace FrootLuips.Subnautica.Extensions;
 
-public enum HeirarchyPreference { Children, Parents }
+/// <summary>
+/// Determines which components should be processed first during a query.
+/// </summary>
+public enum HeirarchyPreference
+{
+	/// <summary>
+	/// Components in parent objects are processed first.
+	/// </summary>
+	Parents,
+	/// <summary>
+	/// Components in child objects are processed first.
+	/// </summary>
+	Children,
+}
 
+/// <summary>
+/// Extension method for <see cref="GameObject"/>s and <see cref="Component"/>s relating to getting other components.
+/// </summary>
 public static class ComponentExtensions
 {
 	internal static List<ComponentQuery> QueryPool { get; } = new(capacity: 2);
@@ -47,6 +63,13 @@ public static class ComponentExtensions
 	/// <returns></returns>
 	public static ComponentQuery Get(this Component component) => GetQuery(component.gameObject);
 
+	/// <summary>
+	/// Enumerates over all components of type <typeparamref name="T"/> in a <see cref="GameObject"/> and it's parents.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="obj"></param>
+	/// <param name="includeInactive">Should inactive objects be included in the enumeration? (this <see cref="GameObject"/> is always included, regardless of this value.)</param>
+	/// <returns></returns>
 	public static IEnumerable<T> EnumerateComponentsInParent<T>(this GameObject obj,
 		bool includeInactive = false)
 	{
@@ -68,6 +91,13 @@ public static class ComponentExtensions
 		}
 	}
 
+	/// <summary>
+	/// Enumerates over all components of type <typeparamref name="T"/> in the children of a <see cref="GameObject"/> using depth-first search.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="obj"></param>
+	/// <param name="includeInactive">Should inactive objects be included in the enumeration? (this <see cref="GameObject"/> is always included, regardless of this value.)</param>
+	/// <returns></returns>
 	public static IEnumerable<T> EnumerateComponentsInChildren<T>(this GameObject obj,
 		bool includeInactive = false)
 	{
@@ -118,6 +148,12 @@ public static class ComponentExtensions
 	}
 }
 
+/// <summary>
+/// Represents a query for components relative to a <see cref="GameObject"/>.
+/// </summary>
+/// <remarks>
+/// This class cannot be inherited, nor instantiated externally.
+/// </remarks>
 public sealed class ComponentQuery
 {
 	internal GameObject gameObject;
@@ -290,7 +326,7 @@ public sealed class ComponentQuery
 		/// <summary>
 		/// <inheritdoc cref="OnSelf"/>
 		/// </summary>
-		/// <param name="component"></param>
+		/// <param name="components"></param>
 		/// <returns><see langword="true"/> if <paramref name="components"/> has at least one value.</returns>
 		public readonly bool TryOnSelf(out T[] components)
 		{
@@ -368,7 +404,7 @@ public sealed class ComponentQuery
 			return array;
 		}
 		/// <summary>
-		/// <inheritdoc cref="InHeirarchy(bool)"/>
+		/// <inheritdoc cref="InHeirarchy(bool, HeirarchyPreference)"/>
 		/// </summary>
 		/// <param name="components"></param>
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>

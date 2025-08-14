@@ -1,120 +1,129 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
-using BepInEx.Logging;
-
-using FrootLuips.Subnautica.Extensions;
+﻿using BepInEx.Logging;
 
 namespace FrootLuips.Subnautica.Logging;
 /// <summary>
-/// Provides a default implementation of the <see cref="ILogger"/> interface.
+/// Provides an implementation of the <see cref="ILogger"/> interface that logs messages to both the <see cref="BepInEx"/> console and the in-game message system.
 /// </summary>
 public class Logger : ILogger
 {
-	private const float _STARTUP_DELAY = 3.0f;
-	private const string _MAIN_MENU = "XMenu";
+	private readonly ConsoleLogger _console;
+	private readonly GameLogger _game;
 
-	private ManualLogSource _logSource;
-	private readonly Queue<Message> _messageQueue = new();
-	private bool _initialized = false;
-
-	public ManualLogSource LogSource {
-		get => _logSource;
-		set => _logSource = value ?? throw new ArgumentNullException(nameof(value));
-	}
-
-	public Logger(ManualLogSource logger)
+	/// <summary/>
+	/// <param name="source"></param>
+	public Logger(ManualLogSource source)
 	{
-		_logSource = logger;
-		_messageQueue = new();
-		_initialized = false;
-
-		SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
+		_console = new(source);
+		_game = new();
 	}
 
-	private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode mode)
+	/// <summary>
+	/// <inheritdoc cref="ILogger.LogDebug(string)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inGame">Should the message also be shown in-game?</param>
+	public void LogDebug(string message, bool inGame = false)
 	{
-		if (scene.name != _MAIN_MENU)
-			return;
-
-		SceneManager.sceneLoaded -= this.SceneManager_sceneLoaded;
-		UWE.CoroutineHost.StartCoroutine(ShowMessageQueue());
+		_console.LogDebug(message);
+		if (inGame)
+			_game.LogDebug(message);
 	}
 
-	private System.Collections.IEnumerator ShowMessageQueue()
+	/// <summary>
+	/// <inheritdoc cref="ILogger.LogInfo(string)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inGame">Should the message also be shown in-game?</param>
+	public void LogInfo(string message, bool inGame = false)
 	{
-		// Wait for the menu to become visible to the player
-		yield return new UnityEngine.WaitForSeconds(_STARTUP_DELAY);
-
-		while (_messageQueue.TryDequeue(out var message))
-		{
-			AddInGameMessage(message.Text, message.Level);
-			yield return UWE.CoroutineUtils.waitForNextFrame;
-		}
-
-		_initialized = true;
+		_console.LogInfo(message);
+		if (inGame)
+			_game.LogInfo(message);
 	}
 
-	public void LogDebug(string message, bool showInGame = false)
+	/// <summary>
+	/// <inheritdoc cref="ILogger.LogMessage(string)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inGame">Should the message also be shown in-game?</param>
+	public void LogMessage(string message, bool inGame = false)
 	{
-		this.LogSource.LogDebug(message);
-		if (showInGame)
-			AddInGameMessage(message, LogLevel.Debug);
+		_console.LogMessage(message);
+		if (inGame)
+			_game.LogMessage(message);
 	}
 
-	public void LogInfo(string message, bool showInGame = false)
+	/// <summary>
+	/// <inheritdoc cref="ILogger.LogWarning(string)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inGame">Should the message also be shown in-game?</param>
+	public void LogWarning(string message, bool inGame = false)
 	{
-		this.LogSource.LogInfo(message);
-		if (showInGame)
-			AddInGameMessage(message, LogLevel.Info);
+		_console.LogWarning(message);
+		if (inGame)
+			_game.LogWarning(message);
 	}
 
-	public void LogMessage(string message, bool showInGame = false)
+	/// <summary>
+	/// <inheritdoc cref="ILogger.LogError(string)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inGame">Should the message also be shown in-game?</param>
+	public void LogError(string message, bool inGame = false)
 	{
-		this.LogSource.LogMessage(message);
-		if (showInGame)
-			AddInGameMessage(message, LogLevel.Message);
+		_console.LogError(message);
+		if (inGame)
+			_game.LogError(message);
 	}
 
-	public void LogWarning(string message, bool showInGame = false)
+	/// <summary>
+	/// <inheritdoc cref="ILogger.LogFatal(string)"/>
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="inGame">Should the message also be shown in-game?</param>
+	public void LogFatal(string message, bool inGame = false)
 	{
-		this.LogSource.LogWarning(message);
-		if (showInGame)
-			AddInGameMessage(message, LogLevel.Warning);
+		_console.LogFatal(message);
+		if (inGame)
+			_game.LogFatal(message);
 	}
 
-	public void LogError(string message, bool showInGame = false)
+	#region ILogger
+	void ILogger.LogDebug(string message)
 	{
-		this.LogSource.LogError(message);
-		if (showInGame)
-			AddInGameMessage(message, LogLevel.Error);
+		_console.LogDebug(message);
+		_game.LogDebug(message);
 	}
 
-	public void LogFatal(string message, bool showInGame = false)
+	void ILogger.LogError(string message)
 	{
-		this.LogSource.LogFatal(message);
-		if (showInGame)
-			AddInGameMessage(message, LogLevel.Fatal);
+		_console.LogError(message);
+		_game.LogError(message);
 	}
 
-	private void AddInGameMessage(string message, LogLevel level)
+	void ILogger.LogFatal(string message)
 	{
-		if (!_initialized)
-		{
-			_messageQueue.Enqueue(new Message(message, level));
-		}
-		else
-		{
-			// colour the message
-			level = level.GetHighestLevel();
-			message = level switch {
-				LogLevel.Fatal or LogLevel.Error => $"<color=red>{message}</color>",
-				LogLevel.Warning => $"<color=yellow>{message}</color>",
-				_ => message,
-			};
-			ErrorMessage.AddError(message);
-		}
+		_console.LogFatal(message);
+		_game.LogFatal(message);
 	}
 
-	public readonly record struct Message(string Text, LogLevel Level);
+	void ILogger.LogInfo(string message)
+	{
+		_console.LogInfo(message);
+		_game.LogInfo(message);
+	}
+
+	void ILogger.LogMessage(string message)
+	{
+		_console.LogMessage(message);
+		_game.LogMessage(message);
+	}
+
+	void ILogger.LogWarning(string message)
+	{
+		_console.LogWarning(message);
+		_game.LogWarning(message);
+	}
+	#endregion
 }
