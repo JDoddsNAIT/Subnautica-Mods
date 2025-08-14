@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using System.IO;
+using System.Text;
+using BepInEx;
 using FrootLuips.Subnautica.Logging;
 using FrootLuips.Subnautica.Tests;
 
@@ -7,6 +9,8 @@ namespace FrootLuips.Subnautica;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 internal sealed class Plugin : BaseUnityPlugin
 {
+	private const string _FILENAME = "test_results.txt";
+
 	private static Logger? _logger;
 	public static new Logger Logger { get => _logger!; private set => _logger = value; }
 
@@ -25,6 +29,7 @@ internal sealed class Plugin : BaseUnityPlugin
 
 	public static string OnConsoleCommand_utilsruntests()
 	{
+		var sb = new StringBuilder();
 		foreach (var container in Tests)
 		{
 			var enumerator = container.GetResults();
@@ -32,12 +37,13 @@ internal sealed class Plugin : BaseUnityPlugin
 			while (enumerator.MoveNext())
 			{
 				var result = enumerator.Current;
-				if (result)
-					Logger.LogMessage(result.ToString());
-				else
-					Logger.LogError(result.ToString());
+				sb.AppendLine(result.ToString());
 			}
 		}
-		return "Test results output to log.";
+
+		var path = Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_GUID, _FILENAME);
+		File.WriteAllText(path, sb.ToString());
+
+		return $"Test results output to {_FILENAME}.";
 	}
 }
