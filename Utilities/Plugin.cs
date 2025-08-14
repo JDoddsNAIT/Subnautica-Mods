@@ -20,10 +20,10 @@ internal sealed class Plugin : BaseUnityPlugin
 	{
 		Logger = new Logger(base.Logger);
 
-		DevConsole.RegisterConsoleCommand(this, "runutilstests");
+		DevConsole.RegisterConsoleCommand(this, "utilsruntests");
 	}
 
-	internal static string OnConsoleCommand_runutilstests()
+	public static string OnConsoleCommand_utilsruntests()
 	{
 		foreach (var container in Tests)
 		{

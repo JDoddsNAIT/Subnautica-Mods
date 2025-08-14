@@ -1,15 +1,30 @@
 ﻿using UnityEngine;
 
 namespace FrootLuips.Subnautica.Extensions;
+/// <summary>
+/// Extension methods for <see cref="Quaternion"/>.
+/// </summary>
 public static class QuaternionExtensions
 {
-	public static Quaternion Add(this Quaternion a, Quaternion b)
+	/// <summary>
+	/// Adds two quaternions together.
+	/// </summary>
+	/// <param name="lhs"></param>
+	/// <param name="rhs"></param>
+	/// <returns></returns>
+	public static Quaternion Add(this Quaternion lhs, Quaternion rhs)
 	{
-		return Quaternion.Euler(a.eulerAngles + b.eulerAngles);
+		return Quaternion.Euler(lhs.eulerAngles + rhs.eulerAngles);
 	}
 
-	public static Quaternion Scale(this Quaternion quaternion, float scale)
+	/// <summary>
+	/// Scales a <paramref name="quaternion"/> by the given <paramref name="factor"/>.
+	/// </summary>
+	/// <param name="quaternion"></param>
+	/// <param name="factor"></param>
+	/// <returns></returns>
+	public static Quaternion Scale(this Quaternion quaternion, float factor)
 	{
-		return Quaternion.Euler(quaternion.eulerAngles * scale);
+		return Quaternion.Euler(quaternion.eulerAngles * factor);
 	}
 }

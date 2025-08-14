@@ -1,6 +1,9 @@
 ﻿using System;
 
 namespace FrootLuips.Subnautica.Extensions;
+/// <summary>
+/// Extension methods for <see cref="string"/> objects.
+/// </summary>
 public static class StringExtensions
 {
 	/// <summary>
@@ -36,7 +39,7 @@ public static class StringExtensions
 	}
 
 	/// <summary>
-	/// Evaluate if a given string contains any of the specified <paramref name="characters"/>.
+	/// Evaluates if a given string contains any of the specified <paramref name="characters"/>.
 	/// </summary>
 	/// <param name="str"></param>
 	/// <param name="characters"></param>
@@ -59,7 +62,7 @@ public static class StringExtensions
 	/// Returns a substring of <paramref name="text"/>, from the start to the first instance of the <paramref name="substring"/>.
 	/// </summary>
 	/// <param name="text"></param>
-	/// <param name="to"></param>
+	/// <param name="substring"></param>
 	/// <param name="inclusive">Whether to include the <paramref name="substring"/> in the result.</param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentOutOfRangeException"/>
