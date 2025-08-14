@@ -1,49 +1,33 @@
-﻿using System.IO;
-using System.Text;
-using BepInEx;
-using FrootLuips.Subnautica.Logging;
+﻿using BepInEx;
 using FrootLuips.Subnautica.Tests;
+using UnityEngine;
+using Logger = FrootLuips.Subnautica.Logging.Logger;
 
 namespace FrootLuips.Subnautica;
 
+/// <summary>
+/// Main plugin class.
+/// </summary>
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-internal sealed class Plugin : BaseUnityPlugin
+public sealed class Plugin : BaseUnityPlugin
 {
-	private const string _FILENAME = "test_results.txt";
-
 	private static Logger? _logger;
+	/// <summary>
+	/// Project-scoped logger instance.
+	/// </summary>
 	public static new Logger Logger { get => _logger!; private set => _logger = value; }
-
-	internal static ITestContainer[] Tests { get; } = new ITestContainer[] {
-		new LogMessage_Tests(),
-		new Queries_Tests(),
-		new StringExtensions_Tests(),
-	};
 
 	internal void Awake()
 	{
 		Logger = new Logger(base.Logger);
 
-		DevConsole.RegisterConsoleCommand(this, "utilsruntests");
+		UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
 	}
 
-	public static string OnConsoleCommand_utilsruntests()
+	private void SceneManager_sceneLoaded(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
 	{
-		var sb = new StringBuilder();
-		foreach (var container in Tests)
-		{
-			var enumerator = container.GetResults();
-
-			while (enumerator.MoveNext())
-			{
-				var result = enumerator.Current;
-				sb.AppendLine(result.ToString());
-			}
-		}
-
-		var path = Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_GUID, _FILENAME);
-		File.WriteAllText(path, sb.ToString());
-
-		return $"Test results output to {_FILENAME}.";
+		UnityEngine.SceneManagement.SceneManager.sceneLoaded -= this.SceneManager_sceneLoaded;
+		var obj = new GameObject(nameof(ConsoleCommandListener)).AddComponent<ConsoleCommandListener>();
+		DontDestroyOnLoad(obj);
 	}
 }

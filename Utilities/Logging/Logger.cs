@@ -9,6 +9,9 @@ public class Logger : ILogger
 	private readonly ConsoleLogger _console;
 	private readonly GameLogger _game;
 
+	/// <inheritdoc cref="GameLogger.Initialized"/>
+	public bool Initialized => _game.Initialized;
+
 	/// <summary/>
 	/// <param name="source"></param>
 	public Logger(ManualLogSource source)
