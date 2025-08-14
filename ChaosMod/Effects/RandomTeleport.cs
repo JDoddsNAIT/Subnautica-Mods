@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FrootLuips.ChaosMod.Effects;
 internal class RandomTeleport : BaseChaosEffect
 {
-	public RandomTeleport() : base(ChaosEffect.RandomTeleport) { }
+	public RandomTeleport() : base(ChaosEffect.RandomTeleport, attributesExpected: 0) { }
 
 	public const string TELEPORTS = "teleports.json";
 
@@ -58,4 +58,8 @@ internal class RandomTeleport : BaseChaosEffect
 		positions.LoadJson(teleportsPath, createIfNotExist: false);
 		this.Distribution = new(positions);
 	}
+
+	// These methods are never called as base.FromData is never called.
+	protected override void ParseAttribute(Effect.Attribute attribute) => throw new NotImplementedException();
+	protected override bool GetSuccess() => throw new NotImplementedException();
 }

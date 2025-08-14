@@ -4,6 +4,8 @@ using Nautilus.Json.ExtensionMethods;
 namespace FrootLuips.ChaosMod.Effects;
 internal static class ChaosEffects
 {
+	public static bool EffectsLoaded { get; private set; } = false;
+
 	public static Dictionary<ChaosEffect, IChaosEffect> Effects { get; private set; } = ResetEffects();
 
 	public static Dictionary<ChaosEffect, IChaosEffect> ResetEffects() => Effects = new() {
@@ -21,10 +23,10 @@ internal static class ChaosEffects
 			Description = "Say hi to Casper",
 			SpawnDistance = 12f
 		},
-		[ChaosEffect.SuperSpeed] = new SuperSpeed() {
-			Description = "Activate Super Speed",
-			Multiplier = 5f
-		},
+		//[ChaosEffect.SuperSpeed] = new SuperSpeed() {
+		//	Description = "Activate Super Speed",
+		//	Multiplier = 5f
+		//},
 		[ChaosEffect.Mushrooms] = new Mushrooms() {
 			Description = "Oops, all mushrooms!"
 		},
@@ -35,14 +37,34 @@ internal static class ChaosEffects
 			Description = "Insurance Claim",
 			DamageDealt = 50f
 		},
-		[ChaosEffect.RainbowVehicles] = new RainbowVehicles() {
-			Description = "Rainbow Vehicles",
-			Speed = 1f
+		//[ChaosEffect.RainbowVehicles] = new RainbowVehicles() {
+		//	Description = "Rainbow Vehicles",
+		//	Speed = 1f
+		//},
+		[ChaosEffect.Moist] = new MoistPercent() {
+			Description = "Moist%",
 		},
-		//[ChaosEffect.MoistPercent]
 		//[ChaosEffect.Lootbox]
 		//[ChaosEffect.FakeTeleport]
-		//[ChaosEffect.FakeCrash]
+		[ChaosEffect.FakeCrash] = new FakeCrash() {
+			Description = "Fake Crash",
+			MinDuration = 3f, MaxDuration = 6f,
+		},
+		[ChaosEffect.ScalePlayer] = new ScalePlayer() {
+			Description = "{0} Player",
+			Scales = new[] {
+				new ScaleData(0.5f, 50),
+				new ScaleData(2.0f, 50),
+			}
+		},
+		[ChaosEffect.ScaleCreatures] = new ScaleCreatures() {
+			Description = "{0} Nearby Creatures",
+			Scales = new[] {
+				new ScaleData(0.5f, 50),
+				new ScaleData(2.0f, 50),
+			},
+			Range = 20f
+		}
 	};
 
 	public static RandomDistribution<IChaosEffect> RandomDistribution { get; private set; }
@@ -75,35 +97,47 @@ internal static class ChaosEffects
 			}
 			else
 			{
+				bool calledBack = false;
 				Effects[effect].FromData(effects[i], statusCallback);
+				if (!calledBack)
+				{
+					Plugin.Logger.LogWarn($"No callback received from '{effect}'. Data integrity is unknown.");
+				}
 				continue;
 
 				void statusCallback(List<string> issues, bool status)
 				{
-					LogMessage message = new(context: context);
-					if (status)
-					{
-						message.WithNotice("Loaded settings for effect '", effect, "'");
-						if (issues.Count > 0)
-						{
-							message.WithMessage("Some issues occurred.").WithRemarks(string.Join("\n", issues));
-							Plugin.Logger.LogWarn(message);
-						}
-						else
-						{
-							message.WithMessage("No issues");
-							Plugin.Logger.LogInfo(message);
-						}
-					}
-					else
-					{
-						message.WithNotice("Failed to load settings for '", effect, "'")
-							.WithMessage("Skipping")
-							.WithRemarks(string.Join("\n", issues));
-						Plugin.Logger.LogError(message);
-					}
+					calledBack = true;
+					StatusCallback(issues, status, context, effect);
 				}
 			}
+		}
+		EffectsLoaded = true;
+	}
+
+	private static void StatusCallback(List<string> issues, bool status, string context, ChaosEffect effect)
+	{
+		LogMessage message = new(context: context);
+		if (status)
+		{
+			message.WithNotice("Loaded settings for effect '", effect, "'");
+			if (issues.Count > 0)
+			{
+				message.WithMessage("Some issues occurred.").WithRemarks(string.Join("\n", issues));
+				Plugin.Logger.LogWarn(message);
+			}
+			else
+			{
+				message.WithMessage("No issues");
+				Plugin.Logger.LogInfo(message);
+			}
+		}
+		else
+		{
+			message.WithNotice("Failed to load settings for '", effect, "'")
+				.WithMessage("Skipping")
+				.WithRemarks(string.Join("\n", issues));
+			Plugin.Logger.LogError(message);
 		}
 	}
 
@@ -126,9 +160,9 @@ internal enum ChaosEffect
 	RandomTeleport,
 	// "Explode the Aurora" - explodes the aurora
 	ExplodeShip,
-	// "Say Hi to Casper!" - spawns a ghost leviathan infront of the player
+	// "Say Hi to Casper!" - spawns a ghost leviathan in front of the player
 	SpawnGhost,
-	// "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
+	// TODO: "{Multiplier}x Move Speed" - Multiplies the player's move speed for some time.
 	SuperSpeed,
 	// "Oops, all Mushrooms!" - Fills the player's inventory with acid mushrooms
 	Mushrooms,
@@ -136,14 +170,18 @@ internal enum ChaosEffect
 	Fly,
 	// "Insurance claim" - Deals 50% damage to all vehicles on the map
 	DamageVehicles,
-	// TODO: (RainbowVehicles) "Rainbow Vehicles" - All vechicles continuously change coulours for some time.
+	// "Rainbow Vehicles" - All vehicles continuously change colours for some time.
 	RainbowVehicles,
-	// TODO: "Moist%" - Turns off the water for the duration
-	MoistPercent,
+	// "Moist%" - Turns off the water for the duration
+	Moist,
 	// TODO: "Lootbox" - Spawn and pickup a time capsule in front of the player
 	Lootbox,
 	// TODO: "Fake Teleport" - Teleports the player to a random location, waits a bit, then teleports them back.
 	FakeTeleport,
-	// TODO: "Fake Crash" - Freezes the game for the duration
+	// "Fake Crash" - Freezes the game for the duration
 	FakeCrash,
+	// "Shrink/Grow Player" - Scales the player
+	ScalePlayer,
+	// "Shrink/Grow Nearby Creatures" - scales all nearby creatures.
+	ScaleCreatures,
 }

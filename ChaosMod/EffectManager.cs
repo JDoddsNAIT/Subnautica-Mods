@@ -28,21 +28,31 @@ internal static class EffectManager
 			return;
 		}
 
+		if (!LoadEffects(callback))
+			return;
+
+		_mainRoutine = UWE.CoroutineHost.StartCoroutine(MainRoutine());
+		callback(STARTUP_MESSAGE);
+	}
+
+	private static bool LoadEffects(Callback callback)
+	{
+		if (ChaosEffects.EffectsLoaded)
+			return true;
+
 		Plugin.Logger.LogDebug("Loading Effects...");
 		try
 		{
 			ChaosEffects.Load(effectsFilePath);
 			Plugin.Logger.LogDebug("Loaded effects!");
+			return true;
 		}
 		catch (Exception ex)
 		{
 			callback(Logging.LogMessage.FromException(ex)
 				.WithNotice("Failed to load effects, Mod could not be started."));
-			return;
+			return false;
 		}
-
-		_mainRoutine = UWE.CoroutineHost.StartCoroutine(MainRoutine());
-		callback(STARTUP_MESSAGE);
 	}
 
 	private static IEnumerator MainRoutine()
@@ -52,7 +62,7 @@ internal static class EffectManager
 			yield return new UnityEngine.WaitForSeconds(Plugin.Options.Delay);
 			try
 			{
-				AddEffect(Plugin.Logger.LogInfo);
+				AddEffect(callback: Plugin.Logger.LogInfo);
 			}
 			catch (Exception ex)
 			{
@@ -87,13 +97,15 @@ internal static class EffectManager
 	/// </summary>
 	/// <param name="effect"></param>
 	/// <param name="callback"></param>
-	public static void AddEffect(Callback? callback, params ChaosEffect[] effects)
+	public static void AddEffect(Callback callback, params ChaosEffect[] effects)
 	{
 		List<ChaosEffect> inactiveEffects;
 
 		if (effects.Length > 0)
 		{
-			inactiveEffects = effects.SimpleWhere(e => !_activeEffects.ContainsKey(e)).SimpleDistinct();
+			inactiveEffects = new List<ChaosEffect>(effects);
+			SimpleQueries.Filter(inactiveEffects, static e => !_activeEffects.ContainsKey(e));
+			SimpleQueries.FilterDuplicates(inactiveEffects);
 		}
 		else
 		{
@@ -103,6 +115,9 @@ internal static class EffectManager
 				effect
 			};
 		}
+
+		if (!LoadEffects(callback))
+			return;
 
 		for (int i = 0; i < inactiveEffects.Count; i++)
 		{
@@ -117,13 +132,13 @@ internal static class EffectManager
 
 	private static void TriggerEffect(IChaosEffect effect)
 	{
-		effect.BeforeStart();
+		string description = effect.BeforeStart();
 
 		ActiveEffect activeEffect = new(effect);
 
-		string message = string.IsNullOrWhiteSpace(effect.Description)
+		string message = string.IsNullOrWhiteSpace(description)
 			? effect.Id.ToString()
-			: effect.Description!;
+			: description;
 		Plugin.Logger.LogInGame(message);
 
 		activeEffect.OnEffectEnd += OnEffectEnd;
@@ -144,32 +159,42 @@ internal static class EffectManager
 	/// <param name="effects"></param>
 	public static void RemoveEffect(Callback? callback, params ChaosEffect[] effects)
 	{
-		List<ChaosEffect> activeEffects = effects.SimpleWhere(_activeEffects.ContainsKey);
+		List<ChaosEffect> effectsToClear;
 		if (effects.Length == 0)
 		{
-			activeEffects = _activeEffects.Keys.ToList();
+			effectsToClear = _activeEffects.Keys.ToList();
 		}
-
-		for (int i = 0; i < activeEffects.Count; i++)
+		else
 		{
-			_activeEffects[activeEffects[i]].Stop();
+			effectsToClear = new(effects);
+			SimpleQueries.Filter(effectsToClear, _activeEffects.ContainsKey);
 		}
 
-		string message = NullOrEmptyCollection(activeEffects)
+		for (int i = 0; i < effectsToClear.Count; i++)
+		{
+			_activeEffects[effectsToClear[i]].Stop();
+		}
+
+		string message = NullOrEmptyCollection(effectsToClear)
 			? "No effects were removed."
-			: $"Effects removed: {string.Join(", ", activeEffects)}";
+			: $"Effects removed: {string.Join(", ", effectsToClear)}";
 		callback?.Invoke(message);
 	}
 
 	public static IEnumerable<ChaosEffect> GetActiveEffects(Callback? callback)
 	{
-		var result = _activeEffects.Keys;
+		var result = _activeEffects.Select(kvp => new EffectString(kvp.Key, kvp.Value.Duration - kvp.Value.Timer));
 
 		string message = NullOrEmptyCollection(_activeEffects)
 			? "No effects are active."
 			: $"Active effects: {string.Join(", ", result)}";
 		callback?.Invoke(message);
 
-		return result;
+		return _activeEffects.Keys;
+	}
+
+	internal readonly record struct EffectString(ChaosEffect Effect, float Remaining)
+	{
+		public override string ToString() => $"{Effect} ({Remaining:0}s remaining)";
 	}
 }

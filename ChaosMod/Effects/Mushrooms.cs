@@ -5,7 +5,7 @@ using UnityEngine;
 namespace FrootLuips.ChaosMod.Effects;
 internal class Mushrooms : BaseChaosEffect
 {
-	public Mushrooms() : base(ChaosEffect.Mushrooms) { }
+	public Mushrooms() : base(ChaosEffect.Mushrooms, attributesExpected: 0) { }
 
 	private const TechType _MUSHROOMS = TechType.AcidMushroom;
 
@@ -31,4 +31,7 @@ internal class Mushrooms : BaseChaosEffect
 			Inventory.main.Pickup(item);
 		}
 	}
+
+	protected override void ParseAttribute(Effect.Attribute attribute) { }
+	protected override bool GetSuccess() => true;
 }

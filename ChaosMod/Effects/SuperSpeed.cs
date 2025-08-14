@@ -3,7 +3,7 @@
 namespace FrootLuips.ChaosMod.Effects;
 internal class SuperSpeed : BaseChaosEffect
 {
-	public SuperSpeed() : base(ChaosEffect.SuperSpeed, duation: 60f) { }
+	public SuperSpeed() : base(ChaosEffect.SuperSpeed, attributesExpected: 2, duration: 60f) { }
 
 	public float? Multiplier { get; set; } = null;
 
@@ -23,59 +23,24 @@ internal class SuperSpeed : BaseChaosEffect
 
 	public override void FromData(Effect data, StatusCallback callback)
 	{
-		base.FromData(data, callback);
-
 		Multiplier = null;
-
-		List<string> errors = new();
-		try
-		{
-			Validate(ValidateAttributes(data.Attributes));
-		}
-		catch (AggregateException agg)
-		{
-			foreach (var ex in agg)
-			{
-				errors.Add(ex.Message);
-			}
-		}
-		catch (Exception ex)
-		{
-			errors.Add(ex.Message);
-		}
-		finally
-		{
-			bool success = Multiplier != null;
-			callback(errors, success);
-		}
+		base.FromData(data, callback);
 	}
 
-	private IEnumerator<Exception> ValidateAttributes(Effect.Attribute[] attributes)
+	protected override void ParseAttribute(Effect.Attribute attribute)
 	{
-		ExpectAttributeCount(attributes, count: 1);
-		var attribute = attributes[0];
-		Exception? exception = null;
-
-		try
+		switch (attribute.Name)
 		{
-			switch (attribute.Name)
-			{
-				case nameof(Multiplier):
-					attribute.ParseAttribute(float.Parse, out var mult);
-					Multiplier = mult;
-					break;
-				default:
-					throw attribute.Invalid();
-			}
+			case nameof(Multiplier):
+				attribute.ParseValue(float.Parse, out var mult);
+				Multiplier = mult;
+				break;
+			default:
+				throw attribute.Invalid();
 		}
-		catch (Exception ex)
-		{
-			exception = ex;
-		}
-
-		if (exception != null)
-			yield return exception;
 	}
+
+	protected override bool GetSuccess() => Multiplier != null;
 
 	public override Effect ToData()
 	{

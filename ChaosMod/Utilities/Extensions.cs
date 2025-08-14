@@ -76,4 +76,32 @@ internal static class Extensions
 			yield return aggregate.InnerExceptions[i];
 		}
 	}
+
+	public static bool TryAdd<T>(this List<T> list, T? item)
+	{
+		if (item == null || list.Contains(item))
+		{
+			return false;
+		}
+		else
+		{
+			list.Add(item);
+			return true;
+		}
+	}
+}
+
+/// <summary>
+/// Determines how the CopyItems extension methods will function.
+/// </summary>
+public enum CopyMode
+{
+	/// <summary>
+	/// Replace all elements in destination with elements from source
+	/// </summary>
+	Replace,
+	/// <summary>
+	/// Append elements from source to destination
+	/// </summary>
+	Append,
 }
