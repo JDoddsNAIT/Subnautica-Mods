@@ -40,11 +40,11 @@ internal static class EffectManager
 		if (ChaosEffects.EffectsLoaded)
 			return true;
 
-		Plugin.Logger.LogDebug("Loading Effects...");
+		Plugin.Console.LogDebug("Loading Effects...");
 		try
 		{
 			ChaosEffects.Load(effectsFilePath);
-			Plugin.Logger.LogDebug("Loaded effects!");
+			Plugin.Console.LogDebug("Loaded effects!");
 			return true;
 		}
 		catch (Exception ex)
@@ -62,12 +62,12 @@ internal static class EffectManager
 			yield return new UnityEngine.WaitForSeconds(Plugin.Options.Delay);
 			try
 			{
-				AddEffect(callback: Plugin.Logger.LogInfo);
+				AddEffect(callback: Plugin.Game.LogInfo);
 			}
 			catch (Exception ex)
 			{
-				Plugin.Logger.LogError(Logging.LogMessage.FromException(ex).AddNotice("Failed to trigger an effect"));
-				continue;
+				Plugin.Console.LogError(Logging.LogMessage.FromException(ex)
+					.AddNotice("Failed to trigger an effect"));
 			}
 		}
 	}
@@ -84,7 +84,7 @@ internal static class EffectManager
 			return;
 		}
 
-		static void callback2(string message) => Plugin.Logger.LogDebug(message);
+		static void callback2(string message) => Plugin.Console.LogDebug(message);
 		RemoveEffect(callback2);
 
 		UWE.CoroutineHost.StopCoroutine(_mainRoutine);
@@ -139,7 +139,7 @@ internal static class EffectManager
 		string message = string.IsNullOrWhiteSpace(description)
 			? effect.Id.ToString()
 			: description;
-		Plugin.Logger.LogInGame(message);
+		Plugin.Game.LogMessage(message);
 
 		activeEffect.OnEffectEnd += OnEffectEnd;
 		_activeEffects.Add(effect.Id, activeEffect);

@@ -5,8 +5,8 @@ public interface ILogger
 {
 	void LogDebug(string message);
 	void LogInfo(string message);
-	void LogWarn(string message);
+	void LogMessage(string message);
+	void LogWarning(string message);
 	void LogError(string message);
 	void LogFatal(string message);
-	void LogInGame(string message, LogLevel level = LogLevel.Info);
 }

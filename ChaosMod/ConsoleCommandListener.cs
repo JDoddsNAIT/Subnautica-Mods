@@ -18,14 +18,14 @@ internal class ConsoleCommandListener : MonoBehaviour
 	{
 		if (n.data == null)
 		{
-			Plugin.Logger.LogInGame(ConsoleCommands.ChaosCommand(""));
+			Plugin.Game.LogMessage(ConsoleCommands.ChaosCommand(""));
 		}
 		else
 		{
 			string arg1 = n.data[0] as string;
 			string arg2 = n.data[1] as string;
 
-			Plugin.Logger.LogInGame(ConsoleCommands.ChaosCommand(arg1 ?? "", arg2 ?? ""));
+			Plugin.Game.LogMessage(ConsoleCommands.ChaosCommand(arg1 ?? "", arg2 ?? ""));
 		}
 	}
 }

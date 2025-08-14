@@ -90,7 +90,7 @@ internal static class ChaosEffects
 		{
 			if (!Enum.TryParse(effects[i].Id, out ChaosEffect effect))
 			{
-				Plugin.Logger.LogWarn(new LogMessage(context: context)
+				Plugin.Console.LogWarning(new LogMessage(context: context)
 					.WithNotice("Effect ID '", effects[i].Id, "' is invalid")
 					.WithMessage("Skipping"));
 				continue;
@@ -101,7 +101,7 @@ internal static class ChaosEffects
 				Effects[effect].FromData(effects[i], statusCallback);
 				if (!calledBack)
 				{
-					Plugin.Logger.LogWarn($"No callback received from '{effect}'. Data integrity is unknown.");
+					Plugin.Console.LogWarning($"No callback received from '{effect}'. Data integrity is unknown.");
 				}
 				continue;
 
@@ -124,12 +124,12 @@ internal static class ChaosEffects
 			if (issues.Count > 0)
 			{
 				message.WithMessage("Some issues occurred.").WithRemarks(string.Join("\n", issues));
-				Plugin.Logger.LogWarn(message);
+				Plugin.Console.LogWarning(message);
 			}
 			else
 			{
 				message.WithMessage("No issues");
-				Plugin.Logger.LogInfo(message);
+				Plugin.Console.LogInfo(message);
 			}
 		}
 		else
@@ -137,7 +137,7 @@ internal static class ChaosEffects
 			message.WithNotice("Failed to load settings for '", effect, "'")
 				.WithMessage("Skipping")
 				.WithRemarks(string.Join("\n", issues));
-			Plugin.Logger.LogError(message);
+			Plugin.Console.LogError(message);
 		}
 	}
 
@@ -156,7 +156,9 @@ internal static class ChaosEffects
 
 internal enum ChaosEffect
 {
+	// "It's raining reapers!" - reapers spawn in the sky.
 	ReaperRain,
+	// "Teleport" - teleports to player to a random location.
 	RandomTeleport,
 	// "Explode the Aurora" - explodes the aurora
 	ExplodeShip,

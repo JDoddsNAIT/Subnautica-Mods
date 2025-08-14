@@ -10,17 +10,19 @@ namespace FrootLuips.ChaosMod;
 [BepInDependency(Nautilus.PluginInfo.PLUGIN_GUID)]
 public sealed class Plugin : BaseUnityPlugin
 {
-	private static ILogger? _logger;
+	private static ILogger? _console, _game;
 	private static ModOptions? _options;
 
-	public static new ILogger Logger { get => _logger!; private set => _logger = value; }
+	public static ILogger Game { get => _game!; private set => _game = value; }
+	public static ILogger Console { get => _console!; private set => _console = value; }
 
 	internal static ModOptions Options { get => _options!; private set => _options = value; }
 	internal static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
 	internal void Awake()
 	{
-		Logger = new Logger(base.Logger);
+		Game = new InGameLogger(base.Logger);
+		Console = new ConsoleLogger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
 		if (!File.Exists(RandomTeleport.teleportsPath))

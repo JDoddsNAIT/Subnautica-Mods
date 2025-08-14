@@ -32,7 +32,7 @@ internal class ScalePlayer : BaseChaosEffect
 		}
 		else
 		{
-			Plugin.Logger.LogWarn("Player will not automatically return to the default size.");
+			Plugin.Logger.LogWarning("Player will not automatically return to the default size.");
 		}
 	}
 
