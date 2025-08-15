@@ -140,12 +140,12 @@ internal static class Utilities
 					recipeData: new RecipeData() {
 						craftAmount = 1,
 						Ingredients = new() {
-							new(TechType.SmallStorage),
-							new(TechType.TitaniumIngot),
-							new(TechType.PlasteelIngot),
-							new(TechType.Lead),
-							new(TechType.Diamond),
-							new(TechType.EnameledGlass),
+							new(TechType.SmallStorage, 1),
+							new(TechType.TitaniumIngot, 1),
+							new(TechType.PlasteelIngot, 1),
+							new(TechType.Lead, 1),
+							new(TechType.Diamond, 1),
+							new(TechType.EnameledGlass, 1),
 						},
 						LinkedItems = new(),
 					},
@@ -159,8 +159,8 @@ internal static class Utilities
 				new CustomRecipeData(itemId: bridgeKitId,
 					recipeData: new RecipeData() {
 						Ingredients = new() {
-							new(TechType.SmallStorage),
-							new(TechType.SeamothSonarModule),
+							new(TechType.SmallStorage, 1),
+							new(TechType.SeamothSonarModule, 1),
 							new(TechType.ComputerChip, 2),
 							new(TechType.CopperWire, 2),
 							new(TechType.AdvancedWiringKit, 2),
@@ -177,7 +177,7 @@ internal static class Utilities
 				new CustomRecipeData(itemId: engineKitId,
 					recipeData: new RecipeData() {
 						Ingredients = new() {
-							new(TechType.SmallStorage),
+							new(TechType.SmallStorage, 1),
 							new(TechType.Lubricant, 4),
 							new(TechType.AramidFibers, 2),
 							new(TechType.Silicone, 2),
@@ -193,9 +193,9 @@ internal static class Utilities
 				// Cyclops
 				new CustomRecipeData(itemId: TechType.Cyclops.ToString(),
 				ingredients: new[] {
-					new Ingredient(hullKitId, 4),
-					new Ingredient(bridgeKitId, 1),
-					new Ingredient(engineKitId, 1)
+					new DTOs.Ingredient(hullKitId, 4),
+					new DTOs.Ingredient(bridgeKitId, 1),
+					new DTOs.Ingredient(engineKitId, 1)
 				},
 				craftAmount: -1,
 				craftSeconds: -1)

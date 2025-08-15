@@ -79,7 +79,7 @@ internal sealed class CustomRecipeData : IRegisterable<CustomRecipe>
 		// Ingredients
 		var subErrors = new List<string>();
 		Ingredients ??= Array.Empty<Ingredient>();
-		var validIngredients = Ingredients.TrySelect((Ingredient i, out CraftData.Ingredient? r) => ValidateIngredient(i, out r, subErrors));
+		var validIngredients = Ingredients.TrySelect((Ingredient i, out global::Ingredient? r) => ValidateIngredient(i, out r, subErrors));
 
 		if (validIngredients.Count == 0)
 		{
@@ -145,9 +145,10 @@ internal sealed class CustomRecipeData : IRegisterable<CustomRecipe>
 		return validItem;
 	}
 
-	private static bool ValidateIngredient(Ingredient ingredient, out CraftData.Ingredient? result, List<string> subErrors)
+	private static bool ValidateIngredient(Ingredient ingredient, out global::Ingredient? result, List<string> subErrors)
 	{
-		result = null;
+		
+			result = null;
 		return ingredient is not null && ingredient.TryConvert(subErrors, out result);
 	}
 

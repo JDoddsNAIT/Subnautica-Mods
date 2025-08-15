@@ -19,10 +19,10 @@ internal class ConsoleCommandListener : MonoBehaviour
 	internal void Awake()
 	{
 		_logger = Plugin.Logger;
-		DevConsole.RegisterConsoleCommand(this, "runtests");
+		DevConsole.RegisterConsoleCommand("runtests", OnConsoleCommand_runtests);
 	}
 
-	public void OnConsoleCommand_runtests()
+	public void OnConsoleCommand_runtests(NotificationCenter.Notification n)
 	{
 		var sb = new StringBuilder();
 		foreach (var container in Tests)

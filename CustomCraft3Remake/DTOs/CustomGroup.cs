@@ -73,7 +73,7 @@ internal sealed class CustomGroupData : IRegisterable<CustomGroup>
 
 	public void Register(List<string> errors, CustomGroup item)
 	{
-		Atlas.Sprite icon = item.Icon is TechType.None
+		UnityEngine.Sprite icon = item.Icon is TechType.None
 			? SpriteManager.defaultSprite
 			: SpriteManager.Get(item.Icon);
 		Validation.Assert(icon is not null, "A null icon is not allowed.");

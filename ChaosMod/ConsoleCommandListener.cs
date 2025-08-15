@@ -6,7 +6,7 @@ internal class ConsoleCommandListener : MonoBehaviour
 {
 	public void Awake()
 	{
-		DevConsole.RegisterConsoleCommand(this, ConsoleCommands.COMMAND_NAME, false, false);
+		DevConsole.RegisterConsoleCommand(ConsoleCommands.COMMAND_NAME, OnConsoleCommand_chaosmod);
 	}
 
 	public void OnDestroy()

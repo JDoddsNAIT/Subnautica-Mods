@@ -21,7 +21,7 @@ internal static partial class Item
 			unlockAtStart: data.PDAData is null || data.PDAData.UnlockAtStart,
 			techTypeOwner: assembly);
 
-		Atlas.Sprite icon = data.Icon is TechType.None
+		UnityEngine.Sprite icon = data.Icon is TechType.None
 			? SpriteManager.defaultSprite : SpriteManager.Get(data.Icon);
 		Validation.Assert(icon is not null, "A null icon is not allowed");
 

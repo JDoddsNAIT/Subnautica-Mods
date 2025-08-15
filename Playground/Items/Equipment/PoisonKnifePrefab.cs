@@ -6,7 +6,6 @@ using Nautilus.Crafting;
 using Nautilus.Extensions;
 using Nautilus.Handlers;
 using UnityEngine;
-using Ingredient = CraftData.Ingredient;
 
 namespace FrootLuips.Playground.Items.Equipment;
 

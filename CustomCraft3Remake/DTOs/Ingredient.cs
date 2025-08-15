@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrootLuips.CustomCraft3Remake.DTOs;
 #nullable enable
-internal sealed class Ingredient : IJsonData<CraftData.Ingredient?>
+internal sealed class Ingredient : IJsonData<global::Ingredient?>
 {
 	private const string _BAD_ID = "Ingredient ignored";
 
@@ -20,7 +20,7 @@ internal sealed class Ingredient : IJsonData<CraftData.Ingredient?>
 	public Ingredient(TechType itemId, int amount = 1) : this(itemId.ToString(), amount)
 	{ }
 
-	public bool TryConvert([NotNull] in List<string> errors, out CraftData.Ingredient? result)
+	public bool TryConvert([NotNull] in List<string> errors, out global::Ingredient? result)
 	{
 		if (Validation.TryParseTechType(ItemId, out var techType).Fails())
 		{
@@ -29,11 +29,11 @@ internal sealed class Ingredient : IJsonData<CraftData.Ingredient?>
 			return false;
 		}
 
-		result = new CraftData.Ingredient(techType, Amount);
+		result = new global::Ingredient(techType, Amount);
 		return true;
 	}
 
-	public static explicit operator Ingredient(CraftData.Ingredient ingredient)
+	public static explicit operator Ingredient(global::Ingredient ingredient)
 	{
 		return new Ingredient(ingredient.techType.ToString(), ingredient.amount);
 	}
