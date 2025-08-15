@@ -28,30 +28,7 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 	/// <returns></returns>
 	public string Combine()
 	{
-		var parts = this.ToArray();
-
-		string? path = null;
-		Validation.Validate(validatePath(parts), callback).ThrowIfFailed();
-		return path!;
-
-		bool callback() => !string.IsNullOrEmpty(path);
-		IEnumerator<Exception> validatePath(string[] parts)
-		{
-			for (int i = 0; i < parts.Length; i++)
-			{
-				if (parts[i].ContainsAny(Path.GetInvalidPathChars()))
-					yield return new ArgumentException(
-						message: string.Format(_INVALID_CHAR_MESSAGE, "path"),
-						paramName: string.Format(_PARAM_NAME, i + 1, parts[i]));
-
-				else if (parts[i].ContainsAny(Path.GetInvalidFileNameChars()))
-					yield return new ArgumentException(
-						message: string.Format(_INVALID_CHAR_MESSAGE, "file name"),
-						paramName: string.Format(_PARAM_NAME, i + 1, parts[i]));
-			}
-
-			path = Path.Combine(parts);
-		}
+		return Path.Combine(this.ToArray());
 	}
 
 	/// <summary>

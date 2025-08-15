@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica;
-public static partial class Validation
+public static partial class _Validation
 {
 	/// <summary>
 	/// Represents the result of a validation process.

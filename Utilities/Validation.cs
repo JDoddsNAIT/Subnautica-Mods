@@ -6,42 +6,9 @@ namespace FrootLuips.Subnautica;
 /// <summary>
 /// Helper class used for validation.
 /// </summary>
-public static partial class Validation
+[Obsolete]
+public static partial class _Validation
 {
-	/// <summary>
-	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, throwing an <see cref="AssertionFailedException"/> if not.
-	/// </summary>
-	/// <param name="condition"></param>
-	/// <param name="message"></param>
-	/// <returns>The value of <paramref name="condition"/>.</returns>
-	/// <exception cref="AssertionFailedException"></exception>
-	public static bool Assert(bool condition, string? message = null)
-	{
-		if (!condition)
-			throw new AssertionFailedException(message);
-		return condition;
-	}
-
-	/// <summary>
-	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, logging a <paramref name="message"/> to the console if not.
-	/// </summary>
-	/// <param name="condition"></param>
-	/// <param name="message"></param>
-	/// <param name="logger"></param>
-	/// <returns>The value of <paramref name="condition"/>.</returns>
-	public static bool AssertLog(bool condition, ILogger logger, string? message = null)
-	{
-		try
-		{
-			return Assert(condition, message);
-		}
-		catch (AssertionFailedException ex)
-		{
-			logger.LogError(ex.Message);
-			return condition;
-		}
-	}
-
 	/// <summary>
 	/// Iterates over <paramref name="validator"/>, and adds all errors to a list.
 	/// </summary>
@@ -112,45 +79,4 @@ public static partial class Validation
 			? new AggregateException(exceptions)
 			: new AggregateException(message, exceptions);
 	}
-}
-
-/// <summary>
-/// The exception thrown when the condition of an Assertion fails.
-/// </summary>
-[Serializable]
-public class AssertionFailedException : Exception
-{
-	private const string _MESSAGE = "Assertion failed";
-
-	private static string GetMessage(string? msg)
-	{
-		return _MESSAGE + (string.IsNullOrWhiteSpace(msg) ? "" : ": " + msg);
-	}
-
-	/// <summary>
-	/// Creates a new <see cref="AssertionFailedException"/>.
-	/// </summary>
-	public AssertionFailedException()
-		: base(_MESSAGE)
-	{ }
-	/// <summary>
-	/// Creates a new <see cref="AssertionFailedException"/> with a <paramref name="message"/> detailing what went wrong.
-	/// </summary>
-	/// <param name="message"></param>
-	public AssertionFailedException(string? message)
-		: base(GetMessage(message))
-	{ }
-	/// <summary>
-	/// <inheritdoc cref="AssertionFailedException(string?)"/>
-	/// </summary>
-	/// <param name="message"></param>
-	/// <param name="inner"></param>
-	public AssertionFailedException(string? message, Exception inner)
-		: base(GetMessage(message), inner)
-	{ }
-	/// <param name="info"></param>
-	/// <param name="context"></param>
-	protected AssertionFailedException(
-	  System.Runtime.Serialization.SerializationInfo info,
-	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
