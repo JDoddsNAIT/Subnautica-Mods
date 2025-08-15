@@ -84,4 +84,17 @@ public static class ValidationHelpers
 	{
 		return Validate(@object, validator.Validate(@object), callback: validator.GetSuccess);
 	}
+
+	/// <summary>
+	/// Aggregates a collection of <see cref="Exception"/>s.
+	/// </summary>
+	/// <param name="exceptions"></param>
+	/// <param name="message"></param>
+	/// <returns></returns>
+	public static AggregateException ToAggregate(this IEnumerable<Exception> exceptions, string? message = null)
+	{
+		return string.IsNullOrWhiteSpace(message)
+			? new AggregateException(exceptions)
+			: new AggregateException(message, exceptions);
+	}
 }
