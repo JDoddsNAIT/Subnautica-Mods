@@ -46,6 +46,5 @@ internal class ConsoleCommandListener : MonoBehaviour
 		{
 			_logger!.LogError($"{ex}", inGame: true);
 		}
-
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using FrootLuips.Subnautica.Tests;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Logger = FrootLuips.Subnautica.Logging.Logger;
 
 namespace FrootLuips.Subnautica;
@@ -21,12 +22,12 @@ public sealed class Plugin : BaseUnityPlugin
 	{
 		Logger = new Logger(base.Logger);
 
-		UnityEngine.SceneManagement.SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
+		SceneManager.sceneLoaded += this.SceneManager_sceneLoaded;
 	}
 
-	private void SceneManager_sceneLoaded(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.LoadSceneMode arg1)
+	private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
 	{
-		UnityEngine.SceneManagement.SceneManager.sceneLoaded -= this.SceneManager_sceneLoaded;
+		SceneManager.sceneLoaded -= this.SceneManager_sceneLoaded;
 		var obj = new GameObject(nameof(ConsoleCommandListener)).AddComponent<ConsoleCommandListener>();
 		DontDestroyOnLoad(obj);
 	}
