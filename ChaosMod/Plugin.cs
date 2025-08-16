@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using BepInEx;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
@@ -27,15 +28,12 @@ public sealed class Plugin : BaseUnityPlugin
 
 		if (!File.Exists(RandomTeleport.teleportsPath))
 		{
-			Logger.LogDebug(new LogMessage(
-				notice: $"{RandomTeleport.TELEPORTS} is missing.",
-				message: "Restoring..."));
-			ConsoleCommands.GetTeleports();
+			UWE.CoroutineHost.StartCoroutine(CreateTeleports());
 		}
 
 		if (Options.DebugResetEffects || !File.Exists(EffectManager.effectsFilePath))
 		{
-			Logger.LogDebug(new LogMessage(
+			Console.LogDebug(new LogMessage(
 				notice: $"{EffectManager.EFFECTS_CONFIG} is missing.",
 				message: "Restoring..."));
 			ChaosEffects.ResetEffects();
@@ -46,14 +44,27 @@ public sealed class Plugin : BaseUnityPlugin
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(LogMessage.FromException(ex).WithNotice("Failed to generate effect data."));
+				Console.LogError(LogMessage.FromException(ex).WithNotice("Failed to generate effect data."));
 				return;
 			}
 		}
 
-		ConsoleCommandsHandler.RegisterConsoleCommands(typeof(ConsoleCommands));
 		Harmony.CreateAndPatchAll(Assembly, PluginInfo.PLUGIN_GUID);
 
-		Logger.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: PluginInfo.PLUGIN_GUID));
+		Console.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: PluginInfo.PLUGIN_GUID));
+	}
+
+	private IEnumerator CreateTeleports()
+	{
+		Console.LogDebug(new LogMessage(
+			notice: $"{RandomTeleport.TELEPORTS} is missing.",
+			message: "Restoring..."));
+
+		while (GotoConsoleCommand.main == null)
+		{
+			yield return UWE.CoroutineUtils.waitForNextFrame;
+		}
+
+		Console.LogInfo(ConsoleCommands.GetTeleports());
 	}
 }
