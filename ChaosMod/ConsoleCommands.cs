@@ -22,7 +22,7 @@ internal static class ConsoleCommands
 		List<Objects.TeleportPosition> positions = new(capacity: locations.Length);
 		SimpleQueries.Convert(locations, converter: Utilities.Utils.ToPosition, positions);
 		positions.SaveJson(RandomTeleport.teleportsPath);
-		return "Saved to " + RandomTeleport.teleportsPath;
+		return "Saved teleport data to " + RandomTeleport.teleportsPath;
 	}
 
 	public static string ChaosCommand(string arg1, string arg2 = "")

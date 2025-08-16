@@ -3,8 +3,10 @@ using System.Reflection;
 using BepInEx;
 using FrootLuips.ChaosMod.Effects;
 using FrootLuips.ChaosMod.Logging;
+using FrootLuips.ChaosMod.Utilities;
 using HarmonyLib;
 using Nautilus.Handlers;
+using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.ChaosMod;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -26,9 +28,13 @@ public sealed class Plugin : BaseUnityPlugin
 		Console = new ConsoleLogger(base.Logger);
 		Options = OptionsPanelHandler.RegisterModOptions<ModOptions>();
 
-		if (!File.Exists(RandomTeleport.teleportsPath))
+		if (Options.DebugResetEffects || !File.Exists(RandomTeleport.teleportsPath))
 		{
-			UWE.CoroutineHost.StartCoroutine(CreateTeleports());
+			Console.LogDebug(new LogMessage(
+				notice: $"{RandomTeleport.TELEPORTS} is missing.",
+				message: "Restoring..."));
+
+			this.StartCoroutine(CreateTeleports());
 		}
 
 		if (Options.DebugResetEffects || !File.Exists(EffectManager.effectsFilePath))
@@ -41,6 +47,7 @@ public sealed class Plugin : BaseUnityPlugin
 			try
 			{
 				ChaosEffects.Save(EffectManager.effectsFilePath);
+				Console.LogDebug("Saved effect data to " + EffectManager.effectsFilePath);
 			}
 			catch (Exception ex)
 			{
@@ -51,20 +58,20 @@ public sealed class Plugin : BaseUnityPlugin
 
 		Harmony.CreateAndPatchAll(Assembly, PluginInfo.PLUGIN_GUID);
 
-		Console.LogInfo(new LogMessage(context: "Init", notice: "Finished loading plugin", message: PluginInfo.PLUGIN_GUID));
+		Console.LogMessage(new LogMessage(context: "Init", notice: "Finished loading plugin", message: PluginInfo.PLUGIN_GUID));
 	}
 
 	private IEnumerator CreateTeleports()
 	{
-		Console.LogDebug(new LogMessage(
-			notice: $"{RandomTeleport.TELEPORTS} is missing.",
-			message: "Restoring..."));
-
 		while (GotoConsoleCommand.main == null)
 		{
 			yield return UWE.CoroutineUtils.waitForNextFrame;
 		}
 
-		Console.LogInfo(ConsoleCommands.GetTeleports());
+		var locations = GotoConsoleCommand.main.data.locations;
+		List<Objects.TeleportPosition> positions = new(capacity: locations.Length);
+		SimpleQueries.Convert(locations, converter: Utilities.Utils.ToPosition, positions);
+		positions.SaveJson(RandomTeleport.teleportsPath);
+		Console.LogDebug("Saved teleport data to " + RandomTeleport.teleportsPath);
 	}
 }
