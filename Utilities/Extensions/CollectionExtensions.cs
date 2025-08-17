@@ -7,7 +7,7 @@ namespace FrootLuips.Subnautica.Extensions;
 public static class CollectionExtensions
 {
 	/// <summary>
-	/// Dequeues and item from the <paramref name="queue"/>, if there are any.
+	/// Dequeues an item from the <paramref name="queue"/>, if there are any.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="queue"></param>
@@ -15,10 +15,22 @@ public static class CollectionExtensions
 	/// <returns><see langword="true"/> if an <paramref name="item"/> was dequeued, otherwise <see langword="false"/>.</returns>
 	public static bool TryDequeue<T>(this Queue<T> queue, out T? item)
 	{
-		item = default;
 		bool any = queue.Count > 0;
-		if (any)
-			item = queue.Dequeue();
+		item = any ? queue.Dequeue() : default;
+		return any;
+	}
+
+	/// <summary>
+	/// Pops an item off the <paramref name="stack"/>, if there are any.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="stack"></param>
+	/// <param name="item"></param>
+	/// <returns><see langword="true"/> if an <paramref name="item"/> was popped, otherwise <see langword="false"/>.</returns>
+	public static bool TryPop<T>(this Stack<T> stack, out T? item)
+	{
+		bool any = stack.Count > 0;
+		item = any ? stack.Pop() : default;
 		return any;
 	}
 
