@@ -55,5 +55,8 @@ public partial class Tree<T>
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+		/// <inheritdoc/>
+		public override readonly string ToString() => $"{Name} ({nameof(Node)})";
 	}
 }

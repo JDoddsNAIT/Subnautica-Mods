@@ -36,6 +36,9 @@ public static class TreeHelpers
 	/// <summary>
 	/// Gets the depth of a <paramref name="node"/>.
 	/// </summary>
+	/// <remarks>
+	/// A node without a parent has a depth of 0.
+	/// </remarks>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <returns></returns>
@@ -88,7 +91,7 @@ public static class TreeHelpers
 		{
 			yield return current;
 			if (current.Parent.HasValue)
-				current = (Tree<T>.Node)current.Parent;
+				current = current.Parent.Value;
 			else
 				yield break;
 		}

@@ -51,7 +51,7 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "C", "D", "E", "F" };
 
-		var actual = _tree!.Enumerate(SearchMode.BreadthFirst).Select(static t => t.gameObject.name).ToArray();
+		var actual = _tree!.EnumerateValues(SearchMode.BreadthFirst).Select(static t => t.gameObject.name).ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
@@ -61,7 +61,7 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "D", "E", "C", "F" };
 
-		var actual = _tree!.Enumerate(SearchMode.DepthFirst).Select(static t => t.gameObject.name).ToArray();
+		var actual = _tree!.EnumerateValues(SearchMode.DepthFirst).Select(static t => t.gameObject.name).ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);

@@ -31,7 +31,7 @@ public partial class Tree<T>
 	/// </summary>
 	/// <param name="search"></param>
 	/// <returns></returns>
-	public IEnumerable<T> Enumerate(SearchMode search)
+	public IEnumerable<T> EnumerateValues(SearchMode search)
 	{
 		foreach (T value in Root.Enumerate(search))
 		{
@@ -40,20 +40,30 @@ public partial class Tree<T>
 	}
 
 	/// <summary>
+	/// Enumerates over all nodes in the tree.
+	/// </summary>
+	/// <param name="search"></param>
+	/// <returns></returns>
+	public IEnumerable<Node> Enumerate(SearchMode search) => Root.Enumerate(search);
+
+	/// <summary>
 	/// Finds the first node in the tree with the given <paramref name="name"/>.
 	/// </summary>
 	/// <param name="name"></param>
 	/// <param name="search"></param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentException"></exception>
-	public T FindNodeWithName(string name, SearchMode search)
+	public Node Find(string name, SearchMode search)
 	{
-		foreach (var node in Root.Enumerate(search))
+		bool withName(Node node) => node.Name == name;
+		if (TryFind(withName, search, out var node))
 		{
-			if (node.Name == name)
-				return node;
+			return node!.Value;
 		}
-		throw new ArgumentException($"There is no node in the tree with the name '{name}'");
+		else
+		{
+			throw new ArgumentException($"There is no node in the tree with the name '{name}'");
+		}
 	}
 
 	/// <summary>
@@ -63,7 +73,7 @@ public partial class Tree<T>
 	/// <param name="search"></param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentException"></exception>
-	public T Find(Predicate<T> predicate, SearchMode search)
+	public Node Find(Predicate<Node> predicate, SearchMode search)
 	{
 		foreach (var node in Root.Enumerate(search))
 		{
@@ -80,7 +90,7 @@ public partial class Tree<T>
 	/// <param name="search"></param>
 	/// <param name="node"></param>
 	/// <returns></returns>
-	public bool TryFind(Predicate<T> predicate, SearchMode search, out T? node)
+	public bool TryFind(Predicate<Node> predicate, SearchMode search, out Node? node)
 	{
 		try
 		{
@@ -89,7 +99,7 @@ public partial class Tree<T>
 		}
 		catch (Exception)
 		{
-			node = default;
+			node = null;
 			return false;
 		}
 	}
@@ -100,7 +110,7 @@ public partial class Tree<T>
 	/// <param name="predicate"></param>
 	/// <param name="search"></param>
 	/// <returns></returns>
-	public IEnumerable<T> FindAll(Predicate<T> predicate, SearchMode search)
+	public IEnumerable<Node> FindAll(Predicate<Node> predicate, SearchMode search)
 	{
 		foreach (var node in Root.Enumerate(search))
 		{
@@ -115,7 +125,7 @@ public partial class Tree<T>
 	/// <param name="path"></param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentException"></exception>
-	public T GetNodeAtPath(string path)
+	public Node GetNodeAtPath(string path)
 	{
 		var parts = path.Split(TreeHelpers.PATH_SEPARATOR);
 
@@ -151,7 +161,7 @@ public partial class Tree<T>
 	/// <param name="path"></param>
 	/// <param name="node"></param>
 	/// <returns></returns>
-	public bool TryGetNodeAtPath(string path, out T? node)
+	public bool TryGetNodeAtPath(string path, out Node? node)
 	{
 		try
 		{
