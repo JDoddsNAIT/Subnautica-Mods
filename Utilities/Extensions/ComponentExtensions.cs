@@ -101,50 +101,32 @@ public static class ComponentExtensions
 	public static IEnumerable<T> EnumerateComponentsInChildren<T>(this GameObject obj,
 		bool includeInactive = false)
 	{
-		Transform current = obj.transform;
+		Stack<Transform> stack = new(capacity: 1);
+		stack.Push(obj.transform);
+		Transform current;
 		List<T> components = new();
-		var indices = new List<ushort?>() { null };
-		int depth = 0;
 
 		do
 		{
-			bool currentActive = current.gameObject == obj || includeInactive || current.gameObject.activeSelf;
-			if (indices[depth] == null)
+			current = stack.Pop();
+			if (current != obj.transform && !includeInactive && !current.gameObject.activeSelf)
 			{
-				indices[depth] = 0;
-				if (currentActive)
-				{
-					components.Clear();
-					current.GetComponents(components);
-					for (int i = 0; i < components.Count; i++)
-					{
-						yield return components[i];
-					}
-				}
-			}
-			else
-			{
-				indices[depth]++;
+				continue;
 			}
 
-			if (currentActive && indices[depth] < current.childCount)
+			components.Clear();
+			current.GetComponents(components);
+			for (int i = 0; i < components.Count; i++)
 			{
-				// Descend
-				current = current.GetChild((int)indices[depth]!);
-				depth++;
+				yield return components[i];
+			}
 
-				if (depth >= indices.Count)
-					indices.Add(null);
-				else
-					indices[depth] = null;
-			}
-			else
+			for (int i = current.childCount - 1; i >= 0; i--)
 			{
-				// Ascend
-				depth--;
-				current = current.parent;
+				stack.Push(current.GetChild(i));
 			}
-		} while (depth >= 0);
+		}
+		while (stack.Count > 0);
 	}
 }
 

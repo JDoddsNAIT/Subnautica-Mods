@@ -146,7 +146,7 @@ public static class TreeHelpers
 			else
 				continue;
 
-			for (int i = 0; i < current.ChildCount; i++)
+			for (int i = current.ChildCount - 1; i >= 0; i--)
 			{
 				var child = current[childIndex: i];
 				if (!CheckForChildDesync(current, child))
