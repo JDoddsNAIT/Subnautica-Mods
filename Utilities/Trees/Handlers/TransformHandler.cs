@@ -7,7 +7,7 @@ namespace FrootLuips.Subnautica.Trees.Handlers;
 public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<GameObject>
 {
 	/// <summary>
-	/// Static instance of this class.
+	/// A static instance of this class.
 	/// </summary>
 	public static TransformHandler Main { get; } = new();
 
