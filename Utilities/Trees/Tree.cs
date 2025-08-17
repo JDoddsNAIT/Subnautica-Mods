@@ -14,17 +14,17 @@ public partial class Tree<T>
 	public Node Root { get; }
 
 	/// <summary>
-	/// Constructs a new <see cref="Tree{T}"/> structure.
-	/// </summary>
-	/// <param name="root"></param>
-	public Tree(Node root) => Root = root;
-
-	/// <summary>
 	/// Constructs a new <see cref="Tree{T}"/> structure with a <paramref name="root"/> node and <paramref name="handler"/>.
 	/// </summary>
 	/// <param name="root"></param>
 	/// <param name="handler"></param>
 	public Tree(T root, ITreeHandler<T> handler) : this(new Tree<T>.Node(root, handler)) { }
+
+	/// <summary>
+	/// Constructs a new <see cref="Tree{T}"/> structure.
+	/// </summary>
+	/// <param name="root"></param>
+	public Tree(Node root) => Root = root;
 
 	/// <summary>
 	/// Enumerates over all values in the tree.
@@ -118,7 +118,10 @@ public partial class Tree<T>
 	public T GetNodeAtPath(string path)
 	{
 		var parts = path.Split(TreeHelpers.PATH_SEPARATOR);
-		Tree<T>.Node current = Root;
+
+		if (parts[0] == Root.Name)
+			parts = parts[1..];
+		Node current = Root;
 
 		for (int i = 0; i < parts.Length; i++)
 		{

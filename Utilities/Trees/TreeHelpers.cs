@@ -81,7 +81,7 @@ public static class TreeHelpers
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <returns></returns>
-	public static IEnumerable<Tree<T>.Node> EnumerateAncestors<T>(this	Tree<T>.Node node)
+	public static IEnumerable<Tree<T>.Node> EnumerateAncestors<T>(this Tree<T>.Node node)
 	{
 		var current = node;
 		for (int i = 0; i < MaxDepth; i++)

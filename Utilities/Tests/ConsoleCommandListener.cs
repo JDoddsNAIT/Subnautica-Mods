@@ -12,6 +12,7 @@ internal class ConsoleCommandListener : MonoBehaviour
 		new LogMessage_Tests(),
 		new Queries_Tests(),
 		new StringExtensions_Tests(),
+		new Trees_Tests(),
 	};
 
 	private Logging.Logger? _logger;

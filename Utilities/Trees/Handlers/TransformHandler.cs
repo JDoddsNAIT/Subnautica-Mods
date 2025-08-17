@@ -25,7 +25,7 @@ public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<Gam
 
 	/// <inheritdoc/>
 	public Tree<Transform>.Node? GetParent(Transform value)
-		=> new(value.parent, this);
+		=> (bool)value.parent ? new(value.parent, this) : null;
 
 	/// <inheritdoc/>
 	public void SetParent(Transform value, Tree<Transform>.Node? parent)
@@ -45,7 +45,7 @@ public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<Gam
 
 	/// <inheritdoc/>
 	public Tree<GameObject>.Node? GetParent(GameObject value)
-		=> new(value.transform.parent.gameObject, this);
+		=> (bool)value.transform.parent ? new(value.transform.parent.gameObject, this) : null;
 
 	/// <inheritdoc/>
 	public void SetParent(GameObject value, Tree<GameObject>.Node? parent)

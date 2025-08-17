@@ -24,7 +24,7 @@ internal readonly record struct TestResult(string Group, string Name, bool Passe
 		}
 		catch (Exception ex)
 		{
-			message = ex.Message;
+			message = ex.ToString();
 			passed = false;
 		}
 
