@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica.Trees;
-public partial class Tree<T> where T : class
+public partial class Tree<T>
 {
 	/// <summary>
 	/// <inheritdoc cref="ITreeNode{T}"/>

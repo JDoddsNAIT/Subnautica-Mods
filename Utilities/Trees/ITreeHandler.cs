@@ -2,7 +2,7 @@
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
-/// Default implementation of <see cref="ITreeHandler{T}"/>.
+/// Generic implementation of <see cref="ITreeHandler{T}"/> for reference types.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class TreeHandler<T> : ITreeHandler<T> where T : class
@@ -48,7 +48,7 @@ public class TreeHandler<T> : ITreeHandler<T> where T : class
 /// Defines how the parent, name, and children of <typeparamref name="T"/> values are accessed within a <see cref="Tree{T}"/> structure.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface ITreeHandler<T> where T : class
+public interface ITreeHandler<T>
 {
 	/// <summary>
 	/// Returns the parent object of a <typeparamref name="T"/> <paramref name="value"/>.

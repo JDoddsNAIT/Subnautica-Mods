@@ -6,7 +6,7 @@ namespace FrootLuips.Subnautica.Trees;
 /// Represents a tree structure of <typeparamref name="T"/> values.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public partial class Tree<T> where T : class
+public partial class Tree<T>
 {
 	/// <summary>
 	/// The root node of the tree. (Read only)
@@ -85,7 +85,7 @@ public partial class Tree<T> where T : class
 		try
 		{
 			node = Find(predicate, search);
-			return node != default;
+			return true;
 		}
 		catch (Exception)
 		{
@@ -153,7 +153,7 @@ public partial class Tree<T> where T : class
 		try
 		{
 			node = GetNodeAtPath(path);
-			return node != default;
+			return true;
 		}
 		catch (Exception)
 		{

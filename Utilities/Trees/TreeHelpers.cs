@@ -39,7 +39,7 @@ public static class TreeHelpers
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <returns></returns>
-	public static int GetDepth<T>(this Tree<T>.Node node) where T : class
+	public static int GetDepth<T>(this Tree<T>.Node node)
 	{
 		var current = node;
 		int depth;
@@ -59,7 +59,7 @@ public static class TreeHelpers
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <returns></returns>
-	public static string GetPath<T>(this Tree<T>.Node node) where T : class
+	public static string GetPath<T>(this Tree<T>.Node node)
 	{
 		var current = node;
 		Stack<string> path = new(capacity: 1);
@@ -81,7 +81,7 @@ public static class TreeHelpers
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <returns></returns>
-	public static IEnumerable<Tree<T>.Node> EnumerateAncestors<T>(this	Tree<T>.Node node) where T : class
+	public static IEnumerable<Tree<T>.Node> EnumerateAncestors<T>(this	Tree<T>.Node node)
 	{
 		var current = node;
 		for (int i = 0; i < MaxDepth; i++)
@@ -102,7 +102,7 @@ public static class TreeHelpers
 	/// <param name="search"></param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
-	public static IEnumerable<Tree<T>.Node> Enumerate<T>(this Tree<T>.Node node, SearchMode search) where T : class
+	public static IEnumerable<Tree<T>.Node> Enumerate<T>(this Tree<T>.Node node, SearchMode search)
 	{
 		return search switch {
 			SearchMode.BreadthFirst => Enumerate_BreadthFirst(node),
@@ -111,7 +111,7 @@ public static class TreeHelpers
 		};
 	}
 
-	private static IEnumerable<Tree<T>.Node> Enumerate_BreadthFirst<T>(Tree<T>.Node root) where T : class
+	private static IEnumerable<Tree<T>.Node> Enumerate_BreadthFirst<T>(Tree<T>.Node root)
 	{
 		Queue<Tree<T>.Node> queue = new(capacity: 1);
 		queue.Enqueue(root);
@@ -134,7 +134,7 @@ public static class TreeHelpers
 		while (queue.Count > 0);
 	}
 
-	private static IEnumerable<Tree<T>.Node> Enumerate_DepthFirst<T>(Tree<T>.Node root) where T : class
+	private static IEnumerable<Tree<T>.Node> Enumerate_DepthFirst<T>(Tree<T>.Node root)
 	{
 		Stack<Tree<T>.Node> stack = new(capacity: 1);
 		stack.Push(root);
@@ -157,7 +157,7 @@ public static class TreeHelpers
 		while (stack.Count > 0);
 	}
 
-	private static bool CheckForChildDesync<T>(Tree<T>.Node? current, Tree<T>.Node child) where T : class
+	private static bool CheckForChildDesync<T>(Tree<T>.Node? current, Tree<T>.Node child)
 	{
 		if (child.Parent != current)
 		{
