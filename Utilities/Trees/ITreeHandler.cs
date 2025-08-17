@@ -12,7 +12,7 @@ public class TreeHandler<T> : ITreeHandler<T> where T : class
 	/// </summary>
 	public required Func<T, T?> GetParent { get; set; }
 	/// <summary>
-	/// <inheritdoc cref="ITreeHandler{T}.SetParent(T, Node{T}?)"/>
+	/// <inheritdoc cref="ITreeHandler{T}.SetParent(T, Tree{T}.Node?)"/>
 	/// </summary>
 	public required Action<T, T?> SetParent { get; set; }
 
@@ -30,17 +30,17 @@ public class TreeHandler<T> : ITreeHandler<T> where T : class
 	/// </summary>
 	public required Func<T, int, T> GetChild { get; set; }
 
-	Node<T>? ITreeHandler<T>.GetParent(T value)
+	Tree<T>.Node? ITreeHandler<T>.GetParent(T value)
 	{
 		var parent = GetParent(value);
 		return parent == null ? null : new(GetParent(value)!, this);
 	}
 
-	void ITreeHandler<T>.SetParent(T value, Node<T>? parent) => SetParent(value, parent?.Value);
+	void ITreeHandler<T>.SetParent(T value, Tree<T>.Node? parent) => SetParent(value, parent?.Value);
 
 	string ITreeHandler<T>.GetName(T value) => GetName(value);
 
-	Node<T> ITreeHandler<T>.GetChild(T value, int index) => new(GetChild(value, index), this);
+	Tree<T>.Node ITreeHandler<T>.GetChild(T value, int index) => new(GetChild(value, index), this);
 	int ITreeHandler<T>.GetChildCount(T value) => GetChildCount(value);
 }
 
@@ -55,14 +55,14 @@ public interface ITreeHandler<T> where T : class
 	/// </summary>
 	/// <param name="value"></param>
 	/// <returns></returns>
-	Node<T>? GetParent(T value);
+	Tree<T>.Node? GetParent(T value);
 
 	/// <summary>
 	/// Set a <typeparamref name="T"/> <paramref name="value"/>'s <paramref name="parent"/> object.
 	/// </summary>
 	/// <param name="value"></param>
 	/// <param name="parent"></param>
-	void SetParent(T value, Node<T>? parent);
+	void SetParent(T value, Tree<T>.Node? parent);
 
 	/// <summary>
 	/// Gets the name of a <typeparamref name="T"/> <paramref name="value"/>.
@@ -83,5 +83,5 @@ public interface ITreeHandler<T> where T : class
 	/// <param name="value"></param>
 	/// <param name="index"></param>
 	/// <returns></returns>
-	Node<T> GetChild(T value, int index);
+	Tree<T>.Node GetChild(T value, int index);
 }

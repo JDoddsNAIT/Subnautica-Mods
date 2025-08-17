@@ -6,8 +6,13 @@ namespace FrootLuips.Subnautica.Trees.Handlers;
 /// </summary>
 public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<GameObject>
 {
+	/// <summary>
+	/// Static instance of this class.
+	/// </summary>
+	public static TransformHandler Main { get; } = new();
+
 	/// <inheritdoc/>
-	public Node<Transform> GetChild(Transform value, int index)
+	public Tree<Transform>.Node GetChild(Transform value, int index)
 		=> new(value.GetChild(index), this);
 
 	/// <inheritdoc/>
@@ -19,15 +24,15 @@ public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<Gam
 		=> value.gameObject.name;
 
 	/// <inheritdoc/>
-	public Node<Transform>? GetParent(Transform value)
+	public Tree<Transform>.Node? GetParent(Transform value)
 		=> new(value.parent, this);
 
 	/// <inheritdoc/>
-	public void SetParent(Transform value, Node<Transform>? parent)
+	public void SetParent(Transform value, Tree<Transform>.Node? parent)
 		=> value.SetParent(parent?.Value);
 
 	/// <inheritdoc/>
-	public Node<GameObject> GetChild(GameObject value, int index)
+	public Tree<GameObject>.Node GetChild(GameObject value, int index)
 		=> new(value.transform.GetChild(index).gameObject, this);
 
 	/// <inheritdoc/>
@@ -39,10 +44,20 @@ public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<Gam
 		=> value.name;
 
 	/// <inheritdoc/>
-	public Node<GameObject>? GetParent(GameObject value)
+	public Tree<GameObject>.Node? GetParent(GameObject value)
 		=> new(value.transform.parent.gameObject, this);
 
 	/// <inheritdoc/>
-	public void SetParent(GameObject value, Node<GameObject>? parent)
+	public void SetParent(GameObject value, Tree<GameObject>.Node? parent)
 		=> value.transform.SetParent(parent?.Value.transform);
+
+	/// <summary>
+	/// Creates a new <see cref="Tree{T}"/> with the default handler.
+	/// </summary>
+	/// <param name="root"></param>
+	/// <returns></returns>
+	public static Tree<Transform> CreateTree(Transform root)
+	{
+		return new Tree<Transform>(root, Main);
+	}
 }

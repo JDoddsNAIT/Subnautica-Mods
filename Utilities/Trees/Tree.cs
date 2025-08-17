@@ -12,13 +12,13 @@ public partial class Tree<T> where T : class
 	/// <summary>
 	/// The root node of the tree.
 	/// </summary>
-	public Node<T> Root { get; private set; }
+	public Node Root { get; private set; }
 
 	/// <summary>
 	/// Constructs a new <see cref="Tree{T}"/> structure.
 	/// </summary>
 	/// <param name="root"></param>
-	public Tree(Node<T> root)
+	public Tree(Tree<T>.Node root)
 	{
 		Root = root;
 	}
@@ -30,7 +30,7 @@ public partial class Tree<T> where T : class
 	/// <param name="handler"></param>
 	public Tree(T root, ITreeHandler<T> handler)
 	{
-		Root = new Node<T>(root, handler);
+		Root = new Tree<T>.Node(root, handler);
 	}
 
 	/// <summary>
@@ -111,7 +111,7 @@ public partial class Tree<T> where T : class
 	}
 
 	/// <summary>
-	/// Gets a <see cref="Node{T}"/> at the specified <paramref name="path"/>.
+	/// Gets a <see cref="Node"/> at the specified <paramref name="path"/>.
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
@@ -119,7 +119,7 @@ public partial class Tree<T> where T : class
 	public T GetNodeAtPath(string path)
 	{
 		var parts = path.Split(TreeHelpers.PATH_SEPARATOR);
-		Node<T> current = Root;
+		Tree<T>.Node current = Root;
 
 		for (int i = 0; i < parts.Length; i++)
 		{
