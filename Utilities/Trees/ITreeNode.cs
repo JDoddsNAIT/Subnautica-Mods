@@ -87,21 +87,24 @@ public abstract class TreeNode<T> : ITreeNode<T> where T : TreeNode<T>
 public interface ITreeNode<T> where T : class
 {
 	/// <summary>
-	/// The parent of this node.
+	/// Gets or sets the parent of this node.
 	/// </summary>
 	Tree<T>.Node? Parent { get; set; }
 
 	/// <summary>
-	/// The nodes name. Ideally this should be unique across this node's siblings.
+	/// The name of this node. (Read only)
 	/// </summary>
+	/// <remarks>
+	/// Ideally a node's name should be unique across siblings.
+	/// </remarks>
 	string Name { get; }
 	/// <summary>
-	/// The node's underlying <typeparamref name="T"/> value.
+	/// The node's underlying <typeparamref name="T"/> value. (Read only)
 	/// </summary>
 	T Value { get; }
 
 	/// <summary>
-	/// The number of children this node has.
+	/// The number of children this node has. (Read only)
 	/// </summary>
 	int ChildCount { get; }
 	/// <summary>

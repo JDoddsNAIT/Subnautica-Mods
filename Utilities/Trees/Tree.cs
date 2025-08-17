@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
@@ -10,35 +9,35 @@ namespace FrootLuips.Subnautica.Trees;
 public partial class Tree<T> where T : class
 {
 	/// <summary>
-	/// The root node of the tree.
+	/// The root node of the tree. (Read only)
 	/// </summary>
-	public Node Root { get; private set; }
+	public Node Root { get; }
 
 	/// <summary>
 	/// Constructs a new <see cref="Tree{T}"/> structure.
 	/// </summary>
 	/// <param name="root"></param>
-	public Tree(Tree<T>.Node root)
-	{
-		Root = root;
-	}
+	public Tree(Node root) => Root = root;
 
 	/// <summary>
 	/// Constructs a new <see cref="Tree{T}"/> structure with a <paramref name="root"/> node and <paramref name="handler"/>.
 	/// </summary>
 	/// <param name="root"></param>
 	/// <param name="handler"></param>
-	public Tree(T root, ITreeHandler<T> handler)
-	{
-		Root = new Tree<T>.Node(root, handler);
-	}
+	public Tree(T root, ITreeHandler<T> handler) : this(new Tree<T>.Node(root, handler)) { }
 
 	/// <summary>
 	/// Enumerates over all values in the tree.
 	/// </summary>
 	/// <param name="search"></param>
 	/// <returns></returns>
-	public IEnumerable<T> Enumerate(SearchMode search) => Root.Enumerate(search).Select(n => n.Value);
+	public IEnumerable<T> Enumerate(SearchMode search)
+	{
+		foreach (T value in Root.Enumerate(search))
+		{
+			yield return value;
+		}
+	}
 
 	/// <summary>
 	/// Finds the first node in the tree with the given <paramref name="name"/>.
@@ -52,7 +51,7 @@ public partial class Tree<T> where T : class
 		foreach (var node in Root.Enumerate(search))
 		{
 			if (node.Name == name)
-				return node.Value;
+				return node;
 		}
 		throw new ArgumentException($"There is no node in the tree with the name '{name}'");
 	}
@@ -68,8 +67,8 @@ public partial class Tree<T> where T : class
 	{
 		foreach (var node in Root.Enumerate(search))
 		{
-			if (predicate(node.Value))
-				return node.Value;
+			if (predicate(node))
+				return node;
 		}
 		throw new ArgumentException($"No node exists that matches the predicate.");
 	}
@@ -105,8 +104,8 @@ public partial class Tree<T> where T : class
 	{
 		foreach (var node in Root.Enumerate(search))
 		{
-			if (predicate(node.Value))
-				yield return node.Value;
+			if (predicate(node))
+				yield return node;
 		}
 	}
 
@@ -144,7 +143,7 @@ public partial class Tree<T> where T : class
 	}
 
 	/// <summary>
-	/// Tries to get a <see cref="Node{T}"/> at the specified <paramref name="path"/>.
+	/// Tries to get a <see cref="Node"/> at the specified <paramref name="path"/>.
 	/// </summary>
 	/// <param name="path"></param>
 	/// <param name="node"></param>

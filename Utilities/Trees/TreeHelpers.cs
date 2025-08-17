@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FrootLuips.Subnautica.Trees.Handlers;
 
 namespace FrootLuips.Subnautica.Trees;
 
@@ -24,9 +25,9 @@ public enum SearchMode
 public static class TreeHelpers
 {
 	/// <summary>
-	/// The maximum depth allowed for tree structures in order to prevent infinite loops. Default value is 256.
+	/// The maximum depth allowed for tree structures in order to prevent infinite loops. Default value is 32.
 	/// </summary>
-	public static uint MaxDepth { get; set; } = 256;
+	public static uint MaxDepth { get; set; } = 32;
 	/// <summary>
 	/// Delimiter for node paths.
 	/// </summary>
@@ -166,5 +167,17 @@ public static class TreeHelpers
 		}
 
 		return false;
+	}
+
+	/// <summary>
+	/// Creates a new <see cref="Tree{T}"/> with this node at it's <paramref name="root"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="root"></param>
+	/// <returns></returns>
+	public static Tree<T> Create<T>(this T root)
+		where T : class, ITreeNode<T>
+	{
+		return new Tree<T>(root, TreeNodeHandler<T>.Main);
 	}
 }

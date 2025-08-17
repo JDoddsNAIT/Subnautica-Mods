@@ -6,7 +6,7 @@ namespace FrootLuips.Subnautica.Trees;
 public partial class Tree<T> where T : class
 {
 	/// <summary>
-	/// Represents a single node in a tree structure.
+	/// <inheritdoc cref="ITreeNode{T}"/>
 	/// </summary>
 	/// <param name="Value"></param>
 	/// <param name="Handler"></param>
@@ -54,9 +54,6 @@ public partial class Tree<T> where T : class
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return this.GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 	}
 }
