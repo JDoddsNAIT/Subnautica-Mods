@@ -62,7 +62,7 @@ internal static class EffectManager
 			yield return new UnityEngine.WaitForSeconds(Plugin.Options.Delay);
 			try
 			{
-				AddEffect(callback: Plugin.Game.LogInfo);
+				AddEffect(callback: Plugin.Console.LogInfo);
 			}
 			catch (Exception ex)
 			{
