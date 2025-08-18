@@ -45,13 +45,17 @@ internal class Trees_Tests : ITestContainer
 		yield return TestResult.Assert(nameof(Enumerate_BFS), Enumerate_BFS, group);
 		yield return TestResult.Assert(nameof(Enumerate_DFS), Enumerate_DFS, group);
 		yield return TestResult.Assert(nameof(FindNodeAtPath), FindNodeAtPath, group);
+		yield return TestResult.Assert(nameof(GetDepth), GetDepth, group);
+		yield return TestResult.Assert(nameof(GetPath), GetPath, group);
 	}
 
 	private bool Enumerate_BFS(out string message)
 	{
 		var expected = new[] { "A", "B", "C", "D", "E", "F" };
 
-		var actual = _tree!.EnumerateValues(SearchMode.BreadthFirst).Select(static t => t.gameObject.name).ToArray();
+		var actual = _tree!.Enumerate(SearchMode.BreadthFirst)
+			.Select(static n => n.Value.gameObject.name)
+			.ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
@@ -61,7 +65,9 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "D", "E", "C", "F" };
 
-		var actual = _tree!.EnumerateValues(SearchMode.DepthFirst).Select(static t => t.gameObject.name).ToArray();
+		var actual = _tree!.Enumerate(SearchMode.DepthFirst)
+			.Select(static n => n.Value.gameObject.name)
+			.ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
@@ -75,5 +81,24 @@ internal class Trees_Tests : ITestContainer
 
 		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
 		return actual == expected;
+	}
+
+	private bool GetDepth(out string message)
+	{
+		int expected = 2;
+		var node = _tree!.Find(SearchMode.DepthFirst, "E");
+		int actual = node.GetDepth();
+
+		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
+		return actual == expected;
+	}
+
+	private bool GetPath(out string message)
+	{
+		string expected = "A/B/E";
+		var node = _tree!.Find(SearchMode.DepthFirst, "E");
+		string actual = node.GetPath();
+
+		return TestResult.GetResult(out message, actual, expected);
 	}
 }

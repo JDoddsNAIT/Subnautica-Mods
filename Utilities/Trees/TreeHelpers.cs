@@ -5,21 +5,6 @@ using FrootLuips.Subnautica.Trees.Handlers;
 namespace FrootLuips.Subnautica.Trees;
 
 /// <summary>
-/// Determines how the children of a <see cref="ITreeNode{T}"/> are searched.
-/// </summary>
-public enum SearchMode
-{
-	/// <summary>
-	/// Breadth-First Search.
-	/// </summary>
-	BreadthFirst,
-	/// <summary>
-	/// Depth-First Search.
-	/// </summary>
-	DepthFirst
-}
-
-/// <summary>
 /// Static helper class for <see cref="Tree{T}"/> structures.
 /// </summary>
 public static class TreeHelpers
@@ -27,11 +12,33 @@ public static class TreeHelpers
 	/// <summary>
 	/// The maximum depth allowed for tree structures in order to prevent infinite loops. Default value is 32.
 	/// </summary>
-	public static uint MaxDepth { get; set; } = 32;
+	public static ushort MaxDepth { get; set; } = 32;
 	/// <summary>
 	/// Delimiter for node paths.
 	/// </summary>
 	public const char PATH_SEPARATOR = '/';
+
+	private const string _MESSAGE = "Child desync detected. Make sure to remove a node from the parent when a new one is assigned.";
+
+	/// <summary>
+	/// Gets the root node.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <returns></returns>
+	public static Tree<T>.Node GetRoot<T>(this Tree<T>.Node node)
+	{
+		var root = node;
+		bool found = false;
+		for (int i = 0; i < MaxDepth && !found; i++)
+		{
+			if (root.IsRoot)
+				found = true;
+			else
+				root = (Tree<T>.Node)root.Parent!;
+		}
+		return root;
+	}
 
 	/// <summary>
 	/// Gets the depth of a <paramref name="node"/>.
@@ -48,10 +55,10 @@ public static class TreeHelpers
 		int depth;
 		for (depth = 0; depth < MaxDepth; depth++)
 		{
-			if (current.Parent.HasValue)
-				current = (Tree<T>.Node)current.Parent;
-			else
+			if (current.IsRoot)
 				break;
+			else
+				current = (Tree<T>.Node)current.Parent!;
 		}
 		return depth;
 	}
@@ -70,14 +77,32 @@ public static class TreeHelpers
 		{
 			path.Push(current.Name);
 
-			if (current.Parent.HasValue)
-				current = (Tree<T>.Node)current.Parent;
-			else
+			if (current.IsRoot)
 				break;
+			else
+				current = (Tree<T>.Node)current.Parent!;
 		}
 		return string.Join(PATH_SEPARATOR.ToString(), path);
 	}
 
+	/// <summary>
+	/// Gets the first immediate child with the name <paramref name="childName"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <param name="childName"></param>
+	/// <returns></returns>
+	/// <exception cref="NodeNotFoundException"></exception>
+	public static Tree<T>.Node GetChild<T>(this Tree<T>.Node node, string childName)
+	{
+		for (int i = 0; i < node.ChildCount; i++)
+		{
+			var child = node.GetChild(i);
+			if (child.Name == childName)
+				return child;
+		}
+		throw NodeNotFoundException.WithName(childName);
+	}
 	/// <summary>
 	/// Enumerates over all of a <paramref name="node"/>'s ancestors.
 	/// </summary>
@@ -90,31 +115,95 @@ public static class TreeHelpers
 		for (int i = 0; i < MaxDepth; i++)
 		{
 			yield return current;
-			if (current.Parent.HasValue)
-				current = current.Parent.Value;
-			else
+			if (current.IsRoot)
 				yield break;
+			else
+				current = (Tree<T>.Node)current.Parent!;
 		}
 	}
 
 	/// <summary>
-	/// Enumerates over all children of a <paramref name="node"/>.
+	/// Enumerates over all descendants of a <paramref name="node"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <param name="search"></param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
+	/// <exception cref="InvalidOperationException"></exception>
 	public static IEnumerable<Tree<T>.Node> Enumerate<T>(this Tree<T>.Node node, SearchMode search)
 	{
-		return search switch {
-			SearchMode.BreadthFirst => Enumerate_BreadthFirst(node),
-			SearchMode.DepthFirst => Enumerate_DepthFirst(node),
-			_ => throw new ArgumentOutOfRangeException(nameof(search)),
-		};
+		return Enumerate(node, new SearchOptions<T>() { Search = search });
 	}
 
-	private static IEnumerable<Tree<T>.Node> Enumerate_BreadthFirst<T>(Tree<T>.Node root)
+	/// <summary>
+	/// Enumerates over the values of all descendants of a <paramref name="node"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <param name="search"></param>
+	/// <returns></returns>
+	public static IEnumerable<T> EnumerateValues<T>(this Tree<T>.Node node, SearchMode search)
+	{
+		return EnumerateValues(node, new SearchOptions<T>() { Search = search });
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="Enumerate{T}(Tree{T}.Node, SearchMode)"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <param name="options"></param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentOutOfRangeException"></exception>
+	/// <exception cref="InvalidOperationException"></exception>
+	public static IEnumerable<Tree<T>.Node> Enumerate<T>(this Tree<T>.Node node, SearchOptions<T> options)
+	{
+		static Tree<T>.Node converter(Tree<T>.Node n) => n;
+		try
+		{
+			return options.Search switch {
+				SearchMode.BreadthFirst => Enumerate_BreadthFirst(node, options, converter),
+				SearchMode.DepthFirst => Enumerate_DepthFirst(node, options, converter),
+				_ => throw new ArgumentOutOfRangeException(nameof(SearchMode)),
+			};
+		}
+		catch
+		{
+			throw;
+		}
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="EnumerateValues{T}(Tree{T}.Node, SearchMode)"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <param name="options"></param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentOutOfRangeException"></exception>
+	/// <exception cref="InvalidOperationException"></exception>
+	public static IEnumerable<T> EnumerateValues<T>(this Tree<T>.Node node, SearchOptions<T> options)
+	{
+		static T converter(Tree<T>.Node n) => n.Value;
+		try
+		{
+			return options.Search switch {
+				SearchMode.BreadthFirst => Enumerate_BreadthFirst(node, options, converter),
+				SearchMode.DepthFirst => Enumerate_DepthFirst(node, options, converter),
+				_ => throw new ArgumentOutOfRangeException(nameof(SearchMode)),
+			};
+		}
+		catch
+		{
+			throw;
+		}
+	}
+
+	private static IEnumerable<TResult> Enumerate_BreadthFirst<T, TResult>(
+		Tree<T>.Node root,
+		SearchOptions<T> options,
+		Converter<Tree<T>.Node, TResult> converter)
 	{
 		Queue<Tree<T>.Node> queue = new(capacity: 1);
 		queue.Enqueue(root);
@@ -122,22 +211,24 @@ public static class TreeHelpers
 		do
 		{
 			current = queue.Dequeue();
-			if (current.GetDepth() < MaxDepth)
-				yield return current;
-			else
-				continue;
+			yield return converter(current);
 
 			for (int i = 0; i < current.ChildCount; i++)
 			{
 				var child = current[childIndex: i];
-				if (!CheckForChildDesync(current, child))
+				CheckForChildDesync(parent: current, child);
+
+				if (options.ShouldSearch(child))
 					queue.Enqueue(child);
 			}
 		}
 		while (queue.Count > 0);
 	}
 
-	private static IEnumerable<Tree<T>.Node> Enumerate_DepthFirst<T>(Tree<T>.Node root)
+	private static IEnumerable<TResult> Enumerate_DepthFirst<T, TResult>(
+		Tree<T>.Node root,
+		SearchOptions<T> options,
+		Converter<Tree<T>.Node, TResult> converter)
 	{
 		Stack<Tree<T>.Node> stack = new(capacity: 1);
 		stack.Push(root);
@@ -145,31 +236,26 @@ public static class TreeHelpers
 		do
 		{
 			current = stack.Pop();
-			if (current.GetDepth() < MaxDepth)
-				yield return current;
-			else
-				continue;
+			yield return converter(current);
 
 			for (int i = current.ChildCount - 1; i >= 0; i--)
 			{
-				var child = current[childIndex: i];
-				if (!CheckForChildDesync(current, child))
+				var child = current.GetChild(i);
+				CheckForChildDesync(parent: current, child);
+
+				if (options.ShouldSearch(child))
 					stack.Push(child);
 			}
 		}
 		while (stack.Count > 0);
 	}
 
-	private static bool CheckForChildDesync<T>(Tree<T>.Node? current, Tree<T>.Node child)
+	private static void CheckForChildDesync<T>(Tree<T>.Node parent, Tree<T>.Node child)
 	{
-		if (child.Parent != current)
+		if (child.Parent != parent)
 		{
-			const string message = "Child desync detected. Make sure to remove a node from the parent when a new one is assigned.";
-			Plugin.Logger.LogWarning(message);
-			return true;
+			throw new InvalidOperationException(_MESSAGE);
 		}
-
-		return false;
 	}
 
 	/// <summary>
@@ -182,5 +268,66 @@ public static class TreeHelpers
 		where T : class, ITreeNode<T>
 	{
 		return new Tree<T>(root, TreeNodeHandler<T>.Main);
+	}
+}
+
+/// <summary>
+/// The exception thrown when a node is not found within a <see cref="Tree{T}"/>.
+/// </summary>
+[Serializable]
+public class NodeNotFoundException : Exception
+{
+	private const string
+		_NAME = "There is no node in the tree with the name '{0}'.",
+		_VALUE = "There is no node in the tree with the given value '{0}'.",
+		_PATH = "No node exists at the path '{0}'",
+		_PREDICATE = "There is no node in the tree that matches the predicate.";
+
+	/// <summary/>
+	public NodeNotFoundException() { }
+	/// <summary/>
+	public NodeNotFoundException(string message) : base(message) { }
+	/// <summary/>
+	public NodeNotFoundException(string message, Exception inner) : base(message, inner) { }
+	/// <summary/>
+	protected NodeNotFoundException(
+	  System.Runtime.Serialization.SerializationInfo info,
+	  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+
+	/// <summary>
+	/// No node was found with the given <paramref name="name"/>.
+	/// </summary>
+	/// <param name="name"></param>
+	/// <param name="inner"></param>
+	public static NodeNotFoundException WithName(string name, Exception? inner = null)
+		=> Create(string.Format(_NAME, name), inner);
+
+	/// <summary>
+	/// No node was found with the given <paramref name="value"/>.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <param name="inner"></param>
+	/// <returns></returns>
+	public static NodeNotFoundException WithValue(object? value, Exception? inner = null)
+		=> Create(string.Format(_VALUE, value), inner);
+	/// <summary>
+	/// No node was found at the given <paramref name="path"/>.
+	/// </summary>
+	/// <param name="path"></param>
+	/// <param name="inner"></param>
+	/// <returns></returns>
+	public static NodeNotFoundException AtPath(string[] path, Exception? inner = null)
+		=> Create(string.Format(_PATH, string.Join(TreeHelpers.PATH_SEPARATOR.ToString(), path)), inner);
+	/// <summary>
+	/// No node was found that meets a <see cref="Predicate{T}"/>
+	/// </summary>
+	/// <param name="inner"></param>
+	/// <returns></returns>
+	public static NodeNotFoundException MeetsPredicate(Exception? inner = null)
+		=> Create(_PREDICATE, inner);
+
+	private static NodeNotFoundException Create(string msg, Exception? inner)
+	{
+		return inner == null ? new NodeNotFoundException(msg) : new NodeNotFoundException(msg, inner);
 	}
 }

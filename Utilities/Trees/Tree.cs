@@ -9,7 +9,7 @@ namespace FrootLuips.Subnautica.Trees;
 public partial class Tree<T>
 {
 	/// <summary>
-	/// The root node of the tree. (Read only)
+	/// The root node of the <see cref="Tree{T}"/>.
 	/// </summary>
 	public Node Root { get; }
 
@@ -18,83 +18,99 @@ public partial class Tree<T>
 	/// </summary>
 	/// <param name="root"></param>
 	/// <param name="handler"></param>
-	public Tree(T root, ITreeHandler<T> handler) : this(new Tree<T>.Node(root, handler)) { }
+	public Tree(T root, ITreeHandler<T> handler) => Root = new Node(root, handler, isRoot: true);
 
-	/// <summary>
-	/// Constructs a new <see cref="Tree{T}"/> structure.
-	/// </summary>
-	/// <param name="root"></param>
-	public Tree(Node root) => Root = root;
-
-	/// <summary>
-	/// Enumerates over all values in the tree.
-	/// </summary>
-	/// <param name="search"></param>
-	/// <returns></returns>
-	public IEnumerable<T> EnumerateValues(SearchMode search)
-	{
-		foreach (T value in Root.Enumerate(search))
-		{
-			yield return value;
-		}
-	}
-
-	/// <summary>
-	/// Enumerates over all nodes in the tree.
-	/// </summary>
-	/// <param name="search"></param>
-	/// <returns></returns>
+	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, SearchMode)"/>
 	public IEnumerable<Node> Enumerate(SearchMode search) => Root.Enumerate(search);
+
+	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, SearchOptions{T})"/>
+	public IEnumerable<Node> Enumerate(SearchOptions<T> options) => Root.Enumerate(options);
+
+	/// <inheritdoc cref="TreeHelpers.EnumerateValues{T}(Tree{T}.Node, SearchMode)"/>
+	public IEnumerable<T> EnumerateValues(SearchMode search) => Root.EnumerateValues(search);
+
+	/// <inheritdoc cref="TreeHelpers.EnumerateValues{T}(Tree{T}.Node, SearchOptions{T})"/>
+	public IEnumerable<T> EnumerateValues(SearchOptions<T> options) => Root.EnumerateValues(options);
 
 	/// <summary>
 	/// Finds the first node in the tree with the given <paramref name="name"/>.
 	/// </summary>
-	/// <param name="name"></param>
 	/// <param name="search"></param>
+	/// <param name="name"></param>
 	/// <returns></returns>
-	/// <exception cref="ArgumentException"></exception>
-	public Node Find(string name, SearchMode search)
+	/// <exception cref="NodeNotFoundException"></exception>
+	public Node Find(SearchMode search, string name)
 	{
 		bool withName(Node node) => node.Name == name;
-		if (TryFind(withName, search, out var node))
-		{
-			return node!.Value;
-		}
-		else
-		{
-			throw new ArgumentException($"There is no node in the tree with the name '{name}'");
-		}
+		return TryFind(search, withName, out var node)
+			? node!.Value
+			: throw NodeNotFoundException.WithName(name);
+	}
+
+	/// <summary>
+	/// Finds the first node in the tree with the given <paramref name="value"/>.
+	/// </summary>
+	/// <param name="search"></param>
+	/// <param name="value"></param>
+	/// <returns></returns>
+	/// <exception cref="NodeNotFoundException"></exception>
+	public Node Find(SearchMode search, T value)
+	{
+		Predicate<Node> withValue = value switch {
+			IEquatable<T> eq => (node) => eq.Equals(node.Value),
+			_ => (node) => value?.Equals(node.Value) ?? false,
+		};
+
+		return TryFind(search, withValue, out var node)
+			? node!.Value
+			: throw NodeNotFoundException.WithValue(value);
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="Find(SearchMode, T)"/>
+	/// </summary>
+	/// <param name="search"></param>
+	/// <param name="value"></param>
+	/// <param name="comparer"></param>
+	/// <returns></returns>
+	/// <exception cref="NodeNotFoundException"></exception>
+	public Node Find(SearchMode search, T value, IEqualityComparer<T> comparer)
+	{
+		bool withValue(Node node) => comparer.Equals(node.Value, value);
+		return TryFind(search, withValue, out var node)
+			? node!.Value
+			: throw NodeNotFoundException.WithValue(value);
 	}
 
 	/// <summary>
 	/// Finds the first node in the tree that meets the <paramref name="predicate"/>.
 	/// </summary>
-	/// <param name="predicate"></param>
 	/// <param name="search"></param>
+	/// <param name="predicate"></param>
 	/// <returns></returns>
-	/// <exception cref="ArgumentException"></exception>
-	public Node Find(Predicate<Node> predicate, SearchMode search)
+	/// <exception cref="NodeNotFoundException"></exception>
+	public Node Find(SearchMode search, Predicate<Node> predicate)
 	{
-		foreach (var node in Root.Enumerate(search))
+		foreach (var node in this.Enumerate(search))
 		{
 			if (predicate(node))
 				return node;
 		}
-		throw new ArgumentException($"No node exists that matches the predicate.");
+		throw NodeNotFoundException.MeetsPredicate();
 	}
 
 	/// <summary>
 	/// Tries to find the first <paramref name="node"/> in the tree that meets the <paramref name="predicate"/>.
 	/// </summary>
-	/// <param name="predicate"></param>
 	/// <param name="search"></param>
+	/// <param name="predicate"></param>
 	/// <param name="node"></param>
-	/// <returns></returns>
-	public bool TryFind(Predicate<Node> predicate, SearchMode search, out Node? node)
+	/// <returns><see langword="true"/> if a node was found.</returns>
+	public bool TryFind(SearchMode search, Predicate<Node> predicate, out Node? node)
 	{
 		try
 		{
-			node = Find(predicate, search);
+			node = Find(search, predicate);
 			return true;
 		}
 		catch (Exception)
@@ -107,10 +123,10 @@ public partial class Tree<T>
 	/// <summary>
 	/// Finds all nodes in the tree that meet the <paramref name="predicate"/>.
 	/// </summary>
-	/// <param name="predicate"></param>
 	/// <param name="search"></param>
+	/// <param name="predicate"></param>
 	/// <returns></returns>
-	public IEnumerable<Node> FindAll(Predicate<Node> predicate, SearchMode search)
+	public IEnumerable<Node> FindAll(SearchMode search, Predicate<Node> predicate)
 	{
 		foreach (var node in Root.Enumerate(search))
 		{
@@ -124,7 +140,7 @@ public partial class Tree<T>
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
-	/// <exception cref="ArgumentException"></exception>
+	/// <exception cref="NodeNotFoundException"></exception>
 	public Node GetNodeAtPath(string path)
 	{
 		var parts = path.Split(TreeHelpers.PATH_SEPARATOR);
@@ -147,8 +163,7 @@ public partial class Tree<T>
 
 			if (!found)
 			{
-				string subPath = string.Join(TreeHelpers.PATH_SEPARATOR.ToString(), parts[..(i + 1)]);
-				throw new ArgumentException($"No node exists at path '{subPath}'");
+				throw NodeNotFoundException.AtPath(parts[..(i + 1)]);
 			}
 		}
 
