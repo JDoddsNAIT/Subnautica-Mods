@@ -24,7 +24,7 @@ public record struct SearchOptions<T>
 
 	internal readonly bool ShouldSearch(Tree<T>.Node node)
 	{
-		return node.GetDepth() < (MaxDepth ?? TreeHelpers.MaxDepth) && (Predicate == null || Predicate(node));
+		return node.GetDepth() <= (MaxDepth ?? TreeHelpers.MaxDepth) && (Predicate == null || Predicate(node));
 	}
 }
 
