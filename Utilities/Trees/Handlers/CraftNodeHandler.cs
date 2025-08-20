@@ -9,18 +9,34 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	/// </summary>
 	public static CraftNodeHandler Main { get; } = new();
 
-	/// <inheritdoc/>
-	public Tree<TreeNode>.Node GetChild(TreeNode value, int index) => new(value[index], this);
+	private readonly ITreeHandler<global::TreeNode> _handler = new TreeHandler<global::TreeNode>() {
+		GetParent = static (global::TreeNode v, out global::TreeNode? p) => (p = v.parent) != null,
+		GetName = static (v) => v.id,
+		GetChildCount = static (v) => v.childCount,
+		GetChildByIndex = static (v, i) => v[i],
+	};
 
 	/// <inheritdoc/>
-	public int GetChildCount(TreeNode value) => value.childCount;
+	public Tree<TreeNode>.Node? GetParent(TreeNode value)
+	{
+		return _handler.GetParent(value);
+	}
 
 	/// <inheritdoc/>
-	public string GetName(TreeNode value) => value.id;
+	public string GetName(TreeNode value)
+	{
+		return _handler.GetName(value);
+	}
 
 	/// <inheritdoc/>
-	public Tree<TreeNode>.Node? GetParent(TreeNode value) => value.parent == null ? null : new(value.parent, this);
+	public int GetChildCount(TreeNode value)
+	{
+		return _handler.GetChildCount(value);
+	}
 
 	/// <inheritdoc/>
-	public void SetParent(TreeNode value, Tree<TreeNode>.Node? parent) => value.parent = parent;
+	public Tree<TreeNode>.Node GetChild(TreeNode value, int index)
+	{
+		return _handler.GetChild(value, index);
+	}
 }

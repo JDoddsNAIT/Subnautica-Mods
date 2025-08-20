@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
-/// Represents a tree structure of <typeparamref name="T"/> values.
+/// Represents a tree structure of <typeparamref name="T"/> values that can be queried and enumerated.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public partial class Tree<T>
@@ -18,19 +18,19 @@ public partial class Tree<T>
 	/// </summary>
 	/// <param name="root"></param>
 	/// <param name="handler"></param>
-	public Tree(T root, ITreeHandler<T> handler) => Root = new Node(root, handler, isRoot: true);
+	public Tree(T root, ITreeHandler<T> handler) => Root = new Node(root, handler);
+
+	/// <inheritdoc cref="TreeHelpers.EnumerateNodes{T}(Tree{T}.Node, SearchMode)"/>
+	public IEnumerable<Node> EnumerateNodes(SearchMode search) => TreeHelpers.EnumerateNodes(Root, search);
+
+	/// <inheritdoc cref="TreeHelpers.EnumerateNodes{T}(Tree{T}.Node, Tree{T}.SearchOptions)"/>
+	public IEnumerable<Node> EnumerateNodes(SearchOptions options) => TreeHelpers.EnumerateNodes(Root, options);
 
 	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, SearchMode)"/>
-	public IEnumerable<Node> Enumerate(SearchMode search) => Root.Enumerate(search);
+	public IEnumerable<T> Enumerate(SearchMode search) => Root.Enumerate(search);
 
-	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, SearchOptions{T})"/>
-	public IEnumerable<Node> Enumerate(SearchOptions<T> options) => Root.Enumerate(options);
-
-	/// <inheritdoc cref="TreeHelpers.EnumerateValues{T}(Tree{T}.Node, SearchMode)"/>
-	public IEnumerable<T> EnumerateValues(SearchMode search) => Root.EnumerateValues(search);
-
-	/// <inheritdoc cref="TreeHelpers.EnumerateValues{T}(Tree{T}.Node, SearchOptions{T})"/>
-	public IEnumerable<T> EnumerateValues(SearchOptions<T> options) => Root.EnumerateValues(options);
+	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, Tree{T}.SearchOptions)"/>
+	public IEnumerable<T> Enumerate(SearchOptions options) => Root.Enumerate(options);
 
 	/// <summary>
 	/// Finds the first node in the tree with the given <paramref name="name"/>.
@@ -91,7 +91,7 @@ public partial class Tree<T>
 	/// <exception cref="NodeNotFoundException"></exception>
 	public Node Find(SearchMode search, Predicate<Node> predicate)
 	{
-		foreach (var node in this.Enumerate(search))
+		foreach (var node in this.EnumerateNodes(search))
 		{
 			if (predicate(node))
 				return node;
@@ -128,7 +128,7 @@ public partial class Tree<T>
 	/// <returns></returns>
 	public IEnumerable<Node> FindAll(SearchMode search, Predicate<Node> predicate)
 	{
-		foreach (var node in Root.Enumerate(search))
+		foreach (var node in Root.EnumerateNodes(search))
 		{
 			if (predicate(node))
 				yield return node;

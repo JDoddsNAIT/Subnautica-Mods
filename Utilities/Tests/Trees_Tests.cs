@@ -53,7 +53,7 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "C", "D", "E", "F" };
 
-		var actual = _tree!.Enumerate(SearchMode.BreadthFirst)
+		var actual = _tree!.EnumerateNodes(SearchMode.BreadthFirst)
 			.Select(static n => n.Value.gameObject.name)
 			.ToArray();
 
@@ -65,7 +65,7 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "D", "E", "C", "F" };
 
-		var actual = _tree!.Enumerate(SearchMode.DepthFirst)
+		var actual = _tree!.EnumerateNodes(SearchMode.DepthFirst)
 			.Select(static n => n.Value.gameObject.name)
 			.ToArray();
 

@@ -13,7 +13,6 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 
 	private readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
 		GetParent = static (Transform v, out Transform? p) => (p = v.parent) != null,
-		SetParent = static (v, p) => v.SetParent(p),
 		GetName = static (v) => v.gameObject.name,
 		GetChildCount = static (v) => v.childCount,
 		GetChildByIndex = static (v, i) => v.GetChild(i),
@@ -23,9 +22,6 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 	public Tree<Transform>.Node? GetParent(Transform value) => _handler.GetParent(value);
 
 	/// <inheritdoc/>
-	public void SetParent(Transform value, Tree<Transform>.Node? parent) => _handler.SetParent(value, parent);
-
-	/// <inheritdoc/>
 	public string GetName(Transform value) => _handler.GetName(value);
 
 	/// <inheritdoc/>
@@ -33,4 +29,14 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 
 	/// <inheritdoc/>
 	public Tree<Transform>.Node GetChild(Transform value, int index) => _handler.GetChild(value, index);
+
+	/// <summary>
+	/// Creates a new <see cref="Tree{T}"/> of <see cref="Transform"/>s using the default handler.
+	/// </summary>
+	/// <param name="root"></param>
+	/// <returns></returns>
+	public static Tree<Transform> CreateTree(Transform root)
+	{
+		return new Tree<Transform>(root, Main);
+	}
 }
