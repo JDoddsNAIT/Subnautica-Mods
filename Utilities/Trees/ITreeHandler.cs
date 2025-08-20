@@ -1,47 +1,78 @@
-﻿using System;
-
-namespace FrootLuips.Subnautica.Trees;
+﻿namespace FrootLuips.Subnautica.Trees;
 /// <summary>
 /// Generic implementation of <see cref="ITreeHandler{T}"/> for reference types.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class TreeHandler<T> : ITreeHandler<T> where T : class
 {
-	/// <summary>
-	/// <inheritdoc cref="ITreeHandler{T}.GetParent(T)"/>
-	/// </summary>
-	public required Func<T, T?> GetParent { get; set; }
-	/// <summary>
-	/// <inheritdoc cref="ITreeHandler{T}.SetParent(T, Tree{T}.Node?)"/>
-	/// </summary>
-	public required Action<T, T?> SetParent { get; set; }
+	/// <inheritdoc cref="GetParentDelegate"/>
+	public required GetParentDelegate GetParent { get; set; }
+	/// <inheritdoc cref="SetParentDelegate"/>
+	public required SetParentDelegate SetParent { get; set; }
+	/// <inheritdoc cref="GetNameDelegate"/>
+	public required GetNameDelegate GetName { get; set; }
+	/// <inheritdoc cref="GetChildCountDelegate"/>
+	public required GetChildCountDelegate GetChildCount { get; set; }
+	/// <inheritdoc cref="GetChildByIndexDelegate"/>
+	public required GetChildByIndexDelegate GetChildByIndex { get; set; }
 
-	/// <summary>
-	/// <inheritdoc cref="ITreeHandler{T}.GetName(T)"/>
-	/// </summary>
-	public required Func<T, string> GetName { get; set; }
+	Tree<T>.Node ITreeHandler<T>.GetChild(T value, int index)
+	{
+		return new Tree<T>.Node(this.GetChildByIndex(value, index), this);
+	}
 
-	/// <summary>
-	/// <inheritdoc cref="ITreeHandler{T}.GetChildCount(T)"/>
-	/// </summary>
-	public required Func<T, int> GetChildCount { get; set; }
-	/// <summary>
-	/// <inheritdoc cref="ITreeHandler{T}.GetChild(T, int)"/>
-	/// </summary>
-	public required Func<T, int, T> GetChild { get; set; }
+	int ITreeHandler<T>.GetChildCount(T value)
+	{
+		return this.GetChildCount(value);
+	}
+
+	string ITreeHandler<T>.GetName(T value)
+	{
+		return this.GetName(value);
+	}
 
 	Tree<T>.Node? ITreeHandler<T>.GetParent(T value)
 	{
-		var parent = GetParent(value);
-		return parent == null ? null : new(GetParent(value)!, this);
+		return this.GetParent(value, out var parent) ? new Tree<T>.Node(parent!, this) : null;
 	}
 
-	void ITreeHandler<T>.SetParent(T value, Tree<T>.Node? parent) => SetParent(value, parent?.Value);
+	void ITreeHandler<T>.SetParent(T value, Tree<T>.Node? parent)
+	{
+		this.SetParent(value, parent?.Value);
+	}
 
-	string ITreeHandler<T>.GetName(T value) => GetName(value);
-
-	Tree<T>.Node ITreeHandler<T>.GetChild(T value, int index) => new(GetChild(value, index), this);
-	int ITreeHandler<T>.GetChildCount(T value) => GetChildCount(value);
+	/// <summary>
+	/// Gets the <paramref name="parent"/> object of a <typeparamref name="T"/> <paramref name="value"/>.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <param name="parent"></param>
+	/// <returns></returns>
+	public delegate bool GetParentDelegate(T value, out T? parent);
+	/// <summary>
+	/// Sets the <paramref name="parent"/> object for a <typeparamref name="T"/> <paramref name="value"/>.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <param name="parent"></param>
+	public delegate void SetParentDelegate(T value, T? parent);
+	/// <summary>
+	/// Get the name of a <typeparamref name="T"/> <paramref name="value"/>.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <returns></returns>
+	public delegate string GetNameDelegate(T value);
+	/// <summary>
+	/// Gets number of <typeparamref name="T"/> objects with <paramref name="value"/> as their parent.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <returns></returns>
+	public delegate int GetChildCountDelegate(T value);
+	/// <summary>
+	/// Gets the child of a <typeparamref name="T"/> <paramref name="value"/> at the specified <paramref name="index"/>.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <param name="index"></param>
+	/// <returns></returns>
+	public delegate T GetChildByIndexDelegate(T value, int index);
 }
 
 /// <summary>
@@ -72,13 +103,13 @@ public interface ITreeHandler<T>
 	string GetName(T value);
 
 	/// <summary>
-	/// Returns the amount of children for a <typeparamref name="T"/> <paramref name="value"/>.
+	/// Gets number of <typeparamref name="T"/> objects with <paramref name="value"/> as their parent.
 	/// </summary>
 	/// <param name="value"></param>
 	/// <returns></returns>
 	int GetChildCount(T value);
 	/// <summary>
-	/// Returns the child at the given <paramref name="index"/> for a <typeparamref name="T"/> <paramref name="value"/>.
+	/// Gets the child of a <typeparamref name="T"/> <paramref name="value"/> at the specified <paramref name="index"/>.
 	/// </summary>
 	/// <param name="value"></param>
 	/// <param name="index"></param>

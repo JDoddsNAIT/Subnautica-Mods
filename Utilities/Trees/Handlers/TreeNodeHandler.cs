@@ -3,7 +3,7 @@
 /// Default <see cref="ITreeHandler{T}"/> for types that implement <see cref="ITreeNode{T}"/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public sealed class TreeNodeHandler<T> : ITreeHandler<T> where T : class, ITreeNode<T>
+public sealed class TreeNodeHandler<T> : ITreeHandler<T> where T : ITreeNode<T>
 {
 	/// <summary>
 	/// A static instance of this class.
