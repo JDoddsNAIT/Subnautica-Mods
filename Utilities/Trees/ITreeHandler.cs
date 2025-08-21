@@ -1,36 +1,36 @@
-﻿namespace FrootLuips.Subnautica.Trees;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FrootLuips.Subnautica.Trees;
 /// <summary>
-/// Defines how the parent, name, and children of <typeparamref name="T"/> values are accessed within a <see cref="Tree{T}"/> structure.
+/// Defines how the parent, name, and children of <typeparamref name="T"/> values are accessed.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface ITreeHandler<T>
 {
 	/// <summary>
-	/// Returns the parent object of a <typeparamref name="T"/> <paramref name="value"/>.
+	/// Tries to get the parent of a <paramref name="node"/>.
 	/// </summary>
-	/// <param name="value"></param>
-	/// <returns></returns>
-	Tree<T>.Node? GetParent(T value);
-
+	/// <param name="node"></param>
+	/// <param name="parent">The parent object. This value is not null if this method returns <see langword="true"/>.</param>
+	/// <returns><see langword="true"/> if the <paramref name="node"/> has a parent.</returns>
+	bool TryGetParent(T node, [NotNullWhen(true)] out T? parent);
 	/// <summary>
-	/// Gets the name of a <typeparamref name="T"/> <paramref name="value"/>.
+	/// Gets the name of a <paramref name="node"/>.
 	/// </summary>
-	/// <param name="value"></param>
+	/// <param name="node"></param>
 	/// <returns></returns>
-	string GetName(T value);
-
+	string GetName(T node);
 	/// <summary>
-	/// Gets number of <typeparamref name="T"/> objects with <paramref name="value"/> as their parent.
+	/// Gets the number of objects with the given <paramref name="node"/> as it's parent.
 	/// </summary>
-	/// <param name="value"></param>
+	/// <param name="node"></param>
 	/// <returns></returns>
-	int GetChildCount(T value);
+	int GetChildCount(T node);
 	/// <summary>
-	/// Gets the child of a <typeparamref name="T"/> <paramref name="value"/> at the specified <paramref name="index"/>.
+	/// Gets the child of a <paramref name="node"/> at the specified <paramref name="index"/>.
 	/// </summary>
-	/// <param name="value"></param>
+	/// <param name="node"></param>
 	/// <param name="index"></param>
 	/// <returns></returns>
-	Tree<T>.Node GetChild(T value, int index);
+	T GetChild(T node, int index);
 }

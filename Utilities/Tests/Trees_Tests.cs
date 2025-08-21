@@ -35,7 +35,7 @@ internal class Trees_Tests : ITestContainer
 		//  / \   \
 		// D   E   F
 
-		return Trees.Handlers.TransformHandler.CreateTree(_objects[0].transform);
+		return new Tree<Transform>(_objects[0].transform, Trees.Handlers.TransformHandler.Main);
 	}
 
 	public IEnumerator<TestResult> GetResults()
@@ -53,8 +53,8 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "C", "D", "E", "F" };
 
-		var actual = _tree!.EnumerateNodes(SearchMode.BreadthFirst)
-			.Select(static n => n.Value.gameObject.name)
+		var actual = _tree!.Enumerate(SearchMode.BreadthFirst)
+			.Select(static o => o.gameObject.name)
 			.ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
@@ -65,8 +65,8 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "D", "E", "C", "F" };
 
-		var actual = _tree!.EnumerateNodes(SearchMode.DepthFirst)
-			.Select(static n => n.Value.gameObject.name)
+		var actual = _tree!.Enumerate(SearchMode.DepthFirst)
+			.Select(static o => o.gameObject.name)
 			.ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
@@ -77,7 +77,7 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = _objects![4].transform; // E
 		string path = "A/B/E";
-		var actual = _tree!.GetNodeAtPath(path);
+		var actual = _tree!.GetNodeAt(path);
 
 		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
 		return actual == expected;
@@ -86,7 +86,7 @@ internal class Trees_Tests : ITestContainer
 	private bool GetDepth(out string message)
 	{
 		int expected = 2;
-		var node = _tree!.Find(SearchMode.DepthFirst, "E");
+		var node = _tree!.Find("E", SearchMode.DepthFirst);
 		int actual = node.GetDepth();
 
 		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
@@ -96,7 +96,7 @@ internal class Trees_Tests : ITestContainer
 	private bool GetPath(out string message)
 	{
 		string expected = "A/B/E";
-		var node = _tree!.Find(SearchMode.DepthFirst, "E");
+		var node = _tree!.Find("E", SearchMode.DepthFirst);
 		string actual = node.GetPath();
 
 		return TestResult.GetResult(out message, actual, expected);

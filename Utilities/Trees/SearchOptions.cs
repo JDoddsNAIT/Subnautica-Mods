@@ -1,44 +1,50 @@
 ﻿using System;
 
 namespace FrootLuips.Subnautica.Trees;
-public partial class Tree<T>
+/// <summary>
+/// Defines how a search is conducted.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="Search">How and what nodes are searched.</param>
+/// <param name="Inclusive">Should the first node be included in the result?</param>
+/// <param name="MaxDepth">The maximum depth of the search.</param>
+/// <param name="Predicate">Limits the search to nodes that meet this condition.</param>
+public record class SearchOptions<T>(
+	SearchMode Search,
+	bool Inclusive = true,
+	ushort? MaxDepth = null,
+	Predicate<T>? Predicate = null)
 {
 	/// <summary>
-	/// Options for enumerating through <see cref="Tree{T}"/>s.
+	/// Should this <paramref name="node"/> be searched?
 	/// </summary>
-	public record class SearchOptions
+	/// <param name="handler"></param>
+	/// <param name="node"></param>
+	/// <returns></returns>
+	public bool ShouldSearch(ITreeHandler<T> handler, T node)
 	{
-		/// <summary>
-		/// <inheritdoc cref="SearchMode"/>
-		/// </summary>
-		public required SearchMode Search { get; set; }
-		/// <summary>
-		/// Should the starting node be excluded from the search?
-		/// </summary>
-		public bool IncludeStart { get; set; } = true;
-		/// <summary>
-		/// The maximum depth of the search.
-		/// </summary>
-		public ushort? MaxDepth { get; set; } = null;
-		/// <summary>
-		/// Limits the search to only nodes that meet this condition. The starting node is always searched.
-		/// </summary>
-		public Predicate<Node>? Predicate { get; set; } = null;
+		return handler.GetDepth(node) <= (MaxDepth ?? TreeHelpers.MaxDepth)
+			&& (Predicate == null || Predicate(node));
 	}
+
+	/// <summary>
+	/// Creates a set of options from a <see cref="SearchMode"/>.
+	/// </summary>
+	/// <param name="search"></param>
+	public static implicit operator SearchOptions<T>(SearchMode search) => new(search);
 }
 
-
 /// <summary>
-/// Determines how the children of a <see cref="Tree{T}.Node"/> are searched.
+/// Determines how and what node are searched.
 /// </summary>
 public enum SearchMode
 {
 	/// <summary>
-	/// Breadth-First Search through all descendants.
+	/// Breadth-First search through all descendants.
 	/// </summary>
 	BreadthFirst,
 	/// <summary>
-	/// Depth-First Search through all descendants.
+	/// Depth-First search through all descendants.
 	/// </summary>
 	DepthFirst,
 	/// <summary>
@@ -46,4 +52,3 @@ public enum SearchMode
 	/// </summary>
 	Ancestors,
 }
-

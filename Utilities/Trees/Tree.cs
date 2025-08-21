@@ -3,95 +3,57 @@ using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
-/// Represents a tree structure of <typeparamref name="T"/> values that can be queried and enumerated.
+/// Represents a tree structure of <typeparamref name="T"/> values.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public partial class Tree<T>
 {
 	/// <summary>
-	/// The root node of the <see cref="Tree{T}"/>.
+	/// The root node of the tree.
 	/// </summary>
-	public Node Root { get; }
+	public T Root { get; set; }
+	/// <summary>
+	/// The <see cref="ITreeHandler{T}"/> used to access the parent, name, and children of a node.
+	/// </summary>
+	public ITreeHandler<T> Handler { get; }
 
 	/// <summary>
-	/// Constructs a new <see cref="Tree{T}"/> structure with a <paramref name="root"/> node and <paramref name="handler"/>.
+	/// Constructs a <see cref="Tree{T}"/> structure with the given <paramref name="root"/> node and <paramref name="handler"/>.
 	/// </summary>
 	/// <param name="root"></param>
 	/// <param name="handler"></param>
-	public Tree(T root, ITreeHandler<T> handler) => Root = new Node(root, handler);
-
-	/// <inheritdoc cref="TreeHelpers.EnumerateNodes{T}(Tree{T}.Node, SearchMode)"/>
-	public IEnumerable<Node> EnumerateNodes(SearchMode search) => TreeHelpers.EnumerateNodes(Root, search);
-
-	/// <inheritdoc cref="TreeHelpers.EnumerateNodes{T}(Tree{T}.Node, Tree{T}.SearchOptions)"/>
-	public IEnumerable<Node> EnumerateNodes(SearchOptions options) => TreeHelpers.EnumerateNodes(Root, options);
-
-	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, SearchMode)"/>
-	public IEnumerable<T> Enumerate(SearchMode search) => Root.Enumerate(search);
-
-	/// <inheritdoc cref="TreeHelpers.Enumerate{T}(Tree{T}.Node, Tree{T}.SearchOptions)"/>
-	public IEnumerable<T> Enumerate(SearchOptions options) => Root.Enumerate(options);
-
-	/// <summary>
-	/// Finds the first node in the tree with the given <paramref name="name"/>.
-	/// </summary>
-	/// <param name="search"></param>
-	/// <param name="name"></param>
-	/// <returns></returns>
-	/// <exception cref="NodeNotFoundException"></exception>
-	public Node Find(SearchMode search, string name)
+	public Tree(T root, ITreeHandler<T> handler)
 	{
-		bool withName(Node node) => node.Name == name;
-		return TryFind(search, withName, out var node)
-			? node!.Value
-			: throw NodeNotFoundException.WithName(name);
+		this.Root = root;
+		this.Handler = handler;
 	}
 
 	/// <summary>
-	/// Finds the first node in the tree with the given <paramref name="value"/>.
+	/// Enumerates over every node in the tree.
 	/// </summary>
 	/// <param name="search"></param>
-	/// <param name="value"></param>
 	/// <returns></returns>
-	/// <exception cref="NodeNotFoundException"></exception>
-	public Node Find(SearchMode search, T value)
-	{
-		Predicate<Node> withValue = value switch {
-			IEquatable<T> eq => (node) => eq.Equals(node.Value),
-			_ => (node) => value?.Equals(node.Value) ?? false,
-		};
-
-		return TryFind(search, withValue, out var node)
-			? node!.Value
-			: throw NodeNotFoundException.WithValue(value);
-	}
+	public IEnumerable<T> Enumerate(SearchMode search)
+		=> TreeHelpers.Enumerate(this.Root, this.Handler, search);
 
 	/// <summary>
-	/// <inheritdoc cref="Find(SearchMode, T)"/>
+	/// <inheritdoc cref="Enumerate(SearchMode)"/>
 	/// </summary>
-	/// <param name="search"></param>
-	/// <param name="value"></param>
-	/// <param name="comparer"></param>
+	/// <param name="options"></param>
 	/// <returns></returns>
-	/// <exception cref="NodeNotFoundException"></exception>
-	public Node Find(SearchMode search, T value, IEqualityComparer<T> comparer)
-	{
-		bool withValue(Node node) => comparer.Equals(node.Value, value);
-		return TryFind(search, withValue, out var node)
-			? node!.Value
-			: throw NodeNotFoundException.WithValue(value);
-	}
+	public IEnumerable<T> Enumerate(SearchOptions<T> options)
+		=> TreeHelpers.Enumerate(this.Root, this.Handler, options);
 
 	/// <summary>
-	/// Finds the first node in the tree that meets the <paramref name="predicate"/>.
+	/// Finds the first node that meets the given <paramref name="predicate"/>.
 	/// </summary>
-	/// <param name="search"></param>
 	/// <param name="predicate"></param>
+	/// <param name="options"></param>
 	/// <returns></returns>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public Node Find(SearchMode search, Predicate<Node> predicate)
+	public T Find(Predicate<T> predicate, SearchOptions<T> options)
 	{
-		foreach (var node in this.EnumerateNodes(search))
+		foreach (var node in this.Enumerate(options))
 		{
 			if (predicate(node))
 				return node;
@@ -100,93 +62,66 @@ public partial class Tree<T>
 	}
 
 	/// <summary>
-	/// Tries to find the first <paramref name="node"/> in the tree that meets the <paramref name="predicate"/>.
+	/// Finds all nodes in the tree that meet the given <paramref name="predicate"/>.
 	/// </summary>
-	/// <param name="search"></param>
 	/// <param name="predicate"></param>
-	/// <param name="node"></param>
-	/// <returns><see langword="true"/> if a node was found.</returns>
-	public bool TryFind(SearchMode search, Predicate<Node> predicate, out Node? node)
-	{
-		try
-		{
-			node = Find(search, predicate);
-			return true;
-		}
-		catch (Exception)
-		{
-			node = null;
-			return false;
-		}
-	}
-
-	/// <summary>
-	/// Finds all nodes in the tree that meet the <paramref name="predicate"/>.
-	/// </summary>
-	/// <param name="search"></param>
-	/// <param name="predicate"></param>
+	/// <param name="options"></param>
 	/// <returns></returns>
-	public IEnumerable<Node> FindAll(SearchMode search, Predicate<Node> predicate)
+	/// <exception cref="NodeNotFoundException"></exception>
+	public IEnumerable<T> FindAll(Predicate<T> predicate, SearchOptions<T> options)
 	{
-		foreach (var node in Root.EnumerateNodes(search))
+		int count = 0;
+		foreach (var node in this.Enumerate(options))
 		{
 			if (predicate(node))
+			{
+				count++;
 				yield return node;
+			}
 		}
+
+		if (count == 0)
+			throw NodeNotFoundException.MeetsPredicate();
 	}
 
 	/// <summary>
-	/// Gets a <see cref="Node"/> at the specified <paramref name="path"/>.
+	/// Finds the first node with the given <paramref name="name"/>.
+	/// </summary>
+	/// <param name="name"></param>
+	/// <param name="options"></param>
+	/// <returns></returns>
+	/// <exception cref="NodeNotFoundException"></exception>
+	public T Find(string name, SearchOptions<T> options)
+	{
+		foreach (var node in this.Enumerate(options))
+		{
+			if (Handler.GetName(node) == name)
+				return node;
+		}
+		throw NodeNotFoundException.WithName(name);
+	}
+
+	/// <summary>
+	/// Gets the node at the given <paramref name="path"/> relative to the <see cref="Root"/>.
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public Node GetNodeAtPath(string path)
+	public T GetNodeAt(string path)
 	{
+		T current = this.Root;
 		var parts = path.Split(TreeHelpers.PATH_SEPARATOR);
-
-		if (parts[0] == Root.Name)
+		if (parts[0] == Handler.GetName(current))
 			parts = parts[1..];
-		Node current = Root;
 
 		for (int i = 0; i < parts.Length; i++)
 		{
-			bool found = false;
-			for (int j = 0; j < current.ChildCount && !found; j++)
-			{
-				if (current[j].Name == parts[i])
-				{
-					found = true;
-					current = current[j];
-				}
-			}
-
-			if (!found)
-			{
-				throw NodeNotFoundException.AtPath(parts[..(i + 1)]);
-			}
+			current = parts[i] switch {
+				".." when Handler.TryGetParent(current, out T? parent) => parent,
+				_ when Handler.TryGetChildByName(node: current, name: parts[i], out T? child) => child,
+				_ => throw NodeNotFoundException.AtPath(parts[..(i + 1)]),
+			};
 		}
-
 		return current;
-	}
-
-	/// <summary>
-	/// Tries to get a <see cref="Node"/> at the specified <paramref name="path"/>.
-	/// </summary>
-	/// <param name="path"></param>
-	/// <param name="node"></param>
-	/// <returns></returns>
-	public bool TryGetNodeAtPath(string path, out Node? node)
-	{
-		try
-		{
-			node = GetNodeAtPath(path);
-			return true;
-		}
-		catch (Exception)
-		{
-			node = default;
-			return false;
-		}
 	}
 }

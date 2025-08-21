@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
 
 namespace FrootLuips.Subnautica.Trees.Handlers;
 /// <summary>
@@ -19,24 +20,26 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 	};
 
 	/// <inheritdoc/>
-	public Tree<Transform>.Node? GetParent(Transform value) => _handler.GetParent(value);
-
-	/// <inheritdoc/>
-	public string GetName(Transform value) => _handler.GetName(value);
-
-	/// <inheritdoc/>
-	public int GetChildCount(Transform value) => _handler.GetChildCount(value);
-
-	/// <inheritdoc/>
-	public Tree<Transform>.Node GetChild(Transform value, int index) => _handler.GetChild(value, index);
-
-	/// <summary>
-	/// Creates a new <see cref="Tree{T}"/> of <see cref="Transform"/>s using the default handler.
-	/// </summary>
-	/// <param name="root"></param>
-	/// <returns></returns>
-	public static Tree<Transform> CreateTree(Transform root)
+	public bool TryGetParent(Transform node, [NotNullWhen(true)] out Transform? parent)
 	{
-		return new Tree<Transform>(root, Main);
+		return _handler.TryGetParent(node, out parent);
+	}
+
+	/// <inheritdoc/>
+	public string GetName(Transform node)
+	{
+		return _handler.GetName(node);
+	}
+
+	/// <inheritdoc/>
+	public int GetChildCount(Transform node)
+	{
+		return _handler.GetChildCount(node);
+	}
+
+	/// <inheritdoc/>
+	public Transform GetChild(Transform node, int index)
+	{
+		return _handler.GetChild(node, index);
 	}
 }

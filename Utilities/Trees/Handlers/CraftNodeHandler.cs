@@ -1,4 +1,6 @@
-﻿namespace FrootLuips.Subnautica.Trees.Handlers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FrootLuips.Subnautica.Trees.Handlers;
 /// <summary>
 /// Standard <see cref="ITreeHandler{T}"/> for <see cref="global::TreeNode"/>s.
 /// </summary>
@@ -17,9 +19,9 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	};
 
 	/// <inheritdoc/>
-	public Tree<TreeNode>.Node? GetParent(TreeNode value)
+	public bool TryGetParent(TreeNode node, [NotNullWhen(true)] out TreeNode? parent)
 	{
-		return _handler.GetParent(value);
+		return _handler.TryGetParent(node, out parent);
 	}
 
 	/// <inheritdoc/>
@@ -35,8 +37,8 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	}
 
 	/// <inheritdoc/>
-	public Tree<TreeNode>.Node GetChild(TreeNode value, int index)
+	public TreeNode GetChild(TreeNode node, int index)
 	{
-		return _handler.GetChild(value, index);
+		return _handler.GetChild(node, index);
 	}
 }
