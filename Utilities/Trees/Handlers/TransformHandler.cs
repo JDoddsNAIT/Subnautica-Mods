@@ -12,17 +12,30 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 	/// </summary>
 	public static TransformHandler Main { get; } = new();
 
-	private readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
-		GetParent = static (Transform v, out Transform? p) => (p = v.parent) != null,
-		GetName = static (v) => v.gameObject.name,
-		GetChildCount = static (v) => v.childCount,
-		GetChildByIndex = static (v, i) => v.GetChild(i),
+	private static readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
+		GetRoot = static (n) => n.root,
+		TryGetParent = static (Transform n, [NotNullWhen(true)] out Transform? p) => (p = n.parent) != null,
+		GetName = static (n) => n.name,
+		GetChildCount = static (n) => n.childCount,
+		GetChildByIndex = static (n, i) => n.GetChild(i),
 	};
+
+	/// <inheritdoc/>
+	public Transform GetRoot(Transform node)
+	{
+		return _handler.GetRoot(node);
+	}
 
 	/// <inheritdoc/>
 	public bool TryGetParent(Transform node, [NotNullWhen(true)] out Transform? parent)
 	{
 		return _handler.TryGetParent(node, out parent);
+	}
+
+	/// <inheritdoc/>
+	public int GetDepth(Transform node)
+	{
+		return _handler.GetDepth(node);
 	}
 
 	/// <inheritdoc/>

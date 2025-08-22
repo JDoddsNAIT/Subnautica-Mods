@@ -11,34 +11,39 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	/// </summary>
 	public static CraftNodeHandler Main { get; } = new();
 
-	private readonly ITreeHandler<global::TreeNode> _handler = new TreeHandler<global::TreeNode>() {
-		GetParent = static (global::TreeNode v, out global::TreeNode? p) => (p = v.parent) != null,
-		GetName = static (v) => v.id,
-		GetChildCount = static (v) => v.childCount,
-		GetChildByIndex = static (v, i) => v[i],
-	};
+	/// <inheritdoc/>
+	public TreeNode GetRoot(TreeNode node)
+	{
+		return node.root;
+	}
 
 	/// <inheritdoc/>
 	public bool TryGetParent(TreeNode node, [NotNullWhen(true)] out TreeNode? parent)
 	{
-		return _handler.TryGetParent(node, out parent);
+		return (parent = node.parent) != null;
 	}
 
 	/// <inheritdoc/>
-	public string GetName(TreeNode value)
+	public int GetDepth(TreeNode node)
 	{
-		return _handler.GetName(value);
+		return node.depth;
 	}
 
 	/// <inheritdoc/>
-	public int GetChildCount(TreeNode value)
+	public string GetName(TreeNode node)
 	{
-		return _handler.GetChildCount(value);
+		return node.id;
+	}
+
+	/// <inheritdoc/>
+	public int GetChildCount(TreeNode node)
+	{
+		return node.childCount;
 	}
 
 	/// <inheritdoc/>
 	public TreeNode GetChild(TreeNode node, int index)
 	{
-		return _handler.GetChild(node, index);
+		return node[index];
 	}
 }
