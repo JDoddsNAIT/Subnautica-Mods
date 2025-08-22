@@ -19,13 +19,24 @@ public static class TreeHelpers
 	public const char PATH_SEPARATOR = '/';
 
 	/// <summary>
+	/// Creates a new <see cref="Tree{T}"/> with this <paramref name="node"/> at it's root.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <returns></returns>
+	public static Tree<T> CreateTree<T>(this T node) where T : class, ITreeNode<T>
+	{
+		return new Tree<T>(node, TreeNodeHandler<T>.Main);
+	}
+
+	/// <summary>
 	/// Gets the root object of a <paramref name="node"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <param name="handler"></param>
 	/// <param name="node"></param>
+	/// <param name="handler"></param>
 	/// <returns></returns>
-	public static T GetRoot<T>(this ITreeHandler<T> handler, T node)
+	public static T GetRoot<T>(T node, ITreeHandler<T> handler)
 	{
 		T current = node;
 		bool foundRoot = false;
@@ -47,10 +58,10 @@ public static class TreeHelpers
 	/// Gets the number of a <paramref name="node"/>'s ancestors.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <param name="handler"></param>
 	/// <param name="node"></param>
+	/// <param name="handler"></param>
 	/// <returns></returns>
-	public static int GetDepth<T>(this ITreeHandler<T> handler, T node)
+	public static int GetDepth<T>(T node, ITreeHandler<T> handler)
 	{
 		T current = node;
 		bool foundRoot = false;
@@ -74,10 +85,10 @@ public static class TreeHelpers
 	/// Gets the absolute path to a <paramref name="node"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <param name="handler"></param>
 	/// <param name="node"></param>
+	/// <param name="handler"></param>
 	/// <returns></returns>
-	public static string GetPath<T>(this ITreeHandler<T> handler, T node)
+	public static string GetPath<T>(T node, ITreeHandler<T> handler)
 	{
 		T current = node;
 		bool foundRoot = false;
@@ -173,7 +184,7 @@ public static class TreeHelpers
 
 		while (handler.TryGetParent(current, out current))
 		{
-			if (options.ShouldSearch(handler, current))
+			if (options.ShouldSearch(current, handler))
 				yield return current;
 		}
 	}
@@ -198,7 +209,7 @@ public static class TreeHelpers
 			for (int i = handler.GetChildCount(current) - 1; i >= 0; i--)
 			{
 				var child = handler.GetChild(current, i);
-				if (options.ShouldSearch(handler, child))
+				if (options.ShouldSearch(child, handler))
 					stack.Push(child);
 			}
 		}
@@ -225,7 +236,7 @@ public static class TreeHelpers
 			for (int i = 0; i < handler.GetChildCount(current); i++)
 			{
 				var child = handler.GetChild(current, i);
-				if (options.ShouldSearch(handler, child))
+				if (options.ShouldSearch(child, handler))
 					queue.Enqueue(child);
 			}
 		}

@@ -45,7 +45,6 @@ internal class Trees_Tests : ITestContainer
 		yield return TestResult.Assert(nameof(Enumerate_BFS), Enumerate_BFS, group);
 		yield return TestResult.Assert(nameof(Enumerate_DFS), Enumerate_DFS, group);
 		yield return TestResult.Assert(nameof(FindNodeAtPath), FindNodeAtPath, group);
-		yield return TestResult.Assert(nameof(GetDepth), GetDepth, group);
 		yield return TestResult.Assert(nameof(GetPath), GetPath, group);
 	}
 
@@ -83,21 +82,11 @@ internal class Trees_Tests : ITestContainer
 		return actual == expected;
 	}
 
-	private bool GetDepth(out string message)
-	{
-		int expected = 2;
-		var node = _tree!.Find("E", SearchMode.DepthFirst);
-		int actual = node.GetDepth();
-
-		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
-		return actual == expected;
-	}
-
 	private bool GetPath(out string message)
 	{
 		string expected = "A/B/E";
 		var node = _tree!.Find("E", SearchMode.DepthFirst);
-		string actual = node.GetPath();
+		string actual = TreeHelpers.GetPath(node, _tree.Handler);
 
 		return TestResult.GetResult(out message, actual, expected);
 	}

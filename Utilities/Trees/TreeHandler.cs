@@ -1,4 +1,6 @@
-﻿namespace FrootLuips.Subnautica.Trees;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FrootLuips.Subnautica.Trees;
 
 /// <summary>
 /// Generic implementation of <see cref="ITreeHandler{T}"/>.
@@ -15,50 +17,56 @@ public class TreeHandler<T> : ITreeHandler<T>
 	/// <inheritdoc cref="GetChildByIndexDelegate"/>
 	public required GetChildByIndexDelegate GetChildByIndex { get; set; }
 
-	Tree<T>.Node ITreeHandler<T>.GetChild(T value, int index)
+	/// <inheritdoc cref="GetRootDelegate"/>
+	public GetRootDelegate? GetRoot { get; set; } = null;
+	/// <inheritdoc cref="GetDepthDelegate"/>
+	public GetDepthDelegate? GetDepth { get; set; } = null;
+
+	T ITreeHandler<T>.GetChild(T node, int index)
 	{
-		return new Tree<T>.Node(this.GetChildByIndex(value, index), this);
+		return GetChildByIndex(node, index);
 	}
 
-	int ITreeHandler<T>.GetChildCount(T value)
+	int ITreeHandler<T>.GetChildCount(T node)
 	{
-		return this.GetChildCount(value);
+		return GetChildCount(node);
 	}
 
-	string ITreeHandler<T>.GetName(T value)
+	string ITreeHandler<T>.GetName(T node)
 	{
-		return this.GetName(value);
+		return GetName(node);
 	}
 
-	Tree<T>.Node? ITreeHandler<T>.GetParent(T value)
+	int ITreeHandler<T>.GetDepth(T node)
 	{
-		return this.GetParent(value, out T? parent) ? new Tree<T>.Node(parent!, this) : null;
+		return GetDepth == null ? TreeHelpers.GetDepth(node, this) : GetDepth(node);
 	}
 
-	/// <summary>
-	/// Gets the <paramref name="parent"/> object of a <typeparamref name="T"/> <paramref name="value"/>.
-	/// </summary>
-	/// <param name="value"></param>
-	/// <param name="parent"></param>
-	/// <returns></returns>
-	public delegate bool GetParentDelegate(T value, out T? parent);
-	/// <summary>
-	/// Get the name of a <typeparamref name="T"/> <paramref name="value"/>.
-	/// </summary>
-	/// <param name="value"></param>
-	/// <returns></returns>
-	public delegate string GetNameDelegate(T value);
-	/// <summary>
-	/// Gets number of <typeparamref name="T"/> objects with <paramref name="value"/> as their parent.
-	/// </summary>
-	/// <param name="value"></param>
-	/// <returns></returns>
-	public delegate int GetChildCountDelegate(T value);
-	/// <summary>
-	/// Gets the child of a <typeparamref name="T"/> <paramref name="value"/> at the specified <paramref name="index"/>.
-	/// </summary>
-	/// <param name="value"></param>
-	/// <param name="index"></param>
-	/// <returns></returns>
-	public delegate T GetChildByIndexDelegate(T value, int index);
+	bool ITreeHandler<T>.TryGetParent(T node, [NotNullWhen(true)] out T? parent)
+	{
+		return GetParent(node, out parent);
+	}
+
+	T ITreeHandler<T>.GetRoot(T node)
+	{
+		return GetRoot == null ? TreeHelpers.GetRoot(node, this) : GetRoot(node);
+	}
+
+	/// <inheritdoc cref="ITreeHandler{T}.GetRoot(T)"/>
+	public delegate T GetRootDelegate(T node);
+	
+	/// <inheritdoc cref="ITreeHandler{T}.TryGetParent(T, out T)"/>
+	public delegate bool GetParentDelegate(T node, [NotNullWhen(true)] out T? parent);
+	
+	/// <inheritdoc cref="ITreeHandler{T}.GetName(T)"/>
+	public delegate string GetNameDelegate(T node);
+
+	/// <inheritdoc cref="ITreeHandler{T}.GetDepth(T)"/>
+	public delegate int GetDepthDelegate(T node);
+	
+	/// <inheritdoc cref="ITreeHandler{T}.GetChildCount(T)"/>
+	public delegate int GetChildCountDelegate(T node);
+	
+	/// <inheritdoc cref="ITreeHandler{T}.GetChild(T, int)"/>
+	public delegate T GetChildByIndexDelegate(T node, int index);
 }

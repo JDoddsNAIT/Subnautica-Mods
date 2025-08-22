@@ -6,8 +6,8 @@ namespace FrootLuips.Subnautica.Trees;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <param name="Search">How and what nodes are searched.</param>
-/// <param name="Inclusive">Should the first node be included in the result?</param>
-/// <param name="MaxDepth">The maximum depth of the search.</param>
+/// <param name="Inclusive">Should the first node be included in the search?</param>
+/// <param name="MaxDepth">The maximum depth of the search. If not initialized, <see cref="TreeHelpers.MaxDepth"/> will be used.</param>
 /// <param name="Predicate">Limits the search to nodes that meet this condition.</param>
 public record class SearchOptions<T>(
 	SearchMode Search,
@@ -18,10 +18,10 @@ public record class SearchOptions<T>(
 	/// <summary>
 	/// Should this <paramref name="node"/> be searched?
 	/// </summary>
-	/// <param name="handler"></param>
 	/// <param name="node"></param>
+	/// <param name="handler"></param>
 	/// <returns></returns>
-	public bool ShouldSearch(ITreeHandler<T> handler, T node)
+	public bool ShouldSearch(T node, ITreeHandler<T> handler)
 	{
 		return handler.GetDepth(node) <= (MaxDepth ?? TreeHelpers.MaxDepth)
 			&& (Predicate == null || Predicate(node));
