@@ -15,7 +15,7 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 	private static readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
 		GetRoot = static (n) => n.root,
 		TryGetParent = static (Transform n, [NotNullWhen(true)] out Transform? p) => (p = n.parent) != null,
-		GetName = static (n) => n.name,
+		GetName = static (n) => n.gameObject.name,
 		GetChildCount = static (n) => n.childCount,
 		GetChildByIndex = static (n, i) => n.GetChild(i),
 	};

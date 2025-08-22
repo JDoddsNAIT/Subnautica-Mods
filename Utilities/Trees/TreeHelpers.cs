@@ -244,7 +244,7 @@ public class NodeNotFoundException : Exception
 	private const string
 		_NAME = "There is no node in the tree with the name '{0}'.",
 		_VALUE = "There is no node in the tree with the given value '{0}'.",
-		_PATH = "No node exists at the path '{0}'",
+		_PATH = "Could not find node at '{1}' (relative to {0})",
 		_PREDICATE = "There is no node in the tree that matches the predicate.";
 
 	/// <summary/>
@@ -278,11 +278,12 @@ public class NodeNotFoundException : Exception
 	/// <summary>
 	/// No node was found at the given <paramref name="path"/>.
 	/// </summary>
+	/// <param name="nodeName"></param>
 	/// <param name="path"></param>
 	/// <param name="inner"></param>
 	/// <returns></returns>
-	public static NodeNotFoundException AtPath(string[] path, Exception? inner = null)
-		=> Create(string.Format(_PATH, string.Join(TreeHelpers.PATH_SEPARATOR.ToString(), path)), inner);
+	public static NodeNotFoundException AtPath(string nodeName, string[] path, Exception? inner = null)
+		=> Create(string.Format(_PATH, nodeName, string.Join(TreeHelpers.PATH_SEPARATOR.ToString(), path)), inner);
 	/// <summary>
 	/// No node was found that meets a <see cref="Predicate{T}"/>
 	/// </summary>
