@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FrootLuips.Subnautica.Validation;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
@@ -34,7 +35,7 @@ public partial class Tree<T>
 	/// <param name="search"></param>
 	/// <returns></returns>
 	public IEnumerable<T> Enumerate(SearchMode search)
-		=> TreeHelpers.Enumerate(this.Root, this.Handler, search);
+		=> TreeHelpers.Enumerate(this.Handler, this.Root, search);
 
 	/// <summary>
 	/// <inheritdoc cref="Enumerate(SearchMode)"/>
@@ -42,7 +43,24 @@ public partial class Tree<T>
 	/// <param name="options"></param>
 	/// <returns></returns>
 	public IEnumerable<T> Enumerate(SearchOptions<T> options)
-		=> TreeHelpers.Enumerate(this.Root, this.Handler, options);
+		=> TreeHelpers.Enumerate(this.Handler, this.Root, options);
+
+	/// <summary>
+	/// Finds all nodes in the tree that meet the given <paramref name="predicate"/>.
+	/// </summary>
+	/// <param name="predicate"></param>
+	/// <param name="options"></param>
+	/// <returns></returns>
+	public IEnumerable<T> FindAll(Predicate<T> predicate, SearchOptions<T> options)
+	{
+		foreach (var node in this.Enumerate(options))
+		{
+			if (predicate(node))
+			{
+				yield return node;
+			}
+		}
+	}
 
 	/// <summary>
 	/// Finds the first node that meets the given <paramref name="predicate"/>.
@@ -61,27 +79,10 @@ public partial class Tree<T>
 		throw NodeNotFoundException.MeetsPredicate();
 	}
 
-	/// <summary>
-	/// Finds all nodes in the tree that meet the given <paramref name="predicate"/>.
-	/// </summary>
-	/// <param name="predicate"></param>
-	/// <param name="options"></param>
-	/// <returns></returns>
-	/// <exception cref="NodeNotFoundException"></exception>
-	public IEnumerable<T> FindAll(Predicate<T> predicate, SearchOptions<T> options)
+	/// <inheritdoc cref="Find(Predicate{T}, SearchOptions{T})"/>
+	public bool TryFind(Predicate<T> predicate, SearchOptions<T> options, out T? result)
 	{
-		int count = 0;
-		foreach (var node in this.Enumerate(options))
-		{
-			if (predicate(node))
-			{
-				count++;
-				yield return node;
-			}
-		}
-
-		if (count == 0)
-			throw NodeNotFoundException.MeetsPredicate();
+		return Validator.Try(() => Find(predicate, options), out result);
 	}
 
 	/// <summary>
@@ -101,6 +102,12 @@ public partial class Tree<T>
 		throw NodeNotFoundException.WithName(name);
 	}
 
+	/// <inheritdoc cref="Find(string, SearchOptions{T})"/>
+	public bool TryFind(string name, SearchOptions<T> options, out T? result)
+	{
+		return Validator.Try(() => Find(name, options), out result);
+	}
+
 	/// <summary>
 	/// Gets the node at the given <paramref name="path"/> relative to the <see cref="Root"/>.
 	/// </summary>
@@ -109,17 +116,26 @@ public partial class Tree<T>
 	/// <exception cref="NodeNotFoundException"></exception>
 	public T GetNodeAt(string path)
 	{
-		T current = this.Root;
-		var parts = path.Split(TreeHelpers.PATH_SEPARATOR);
-		if (parts[0] == Handler.GetName(current))
-			parts = parts[1..];
+		return GetNodeAtPath(path.Split(TreeHelpers.PATH_SEPARATOR));
+	}
 
-		for (int i = 0; i < parts.Length; i++)
+	/// <inheritdoc cref="GetNodeAt(string)"/>
+	public bool TryGetNodeAt(string path, out T? result)
+	{
+		return Validator.Try(() => GetNodeAt(path), out result);
+	}
+
+	/// <inheritdoc cref="GetNodeAt(string)"/>
+	public T GetNodeAtPath(params string[] path)
+	{
+		T current = this.Root;
+
+		for (int i = 0; i < path.Length; i++)
 		{
-			current = parts[i] switch {
+			current = path[i] switch {
 				".." when Handler.TryGetParent(current, out T? parent) => parent,
-				_ when Handler.TryGetChildByName(node: current, name: parts[i], out T? child) => child,
-				_ => throw NodeNotFoundException.AtPath(parts[..(i + 1)]),
+				not ".." when Handler.TryGetChildByName(current, path[i], out T? child) => child,
+				_ => throw NodeNotFoundException.AtPath(path[..(i + 1)]),
 			};
 		}
 		return current;

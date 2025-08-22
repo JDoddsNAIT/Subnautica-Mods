@@ -1,13 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FrootLuips.Subnautica.Logging;
 
 namespace FrootLuips.Subnautica.Validation;
 /// <summary>
 /// Helper class for validation.
 /// </summary>
-public static class ValidationHelpers
+public static class Validator
 {
+	/// <summary>
+	/// Wraps a <paramref name="method"/> in a <see langword="try"/>/<see langword="catch"/> statement.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="method"></param>
+	/// <param name="result">The result of <paramref name="method"/>.</param>
+	/// <returns><see langword="true"/> if <paramref name="result"/> is not <see langword="null"/> and no exception was thrown, otherwise <see langword="false"/>.</returns>
+	public static bool Try<T>(Func<T> method, [NotNullWhen(true)] out T? result)
+	{
+		try
+		{
+			result = method();
+			return result != null;
+		}
+		catch
+		{
+			result = default;
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="Try{T}(Func{T}, out T)"/>
+	/// </summary>
+	/// <param name="method"></param>
+	/// <returns><see langword="true"/> if no exception was thrown, otherwise <see langword="false"/>.</returns>
+	public static bool Try(Action method)
+	{
+		try
+		{
+			method();
+			return true;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
+
 	/// <summary>
 	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, throwing an <see cref="AssertionFailedException"/> if not.
 	/// </summary>

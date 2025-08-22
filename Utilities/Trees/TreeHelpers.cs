@@ -144,29 +144,20 @@ public static class TreeHelpers
 	/// <returns></returns>
 	public static bool TryGetChildByName<T>(this ITreeHandler<T> handler, T node, string name, [NotNullWhen(true)] out T? child)
 	{
-		try
-		{
-			child = GetChildByName(handler, node, name)!;
-			return true;
-		}
-		catch
-		{
-			child = default;
-			return false;
-		}
+		return Validation.Validator.Try(() => handler.GetChildByName(node, name), out child);
 	}
 
 	/// <summary>
 	/// Enumerates over all nodes relative to the given <paramref name="node"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	/// <param name="node"></param>
 	/// <param name="handler"></param>
+	/// <param name="node"></param>
 	/// <param name="options">Defines how the search is conducted.</param>
 	/// <returns></returns>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public static IEnumerable<T> Enumerate<T>(T node, ITreeHandler<T> handler, SearchOptions<T> options)
+	public static IEnumerable<T> Enumerate<T>(this ITreeHandler<T> handler, T node, SearchOptions<T> options)
 	{
 		return options.Search switch {
 			SearchMode.BreadthFirst => Enumerate_BreadthFirst(handler, node, options),

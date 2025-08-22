@@ -75,7 +75,7 @@ internal class Trees_Tests : ITestContainer
 	private bool FindNodeAtPath(out string message)
 	{
 		var expected = _objects![4].transform; // E
-		string path = "A/B/E";
+		string path = "B/E";
 		var actual = _tree!.GetNodeAt(path);
 
 		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
@@ -84,7 +84,7 @@ internal class Trees_Tests : ITestContainer
 
 	private bool GetPath(out string message)
 	{
-		string expected = "A/B/E";
+		string expected = "B/E";
 		var node = _tree!.Find("E", SearchMode.DepthFirst);
 		string actual = TreeHelpers.GetPath(node, _tree.Handler);
 
