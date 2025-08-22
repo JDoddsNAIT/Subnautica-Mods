@@ -7,7 +7,7 @@ namespace FrootLuips.Subnautica.Trees;
 /// Represents a tree structure of <typeparamref name="T"/> values.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public partial class Tree<T>
+public class Tree<T>
 {
 	/// <summary>
 	/// The root node of the tree.
@@ -17,6 +17,9 @@ public partial class Tree<T>
 	/// The <see cref="ITreeHandler{T}"/> used to access the parent, name, and children of a node.
 	/// </summary>
 	public ITreeHandler<T> Handler { get; }
+
+	/// <inheritdoc cref="GetNodeAt(string)"/>
+	public T this[string path] => GetNodeAt(path);
 
 	/// <summary>
 	/// Constructs a <see cref="Tree{T}"/> structure with the given <paramref name="root"/> node and <paramref name="handler"/>.
@@ -151,11 +154,6 @@ public partial class Tree<T>
 			{
 				throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)], ex);
 			}
-			//current = path[i] switch {
-			//	".." when Handler.TryGetParent(current, out T? parent) => parent,
-			//	not ".." when Handler.TryGetChildByName(current, path[i], out T? child) => child,
-			//	_ => throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)]),
-			//};
 		}
 		return current;
 	}
