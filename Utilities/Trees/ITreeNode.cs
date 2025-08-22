@@ -80,7 +80,7 @@ public sealed class TreeNodeHandler<T> : ITreeHandler<T>
 	}
 
 	/// <inheritdoc/>
-	public T GetChild(T node, int index)
+	public T GetChildByIndex(T node, int index)
 	{
 		return node[index];
 	}

@@ -42,7 +42,7 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	}
 
 	/// <inheritdoc/>
-	public TreeNode GetChild(TreeNode node, int index)
+	public TreeNode GetChildByIndex(TreeNode node, int index)
 	{
 		return node[index];
 	}

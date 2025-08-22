@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using FrootLuips.Subnautica.Extensions;
+using static FrootLuips.Subnautica.Validation.Validator;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
@@ -14,9 +14,13 @@ public static class TreeHelpers
 	/// </summary>
 	public static ushort MaxDepth { get; set; } = 32;
 	/// <summary>
+	/// The separator string for node paths.
+	/// </summary>
+	public const string PATH_SEPARATOR = "/";
+	/// <summary>
 	/// The delimiter character for node paths.
 	/// </summary>
-	public const char PATH_SEPARATOR = '/';
+	public const char PATH_DELIMITER = '/';
 
 	/// <summary>
 	/// Creates a new <see cref="Tree{T}"/> with this <paramref name="node"/> at it's root.
@@ -40,7 +44,7 @@ public static class TreeHelpers
 	{
 		T current = node;
 		bool foundRoot = false;
-		for (int i = 0; i < TreeHelpers.MaxDepth && !foundRoot; i++)
+		for (int i = 0; i < MaxDepth && !foundRoot; i++)
 		{
 			if (handler.TryGetParent(current, out var parent))
 			{
@@ -66,7 +70,7 @@ public static class TreeHelpers
 		T current = node;
 		bool foundRoot = false;
 		int depth = 0;
-		for (int i = 0; i < TreeHelpers.MaxDepth && !foundRoot; i++)
+		for (int i = 0; i < MaxDepth && !foundRoot; i++)
 		{
 			if (handler.TryGetParent(current, out var parent))
 			{
@@ -93,7 +97,7 @@ public static class TreeHelpers
 		T current = node;
 		bool foundRoot = false;
 		var path = new Stack<string>();
-		for (int i = 0; i < TreeHelpers.MaxDepth && !foundRoot; i++)
+		for (int i = 0; i < MaxDepth && !foundRoot; i++)
 		{
 			path.Push(handler.GetName(current));
 			if (handler.TryGetParent(current, out var parent))
@@ -105,7 +109,42 @@ public static class TreeHelpers
 				foundRoot = true;
 			}
 		}
-		return string.Join(TreeHelpers.PATH_SEPARATOR.ToString(), path);
+		return path.Join(PATH_SEPARATOR);
+	}
+
+	/// <summary>
+	/// Gets the first node at the given <paramref name="path"/>, relative to <paramref name="node"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="handler"></param>
+	/// <param name="node"></param>
+	/// <param name="path"></param>
+	/// <returns></returns>
+	/// <exception cref="NodeNotFoundException"></exception>
+	public static T GetNode<T>(this ITreeHandler<T> handler, T node, string path)
+	{
+		return path switch {
+			null or "" => node,
+			_ when path.Contains(PATH_SEPARATOR) => handler.GetNode(node, path.Split(PATH_DELIMITER)),
+			_ => handler.GetChild(node, path),
+		};
+	}
+
+	/// <inheritdoc cref="GetNode{T}(ITreeHandler{T}, T, string)"/>
+	public static T GetNode<T>(this ITreeHandler<T> handler, T node, params string[] path)
+	{
+		if (path.Length == 0)
+			return node;
+		T result = node;
+		for (int i = 0; i < path.Length; i++)
+		{
+			result = path[i] switch {
+				".." when handler.TryGetParent(result, out T? parent) => parent,
+				not ".." when Try(() => handler.GetChild(result, path[i]), out T? child) => child,
+				_ => throw NodeNotFoundException.AtPath(handler.GetName(node), path[..(i + 1)]),
+			};
+		}
+		return result;
 	}
 
 	/// <summary>
@@ -116,35 +155,19 @@ public static class TreeHelpers
 	/// <param name="node"></param>
 	/// <param name="name"></param>
 	/// <returns></returns>
-	/// <exception cref="ArgumentException"></exception>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public static T GetChildByName<T>(this ITreeHandler<T> handler, T node, string name)
+	public static T GetChild<T>(this ITreeHandler<T> handler, T node, string name)
 	{
-		if (name.ContainsAny(TreeHelpers.PATH_SEPARATOR))
-			throw new ArgumentException($"The name of a node cannot contain a '{TreeHelpers.PATH_SEPARATOR}'");
-
-		T child;
+		T result;
 		for (int i = 0; i < handler.GetChildCount(node); i++)
 		{
-			child = handler.GetChild(node, i);
-			if (handler.GetName(child) == name)
-				return child;
+			result = handler.GetChildByIndex(node, i);
+			if (handler.GetName(result) == name)
+			{
+				return result;
+			}
 		}
 		throw NodeNotFoundException.WithName(name);
-	}
-
-	/// <summary>
-	/// Tries to get the first child of a <paramref name="node"/> with the name <paramref name="name"/>.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="handler"></param>
-	/// <param name="node"></param>
-	/// <param name="name"></param>
-	/// <param name="child"></param>
-	/// <returns></returns>
-	public static bool TryGetChildByName<T>(this ITreeHandler<T> handler, T node, string name, [NotNullWhen(true)] out T? child)
-	{
-		return Validation.Validator.Try(() => handler.GetChildByName(node, name), out child);
 	}
 
 	/// <summary>
@@ -199,7 +222,7 @@ public static class TreeHelpers
 
 			for (int i = handler.GetChildCount(current) - 1; i >= 0; i--)
 			{
-				var child = handler.GetChild(current, i);
+				var child = handler.GetChildByIndex(current, i);
 				if (options.ShouldSearch(child, handler))
 					stack.Push(child);
 			}
@@ -226,7 +249,7 @@ public static class TreeHelpers
 
 			for (int i = 0; i < handler.GetChildCount(current); i++)
 			{
-				var child = handler.GetChild(current, i);
+				var child = handler.GetChildByIndex(current, i);
 				if (options.ShouldSearch(child, handler))
 					queue.Enqueue(child);
 			}
@@ -283,7 +306,7 @@ public class NodeNotFoundException : Exception
 	/// <param name="inner"></param>
 	/// <returns></returns>
 	public static NodeNotFoundException AtPath(string nodeName, string[] path, Exception? inner = null)
-		=> Create(string.Format(_PATH, nodeName, string.Join(TreeHelpers.PATH_SEPARATOR.ToString(), path)), inner);
+		=> Create(string.Format(_PATH, nodeName, string.Join(TreeHelpers.PATH_SEPARATOR, path)), inner);
 	/// <summary>
 	/// No node was found that meets a <see cref="Predicate{T}"/>
 	/// </summary>

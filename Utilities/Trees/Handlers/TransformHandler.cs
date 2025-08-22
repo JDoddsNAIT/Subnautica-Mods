@@ -51,8 +51,8 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 	}
 
 	/// <inheritdoc/>
-	public Transform GetChild(Transform node, int index)
+	public Transform GetChildByIndex(Transform node, int index)
 	{
-		return _handler.GetChild(node, index);
+		return _handler.GetChildByIndex(node, index);
 	}
 }

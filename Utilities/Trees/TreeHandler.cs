@@ -22,7 +22,7 @@ public class TreeHandler<T> : ITreeHandler<T>
 	/// <inheritdoc cref="GetDepthDelegate"/>
 	public GetDepthDelegate? GetDepth { get; set; } = null;
 
-	T ITreeHandler<T>.GetChild(T node, int index)
+	T ITreeHandler<T>.GetChildByIndex(T node, int index)
 	{
 		return GetChildByIndex(node, index);
 	}
@@ -67,6 +67,6 @@ public class TreeHandler<T> : ITreeHandler<T>
 	/// <inheritdoc cref="ITreeHandler{T}.GetChildCount(T)"/>
 	public delegate int GetChildCountDelegate(T node);
 	
-	/// <inheritdoc cref="ITreeHandler{T}.GetChild(T, int)"/>
+	/// <inheritdoc cref="ITreeHandler{T}.GetChildByIndex(T, int)"/>
 	public delegate T GetChildByIndexDelegate(T node, int index);
 }

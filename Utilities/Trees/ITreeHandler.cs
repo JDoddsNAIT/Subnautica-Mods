@@ -44,5 +44,5 @@ public interface ITreeHandler<T>
 	/// <param name="node"></param>
 	/// <param name="index"></param>
 	/// <returns></returns>
-	T GetChild(T node, int index);
+	T GetChildByIndex(T node, int index);
 }

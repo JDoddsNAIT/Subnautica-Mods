@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FrootLuips.Subnautica.Validation;
 
 namespace FrootLuips.Subnautica.Trees;
@@ -17,9 +18,6 @@ public class Tree<T>
 	/// The <see cref="ITreeHandler{T}"/> used to access the parent, name, and children of a node.
 	/// </summary>
 	public ITreeHandler<T> Handler { get; }
-
-	/// <inheritdoc cref="GetNodeAt(string)"/>
-	public T this[string path] => GetNodeAt(path);
 
 	/// <summary>
 	/// Constructs a <see cref="Tree{T}"/> structure with the given <paramref name="root"/> node and <paramref name="handler"/>.
@@ -97,12 +95,7 @@ public class Tree<T>
 	/// <exception cref="NodeNotFoundException"></exception>
 	public T Find(string name, SearchOptions<T> options)
 	{
-		foreach (var node in this.Enumerate(options))
-		{
-			if (Handler.GetName(node) == name)
-				return node;
-		}
-		throw NodeNotFoundException.WithName(name);
+		return this.Find(n => Handler.GetName(n) == name, options);
 	}
 
 	/// <inheritdoc cref="Find(string, SearchOptions{T})"/>
@@ -112,49 +105,25 @@ public class Tree<T>
 	}
 
 	/// <summary>
-	/// Gets the node at the given <paramref name="path"/> relative to the <see cref="Root"/>.
+	/// Gets the first node at the given <paramref name="path"/>, relative to the <see cref="Tree{T}.Root"/>
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public T GetNodeAt(string path)
-	{
-		return GetNodeAtPath(path.Split(TreeHelpers.PATH_SEPARATOR));
-	}
+	public T GetNodeAt(string path) => Handler.GetNode(Root, path);
 
 	/// <inheritdoc cref="GetNodeAt(string)"/>
-	public bool TryGetNodeAt(string path, out T? result)
+	public T GetNodeAtPath(params string[] path) => Handler.GetNode(Root, path);
+
+	/// <inheritdoc cref="GetNodeAt(string)"/>
+	public bool TryGetNodeAt(string path, [NotNullWhen(true)] out T? result)
 	{
 		return Validator.Try(() => GetNodeAt(path), out result);
 	}
 
-	/// <inheritdoc cref="GetNodeAt(string)"/>
-	public T GetNodeAtPath(params string[] path)
+	/// <inheritdoc cref="GetNodeAtPath(string[])"/>
+	public bool TryGetNodeAtPath(string[] path, [NotNullWhen(true)] out T? node)
 	{
-		T current = this.Root;
-
-		for (int i = 0; i < path.Length; i++)
-		{
-			try
-			{
-				if (path[i] == ".." && Handler.TryGetParent(current, out T? parent))
-				{
-					current = parent;
-				}
-				else if (path[i] != "..")
-				{
-					current = Handler.GetChildByName(current, path[i]);
-				}
-				else
-				{
-					throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)]);
-				}
-			}
-			catch (Exception ex) when (ex is not NodeNotFoundException)
-			{
-				throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)], ex);
-			}
-		}
-		return current;
+		return Validator.Try(() => GetNodeAtPath(path), out node);
 	}
 }
