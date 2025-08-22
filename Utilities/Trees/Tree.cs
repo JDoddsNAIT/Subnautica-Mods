@@ -132,11 +132,30 @@ public partial class Tree<T>
 
 		for (int i = 0; i < path.Length; i++)
 		{
-			current = path[i] switch {
-				".." when Handler.TryGetParent(current, out T? parent) => parent,
-				not ".." when Handler.TryGetChildByName(current, path[i], out T? child) => child,
-				_ => throw NodeNotFoundException.AtPath(path[..(i + 1)]),
-			};
+			try
+			{
+				if (path[i] == ".." && Handler.TryGetParent(current, out T? parent))
+				{
+					current = parent;
+				}
+				else if (path[i] != "..")
+				{
+					current = Handler.GetChildByName(current, path[i]);
+				}
+				else
+				{
+					throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)]);
+				}
+			}
+			catch (Exception ex) when (ex is not NodeNotFoundException)
+			{
+				throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)], ex);
+			}
+			//current = path[i] switch {
+			//	".." when Handler.TryGetParent(current, out T? parent) => parent,
+			//	not ".." when Handler.TryGetChildByName(current, path[i], out T? child) => child,
+			//	_ => throw NodeNotFoundException.AtPath(Handler.GetName(this.Root), path[..(i + 1)]),
+			//};
 		}
 		return current;
 	}

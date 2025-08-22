@@ -52,7 +52,7 @@ public static class StringExtensions
 		bool contains = false;
 		for (int i = 0; i < str.Length && !contains; i++)
 		{
-			if (Array.IndexOf(characters, str[i]) == -1)
+			if (Array.IndexOf(characters, str[i]) > -1)
 				contains = true;
 		}
 		return contains;

@@ -84,7 +84,7 @@ internal class Trees_Tests : ITestContainer
 
 	private bool GetPath(out string message)
 	{
-		string expected = "B/E";
+		string expected = "A/B/E";
 		var node = _tree!.Find("E", SearchMode.DepthFirst);
 		string actual = TreeHelpers.GetPath(node, _tree.Handler);
 
