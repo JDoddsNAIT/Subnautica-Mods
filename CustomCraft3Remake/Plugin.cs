@@ -5,7 +5,6 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using FrootLuips.CustomCraft3Remake.DTOs;
-using Nautilus.Handlers;
 
 namespace FrootLuips.CustomCraft3Remake;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -45,10 +44,11 @@ internal sealed partial class Plugin : BaseUnityPlugin
 
 	internal static string samplesDir, craftTreeDir, itemsDir, sizeDir, recipesDir;
 
-	internal void Awake()
+	private void Awake()
 	{
-		Cfg = OptionsPanelHandler.RegisterModOptions<PluginOptions>();
+		Cfg = Nautilus.Handlers.OptionsPanelHandler.RegisterModOptions<PluginOptions>();
 
+		// set project-scoped logger instance
 		Logger = base.Logger;
 		Service = new(Logger);
 
@@ -56,11 +56,13 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		CreateMissingFolders();
 		GenerateSamples();
 
+		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, GenerateSamples, "Generating Samples");
 		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, ConvertCC3Data, "Converting Files");
-		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, RegisterCraftTree, "Modifying Craft Tree");
-		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, RegisterItems, "Registering New Items");
-		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, RegisterRecipes, "Assigning Recipes");
-		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, RegisterSizes, "Setting Custom Sizes");
+
+		RegisterCraftTree();
+		RegisterItems();
+		RegisterSizes();
+		RegisterRecipes();
 
 		Logger.LogInfo($"Initialization complete.");
 	}
@@ -110,15 +112,10 @@ internal sealed partial class Plugin : BaseUnityPlugin
 
 	private void ConvertCC3Data(WaitScreenHandler.WaitScreenTask task)
 	{
-		if (!_convert_firstLoad)
-			return;
-
 		CustomCraftConversion.Converter.ConvertFiles();
-
-		_convert_firstLoad = false;
 	}
 
-	private void RegisterCraftTree(WaitScreenHandler.WaitScreenTask task)
+	private void RegisterCraftTree()
 	{
 		if (!_craftTree_firstLoad)
 			return;
@@ -141,7 +138,7 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		_craftTree_firstLoad = false;
 	}
 
-	private void RegisterItems(WaitScreenHandler.WaitScreenTask task)
+	private void RegisterItems()
 	{
 		if (!_items_firstLoad)
 			return;
@@ -164,7 +161,7 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		_items_firstLoad = false;
 	}
 
-	private void RegisterSizes(WaitScreenHandler.WaitScreenTask task)
+	private void RegisterSizes()
 	{
 		Logger.LogDebug($"Registering Custom Sizes...");
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -182,7 +179,7 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		Logger.LogDebug($"Registered custom size data in {stopwatch.ElapsedMilliseconds} ms.");
 	}
 
-	private void RegisterRecipes(WaitScreenHandler.WaitScreenTask task)
+	private void RegisterRecipes()
 	{
 		Logger.LogDebug($"Registering Custom Recipes...");
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
