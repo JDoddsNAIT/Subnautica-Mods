@@ -1,4 +1,6 @@
-﻿namespace FrootLuips.Subnautica.Trees.Handlers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FrootLuips.Subnautica.Trees.Handlers;
 /// <summary>
 /// Standard <see cref="ITreeHandler{T}"/> for <see cref="global::TreeNode"/>s.
 /// </summary>
@@ -10,17 +12,38 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	public static CraftNodeHandler Main { get; } = new();
 
 	/// <inheritdoc/>
-	public Tree<TreeNode>.Node GetChild(TreeNode value, int index) => new(value[index], this);
+	public TreeNode GetRoot(TreeNode node)
+	{
+		return node.root;
+	}
 
 	/// <inheritdoc/>
-	public int GetChildCount(TreeNode value) => value.childCount;
+	public bool TryGetParent(TreeNode node, [NotNullWhen(true)] out TreeNode? parent)
+	{
+		return (parent = node.parent) != null;
+	}
 
 	/// <inheritdoc/>
-	public string GetName(TreeNode value) => value.id;
+	public int GetDepth(TreeNode node)
+	{
+		return node.depth;
+	}
 
 	/// <inheritdoc/>
-	public Tree<TreeNode>.Node? GetParent(TreeNode value) => value.parent == null ? null : new(value.parent, this);
+	public string GetName(TreeNode node)
+	{
+		return node.id;
+	}
 
 	/// <inheritdoc/>
-	public void SetParent(TreeNode value, Tree<TreeNode>.Node? parent) => value.parent = parent;
+	public int GetChildCount(TreeNode node)
+	{
+		return node.childCount;
+	}
+
+	/// <inheritdoc/>
+	public TreeNode GetChildByIndex(TreeNode node, int index)
+	{
+		return node[index];
+	}
 }

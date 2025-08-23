@@ -1,38 +1,87 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
-/// Represents a single node in a <see cref="Tree{T}"/> structure.
+/// Template interface for nodes of a <see cref="Tree{T}"/> structure. Comes with a pre-built <see cref="ITreeHandler{T}"/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface ITreeNode<T>
+public interface ITreeNode<out T> where T : class, ITreeNode<T>
 {
 	/// <summary>
-	/// Gets or sets the parent of this node.
+	/// The root object.
 	/// </summary>
-	Tree<T>.Node? Parent { get; set; }
+	T Root { get; }
+	/// <summary>
+	/// The parent object.
+	/// </summary>
+	T? Parent { get; }
+	/// <summary>
+	/// The number of ancestors on this object.
+	/// </summary>
+	int Depth { get; }
 
 	/// <summary>
-	/// The name of this node. (Read only)
+	/// The name of this object.
 	/// </summary>
-	/// <remarks>
-	/// Ideally a node's name should be unique across siblings.
-	/// </remarks>
 	string Name { get; }
+	
 	/// <summary>
-	/// The node's underlying <typeparamref name="T"/> value. (Read only)
-	/// </summary>
-	T Value { get; }
-
-	/// <summary>
-	/// The number of children this node has. (Read only)
+	/// The number of objects with <see langword="this"/> as it's <see cref="Parent"/>.
 	/// </summary>
 	int ChildCount { get; }
 	/// <summary>
-	/// Gets the child at the specified <paramref name="childIndex"/>.
+	/// Gets the child at the specified <paramref name="index"/>.
 	/// </summary>
-	/// <param name="childIndex"></param>
+	/// <param name="index"></param>
 	/// <returns></returns>
-	/// <exception cref="IndexOutOfRangeException"></exception>
-	Tree<T>.Node GetChild(int childIndex);
+	T this[int index] { get; }
+}
+
+/// <summary>
+/// Standard <see cref="ITreeHandler{T}"/> for reference types that implement <see cref="ITreeNode{T}"/>
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public sealed class TreeNodeHandler<T> : ITreeHandler<T>
+	where T : class, ITreeNode<T>
+{
+	/// <summary>
+	/// Static instance of this class.
+	/// </summary>
+	public static TreeNodeHandler<T> Main { get; } = new TreeNodeHandler<T>();
+
+	/// <inheritdoc/>
+	public T GetRoot(T node)
+	{
+		return node.Root;
+	}
+
+	/// <inheritdoc/>
+	public bool TryGetParent(T node, [NotNullWhen(true)] out T? parent)
+	{
+		return (parent = node.Parent) != null;
+	}
+
+	/// <inheritdoc/>
+	public int GetDepth(T node)
+	{
+		return node.Depth;
+	}
+
+	/// <inheritdoc/>
+	public string GetName(T node)
+	{
+		return node.Name;
+	}
+
+	/// <inheritdoc/>
+	public int GetChildCount(T node)
+	{
+		return node.ChildCount;
+	}
+
+	/// <inheritdoc/>
+	public T GetChildByIndex(T node, int index)
+	{
+		return node[index];
+	}
 }

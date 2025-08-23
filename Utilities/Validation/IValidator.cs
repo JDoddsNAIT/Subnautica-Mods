@@ -43,6 +43,6 @@ public abstract class Validator<T> : IValidator<T>
 	/// <inheritdoc/>
 	public virtual bool GetSuccess(T? obj, IReadOnlyCollection<Exception> issues)
 	{
-		return obj != null && issues == null || issues.Count == 0;
+		return obj != null && (issues == null || issues.Count == 0);
 	}
 }

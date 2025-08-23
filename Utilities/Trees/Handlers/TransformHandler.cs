@@ -1,63 +1,58 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
 
 namespace FrootLuips.Subnautica.Trees.Handlers;
 /// <summary>
-/// Standard <see cref="ITreeHandler{T}"/> for <see cref="Transform"/>s and <see cref="GameObject"/>s.
+/// Standard <see cref="ITreeHandler{T}"/> for <see cref="Transform"/>s.
 /// </summary>
-public sealed class TransformHandler : ITreeHandler<Transform>, ITreeHandler<GameObject>
+public sealed class TransformHandler : ITreeHandler<Transform>
 {
 	/// <summary>
 	/// A static instance of this class.
 	/// </summary>
 	public static TransformHandler Main { get; } = new();
 
-	/// <inheritdoc/>
-	public Tree<Transform>.Node GetChild(Transform value, int index)
-		=> new(value.GetChild(index), this);
+	private static readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
+		GetRoot = static (n) => n.root,
+		TryGetParent = static (Transform n, [NotNullWhen(true)] out Transform? p) => (p = n.parent) != null,
+		GetName = static (n) => n.gameObject.name,
+		GetChildCount = static (n) => n.childCount,
+		GetChildByIndex = static (n, i) => n.GetChild(i),
+	};
 
 	/// <inheritdoc/>
-	public int GetChildCount(Transform value)
-		=> value.childCount;
-
-	/// <inheritdoc/>
-	public string GetName(Transform value)
-		=> value.gameObject.name;
-
-	/// <inheritdoc/>
-	public Tree<Transform>.Node? GetParent(Transform value)
-		=> (bool)value.parent ? new(value.parent, this) : null;
-
-	/// <inheritdoc/>
-	public void SetParent(Transform value, Tree<Transform>.Node? parent)
-		=> value.SetParent(parent?.Value);
-
-	/// <inheritdoc/>
-	public Tree<GameObject>.Node GetChild(GameObject value, int index)
-		=> new(value.transform.GetChild(index).gameObject, this);
-
-	/// <inheritdoc/>
-	public int GetChildCount(GameObject value)
-		=> value.transform.childCount;
-
-	/// <inheritdoc/>
-	public string GetName(GameObject value)
-		=> value.name;
-
-	/// <inheritdoc/>
-	public Tree<GameObject>.Node? GetParent(GameObject value)
-		=> (bool)value.transform.parent ? new(value.transform.parent.gameObject, this) : null;
-
-	/// <inheritdoc/>
-	public void SetParent(GameObject value, Tree<GameObject>.Node? parent)
-		=> value.transform.SetParent(parent?.Value.transform);
-
-	/// <summary>
-	/// Creates a new <see cref="Tree{T}"/> with the default handler.
-	/// </summary>
-	/// <param name="root"></param>
-	/// <returns></returns>
-	public static Tree<Transform> CreateTree(Transform root)
+	public Transform GetRoot(Transform node)
 	{
-		return new Tree<Transform>(root, Main);
+		return _handler.GetRoot(node);
+	}
+
+	/// <inheritdoc/>
+	public bool TryGetParent(Transform node, [NotNullWhen(true)] out Transform? parent)
+	{
+		return _handler.TryGetParent(node, out parent);
+	}
+
+	/// <inheritdoc/>
+	public int GetDepth(Transform node)
+	{
+		return _handler.GetDepth(node);
+	}
+
+	/// <inheritdoc/>
+	public string GetName(Transform node)
+	{
+		return _handler.GetName(node);
+	}
+
+	/// <inheritdoc/>
+	public int GetChildCount(Transform node)
+	{
+		return _handler.GetChildCount(node);
+	}
+
+	/// <inheritdoc/>
+	public Transform GetChildByIndex(Transform node, int index)
+	{
+		return _handler.GetChildByIndex(node, index);
 	}
 }

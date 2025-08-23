@@ -35,7 +35,7 @@ internal class Trees_Tests : ITestContainer
 		//  / \   \
 		// D   E   F
 
-		return Trees.Handlers.TransformHandler.CreateTree(_objects[0].transform);
+		return new Tree<Transform>(_objects[0].transform, Trees.Handlers.TransformHandler.Main);
 	}
 
 	public IEnumerator<TestResult> GetResults()
@@ -45,13 +45,16 @@ internal class Trees_Tests : ITestContainer
 		yield return TestResult.Assert(nameof(Enumerate_BFS), Enumerate_BFS, group);
 		yield return TestResult.Assert(nameof(Enumerate_DFS), Enumerate_DFS, group);
 		yield return TestResult.Assert(nameof(FindNodeAtPath), FindNodeAtPath, group);
+		yield return TestResult.Assert(nameof(GetPath), GetPath, group);
 	}
 
 	private bool Enumerate_BFS(out string message)
 	{
 		var expected = new[] { "A", "B", "C", "D", "E", "F" };
 
-		var actual = _tree!.EnumerateValues(SearchMode.BreadthFirst).Select(static t => t.gameObject.name).ToArray();
+		var actual = _tree!.Enumerate(SearchMode.BreadthFirst)
+			.Select(static o => o.gameObject.name)
+			.ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
@@ -61,7 +64,9 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = new[] { "A", "B", "D", "E", "C", "F" };
 
-		var actual = _tree!.EnumerateValues(SearchMode.DepthFirst).Select(static t => t.gameObject.name).ToArray();
+		var actual = _tree!.Enumerate(SearchMode.DepthFirst)
+			.Select(static o => o.gameObject.name)
+			.ToArray();
 
 		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
@@ -70,10 +75,19 @@ internal class Trees_Tests : ITestContainer
 	private bool FindNodeAtPath(out string message)
 	{
 		var expected = _objects![4].transform; // E
-		string path = "A/B/E";
-		var actual = _tree!.GetNodeAtPath(path);
+		string path = "B/E";
+		var actual = _tree!.GetNode(path);
 
 		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
 		return actual == expected;
+	}
+
+	private bool GetPath(out string message)
+	{
+		string expected = "A/B/E";
+		var node = _tree!.Find("E", SearchMode.DepthFirst);
+		string actual = TreeHelpers.GetPath(node, _tree.Handler);
+
+		return TestResult.GetResult(out message, actual, expected);
 	}
 }

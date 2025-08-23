@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FrootLuips.Subnautica.Extensions;
 /// <summary>
@@ -52,7 +53,7 @@ public static class StringExtensions
 		bool contains = false;
 		for (int i = 0; i < str.Length && !contains; i++)
 		{
-			if (Array.IndexOf(characters, str[i]) == -1)
+			if (Array.IndexOf(characters, str[i]) > -1)
 				contains = true;
 		}
 		return contains;
@@ -110,5 +111,29 @@ public static class StringExtensions
 
 		var message = string.Format("Substring '{0}' does not exist within '{1}'.", substring, text);
 		throw new ArgumentOutOfRangeException(nameof(substring), message);
+	}
+
+	/// <inheritdoc cref="string.Join(string, string[])"/>
+	public static string Join(this string[] strings, string separator)
+	{
+		return string.Join(separator, strings);
+	}
+
+	/// <inheritdoc cref="string.Join{T}(string, IEnumerable{T})"/>
+	public static string Join(this IEnumerable<string> strings, string separator)
+	{
+		return string.Join(separator, strings);
+	}
+
+	/// <inheritdoc cref="string.Join(string, string[])"/>
+	public static string Join(this string[] strings, char separator)
+	{
+		return string.Join(separator.ToString(), strings);
+	}
+
+	/// <inheritdoc cref="string.Join{T}(string, IEnumerable{T})"/>
+	public static string Join(this IEnumerable<string> strings, char separator)
+	{
+		return string.Join(separator.ToString(), strings);
 	}
 }
