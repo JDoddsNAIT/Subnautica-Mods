@@ -14,11 +14,6 @@ public sealed class CustomCraftService
 {
 	private const string _FILE_EXTENSION = ".json";
 
-	private readonly Dictionary<string, CustomGroup> _managedGroups = new();
-	private readonly Dictionary<string, CustomItem> _managedItems = new();
-	private readonly Dictionary<string, CustomRecipe> _managedRecipes = new();
-	private readonly Dictionary<string, CustomSize> _managedSizes = new();
-
 	public ManualLogSource Logger { get; }
 
 	public CustomCraftService(ManualLogSource logger) => Logger = logger;
@@ -94,11 +89,6 @@ public sealed class CustomCraftService
 		if (!this.TryLoadData<TData, T>(jsonFilePath, items, itemType))
 			return false;
 
-		const string
-			modifiedMessage = "Data has been modified. Game must be restarted to apply changes.",
-			missingMessage = "Data for '{0}' has been removed. Game must be restarted to apply changes.";
-
-		List<string> itemsRegistered = new(items.Count);
 		for (int i = 0; i < items.Count; i++)
 		{
 			var item = items[i];
@@ -110,11 +100,7 @@ public sealed class CustomCraftService
 				validItem = item.TryConvert(errors, out T result);
 				if (validItem)
 				{
-					itemsRegistered.Add(item.GetId());
-					if (IsUnchanged(item, result))
-						item.Register(errors, result);
-					else
-						errors.Add(modifiedMessage);
+					item.Register(errors, result);
 				}
 			}
 			catch (Exception ex)
@@ -140,47 +126,6 @@ public sealed class CustomCraftService
 
 			Logger.Log(level, new LogMessage(context: nameof(CustomCraftService), notice, message));
 		}
-
-		if (typeof(T) == typeof(CustomGroup))
-		{
-			foreach (var key in _managedGroups.Keys)
-			{
-				if (!itemsRegistered.Contains(key))
-				{
-					Logger.LogWarning(string.Format(missingMessage, key));
-				}
-			}
-		}
-		else if (typeof(T) == typeof(CustomItem))
-		{
-			foreach (var key in _managedItems.Keys)
-			{
-				if (!itemsRegistered.Contains(key))
-				{
-					Logger.LogWarning(string.Format(missingMessage, key));
-				}
-			}
-		}
-		else if (typeof(T) == typeof(CustomRecipe))
-		{
-			foreach (var key in _managedRecipes.Keys)
-			{
-				if (!itemsRegistered.Contains(key))
-				{
-					Logger.LogWarning(string.Format(missingMessage, key));
-				}
-			}
-		}
-		else if (typeof(T) == typeof(CustomSize))
-		{
-			foreach (var key in _managedSizes.Keys)
-			{
-				if (!itemsRegistered.Contains(key))
-				{
-					Logger.LogWarning(string.Format(missingMessage, key));
-				}
-			}
-		}
 		return true;
 	}
 
@@ -200,18 +145,5 @@ public sealed class CustomCraftService
 				.WithMessage(ex));
 			return false;
 		}
-	}
-
-	private bool IsUnchanged<TData, T>(TData data, T value)
-		where TData : IRegisterable<T> where T : class
-	{
-		string id = data.GetId();
-		return value switch {
-			CustomGroup => !_managedGroups.ContainsKey(id) || data.Equals(_managedGroups[id] as T, value),
-			CustomItem => !_managedItems.ContainsKey(id) || data.Equals(_managedItems[id] as T, value),
-			CustomRecipe => !_managedRecipes.ContainsKey(id) || data.Equals(_managedRecipes[id] as T, value),
-			CustomSize => !_managedSizes.ContainsKey(id) || data.Equals(_managedSizes[id] as T, value),
-			_ => throw new InvalidOperationException(),
-		};
 	}
 }
