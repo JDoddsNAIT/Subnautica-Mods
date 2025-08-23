@@ -36,6 +36,9 @@ public static class TreeHelpers
 	/// <summary>
 	/// Gets the root object of a <paramref name="node"/>.
 	/// </summary>
+	/// <remarks>
+	/// This method does not use the <paramref name="handler"/>'s <see cref="ITreeHandler{T}.GetRoot(T)"/> method, rather provides a default implementation for use in classes that implement the interface.
+	/// </remarks>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <param name="handler"></param>
@@ -59,8 +62,11 @@ public static class TreeHelpers
 	}
 
 	/// <summary>
-	/// Gets the number of a <paramref name="node"/>'s ancestors.
+	/// Counts the ancestors of a <paramref name="node"/>.
 	/// </summary>
+	/// <remarks>
+	/// This method does not use the <paramref name="handler"/>'s <see cref="ITreeHandler{T}.GetDepth(T)"/> method, rather provides a default implementation for use in classes that implement the interface.
+	/// </remarks>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <param name="handler"></param>
@@ -88,10 +94,13 @@ public static class TreeHelpers
 	/// <summary>
 	/// Gets the absolute path to a <paramref name="node"/>.
 	/// </summary>
+	/// <remarks>
+	/// See also: <seealso cref="PATH_DELIMITER"/>
+	/// </remarks>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="node"></param>
 	/// <param name="handler"></param>
-	/// <returns></returns>
+	/// <returns>The names of this <paramref name="node"/> and it's ancestors delimited by the <seealso cref="PATH_DELIMITER"/>.</returns>
 	public static string GetPath<T>(T node, ITreeHandler<T> handler)
 	{
 		T current = node;
@@ -112,6 +121,7 @@ public static class TreeHelpers
 		return path.Join(PATH_SEPARATOR);
 	}
 
+	#region Handler Extensions
 	/// <summary>
 	/// Gets the first node at the given <paramref name="path"/>, relative to <paramref name="node"/>.
 	/// </summary>
@@ -169,6 +179,7 @@ public static class TreeHelpers
 		}
 		throw NodeNotFoundException.WithName(name);
 	}
+	#endregion
 
 	/// <summary>
 	/// Enumerates over all nodes relative to the given <paramref name="node"/>.

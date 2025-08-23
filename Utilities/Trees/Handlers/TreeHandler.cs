@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace FrootLuips.Subnautica.Trees;
+namespace FrootLuips.Subnautica.Trees.Handlers;
 
 /// <summary>
 /// Generic implementation of <see cref="ITreeHandler{T}"/>.

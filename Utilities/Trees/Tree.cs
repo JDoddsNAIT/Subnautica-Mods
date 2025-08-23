@@ -5,10 +5,10 @@ using FrootLuips.Subnautica.Validation;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
-/// Represents a tree structure of <typeparamref name="T"/> values.
+/// Represents a tree structure of <typeparamref name="T"/> objects.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Tree<T>
+public class Tree<T> : ITreeHandler<T>
 {
 	/// <summary>
 	/// The root node of the tree.
@@ -110,20 +110,38 @@ public class Tree<T>
 	/// <param name="path"></param>
 	/// <returns></returns>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public T GetNodeAt(string path) => Handler.GetNode(Root, path);
+	public T GetNode(string path) => Handler.GetNode(Root, path);
 
-	/// <inheritdoc cref="GetNodeAt(string)"/>
-	public T GetNodeAtPath(params string[] path) => Handler.GetNode(Root, path);
+	/// <inheritdoc cref="GetNode(string)"/>
+	public T GetNode(params string[] path) => Handler.GetNode(Root, path);
 
-	/// <inheritdoc cref="GetNodeAt(string)"/>
-	public bool TryGetNodeAt(string path, [NotNullWhen(true)] out T? result)
+	/// <inheritdoc cref="GetNode(string)"/>
+	public bool TryGetNode(string path, [NotNullWhen(true)] out T? result)
 	{
-		return Validator.Try(() => GetNodeAt(path), out result);
+		return Validator.Try(() => GetNode(path), out result);
 	}
 
-	/// <inheritdoc cref="GetNodeAtPath(string[])"/>
-	public bool TryGetNodeAtPath(string[] path, [NotNullWhen(true)] out T? node)
+	/// <inheritdoc cref="GetNode(string[])"/>
+	public bool TryGetNode(string[] path, [NotNullWhen(true)] out T? node)
 	{
-		return Validator.Try(() => GetNodeAtPath(path), out node);
+		return Validator.Try(() => GetNode(path), out node);
 	}
+
+	T ITreeHandler<T>.GetRoot(T node)
+		=> this.Handler.GetRoot(node);
+
+	bool ITreeHandler<T>.TryGetParent(T node, [NotNullWhen(true)] out T? parent)
+		=> this.Handler.TryGetParent(node, out parent);
+
+	int ITreeHandler<T>.GetDepth(T node)
+		=> this.Handler.GetDepth(node);
+
+	string ITreeHandler<T>.GetName(T node)
+		=> this.Handler.GetName(node);
+
+	int ITreeHandler<T>.GetChildCount(T node)
+		=> this.Handler.GetChildCount(node);
+
+	T ITreeHandler<T>.GetChildByIndex(T node, int index)
+		=> this.Handler.GetChildByIndex(node, index);
 }

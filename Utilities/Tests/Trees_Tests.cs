@@ -76,7 +76,7 @@ internal class Trees_Tests : ITestContainer
 	{
 		var expected = _objects![4].transform; // E
 		string path = "B/E";
-		var actual = _tree!.GetNodeAt(path);
+		var actual = _tree!.GetNode(path);
 
 		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
 		return actual == expected;
