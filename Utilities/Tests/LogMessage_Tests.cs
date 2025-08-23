@@ -19,22 +19,22 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithMessage("Notice")
-			.WithNotice("Message")
+			.WithMessage("Message")
+			.WithNotice("Notice")
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
-		string expected = "[Context] Notice - Message (Remarks)";
+		string expected = "[Context] Message - Notice (Remarks)";
 		return GetResult(out message, actual, expected);
 	}
 
 	private bool NoContext(out string message)
 	{
 		var logMessage = new LogMessage()
-			.WithMessage("Notice")
-			.WithNotice("Message")
+			.WithMessage("Message")
+			.WithNotice("Notice")
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
-		string expected = "Notice - Message (Remarks)";
+		string expected = "Message - Notice (Remarks)";
 		return GetResult(out message, actual, expected);
 	}
 
@@ -42,9 +42,9 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithNotice("Message")
+			.WithNotice("Notice")
 			.WithRemarks("Remarks");
-		string expected = "[Context] Message (Remarks)";
+		string expected = "[Context] Notice (Remarks)";
 		string actual = logMessage.ToString();
 		return GetResult(out message, actual, expected);
 	}
@@ -53,10 +53,10 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithMessage("Notice")
+			.WithMessage("Message")
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
-		string expected = "[Context] Notice - (Remarks)";
+		string expected = "[Context] Message - (Remarks)";
 		return GetResult(out message, actual, expected);
 	}
 
@@ -64,10 +64,10 @@ internal class LogMessage_Tests : ITestContainer
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
-			.WithMessage("Notice")
-			.WithNotice("Message");
+			.WithMessage("Message")
+			.WithNotice("Notice");
 		string actual = logMessage.ToString();
-		string expected = "[Context] Notice - Message";
+		string expected = "[Context] Message - Notice";
 		return GetResult(out message, actual, expected);
 	}
 }
