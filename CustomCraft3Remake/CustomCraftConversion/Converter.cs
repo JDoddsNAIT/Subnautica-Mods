@@ -7,7 +7,7 @@ using Nautilus.Json.ExtensionMethods;
 
 namespace FrootLuips.CustomCraft3Remake.CustomCraftConversion;
 
-internal static class Converter
+internal class Converter
 {
 	internal const string NEW_RECIPES = "NewRecipes.json",
 		CUSTOM_SIZES = "CustomSizes.json",
@@ -17,7 +17,7 @@ internal static class Converter
 
 	private static readonly string _conversionDir = Utilities.PrependPluginPath(Plugin.WORKING_DIR, Plugin.CONVERSION_DIR);
 
-	public static void ConvertFiles()
+	public void ConvertFiles()
 	{
 		if (!Directory.Exists(_conversionDir) || Directory.EnumerateFiles(_conversionDir).Count() == 0)
 		{
@@ -66,7 +66,7 @@ internal static class Converter
 		Plugin.Logger.LogDebug(new LogMessage(notice: "Conversion complete").WithMessage("Converted CC3 files in ", stopwatch.ElapsedMilliseconds, " ms."));
 	}
 
-	private static void ConvertNewRecipes(string filePath, List<CustomItemData> customItems, List<CustomRecipeData> customRecipes, List<CustomSizeData> customSizes)
+	private void ConvertNewRecipes(string filePath, List<CustomItemData> customItems, List<CustomRecipeData> customRecipes, List<CustomSizeData> customSizes)
 	{
 		if (!File.Exists(filePath))
 			return;
@@ -112,7 +112,7 @@ internal static class Converter
 			File.Delete(filePath);
 	}
 
-	private static void ConvertModifiedRecipes(string filePath, List<CustomRecipeData> customRecipes)
+	private void ConvertModifiedRecipes(string filePath, List<CustomRecipeData> customRecipes)
 	{
 		if (!File.Exists(filePath))
 			return;
@@ -137,7 +137,7 @@ internal static class Converter
 			File.Delete(filePath);
 	}
 
-	private static void ConvertSizes(string filePath, List<CustomSizeData> customSizes)
+	private void ConvertSizes(string filePath, List<CustomSizeData> customSizes)
 	{
 		if (!File.Exists(filePath))
 			return;
@@ -157,7 +157,7 @@ internal static class Converter
 			File.Delete(filePath);
 	}
 
-	private static void Finalize(List<CustomItemData> customItems, List<CustomRecipeData> customRecipes, List<CustomSizeData> customSizes)
+	private void Finalize(List<CustomItemData> customItems, List<CustomRecipeData> customRecipes, List<CustomSizeData> customSizes)
 	{
 		string filePath;
 		if (!customItems.IsNullOrEmpty())
