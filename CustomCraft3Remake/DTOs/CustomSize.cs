@@ -44,6 +44,16 @@ internal sealed class CustomSizeData : IRegisterable<CustomSize>
 	{
 		CraftDataHandler.SetItemSize(item.ItemId, item.Width, item.Height);
 	}
+
+	public bool Equals(CustomSize x, CustomSize y)
+	{
+		return x.ItemId == y.ItemId;
+	}
+
+	public int GetHashCode(CustomSize obj)
+	{
+		return obj.GetHashCode();
+	}
 }
 
 internal sealed record class CustomSize(TechType ItemId, int Width, int Height);

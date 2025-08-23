@@ -91,6 +91,16 @@ internal sealed class CustomItemData : IRegisterable<CustomItem>
 	public string GetId() => this.ItemId;
 
 	public void Register(List<string> errors, CustomItem item) => Item.Register(item, System.Reflection.Assembly.GetExecutingAssembly());
+
+	public bool Equals(CustomItem x, CustomItem y)
+	{
+		return false;
+	}
+
+	public int GetHashCode(CustomItem obj)
+	{
+		return obj.GetHashCode();
+	}
 }
 
 internal sealed record class CustomItem(string ItemId, TechType Model, TechType Icon, string DisplayName, string Description, ValidPDAData? PDAData);

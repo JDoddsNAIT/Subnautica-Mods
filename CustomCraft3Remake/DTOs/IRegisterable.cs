@@ -14,7 +14,8 @@ internal interface IJsonData<TResult> where TResult : class
 	bool TryConvert([NotNull] in List<string> errors, [MaybeNullWhen(false)] out TResult result);
 }
 
-internal interface IRegisterable<TResult> : IJsonData<TResult> where TResult : class
+internal interface IRegisterable<TResult> : IJsonData<TResult>, IEqualityComparer<TResult>
+	where TResult : class
 {
 	string GetId();
 	void Register(List<string> errors, TResult item);

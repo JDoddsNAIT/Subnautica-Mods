@@ -81,6 +81,22 @@ internal sealed class CustomGroupData : IRegisterable<CustomGroup>
 		Utilities.CreateMissingTabs(item.Fabricator, item.Path, errors);
 		CraftTreeHandler.AddTabNode(item.Fabricator, item.Id, item.DisplayName, icon, item.Path);
 	}
+
+	public bool Equals(CustomGroup x, CustomGroup y)
+	{
+		bool pathEquals = x.Path.Length == y.Path.Length;
+		for (int i = 0; i < x.Path.Length && pathEquals; i++)
+		{
+			pathEquals = x.Path[i] == y.Path[i];
+		}
+
+		return pathEquals && x.Id == y.Id && x.Fabricator == y.Fabricator;
+	}
+
+	public int GetHashCode(CustomGroup obj)
+	{
+		return obj.GetHashCode();
+	}
 }
 
 internal sealed record class CustomGroup(string Id, string DisplayName, TechType Icon, CraftTree.Type Fabricator, params string[] Path);

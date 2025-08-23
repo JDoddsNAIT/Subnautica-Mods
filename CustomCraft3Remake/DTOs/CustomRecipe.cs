@@ -175,6 +175,16 @@ internal sealed class CustomRecipeData : IRegisterable<CustomRecipe>
 			CraftDataHandler.SetCraftingTime(item.ItemId, item.CraftTime);
 		}
 	}
+
+	public bool Equals(CustomRecipe x, CustomRecipe y)
+	{
+		return x.ItemId == y.ItemId;
+	}
+
+	public int GetHashCode(CustomRecipe obj)
+	{
+		return obj.GetHashCode();
+	}
 }
 
 internal sealed record class CustomRecipe(TechType ItemId, RecipeData Recipe, float CraftTime, TechType[] RequiredTech, CraftTree.Type Fabricator, string[] FabricatorPath);
