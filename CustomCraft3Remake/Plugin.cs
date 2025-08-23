@@ -5,6 +5,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using FrootLuips.CustomCraft3Remake.DTOs;
+using Nautilus.Handlers;
 
 namespace FrootLuips.CustomCraft3Remake;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -42,31 +43,23 @@ internal sealed partial class Plugin : BaseUnityPlugin
 
 	internal static string samplesDir, craftTreeDir, itemsDir, sizeDir, recipesDir;
 
-	private void Awake()
+	internal void Awake()
 	{
-		Cfg = Nautilus.Handlers.OptionsPanelHandler.RegisterModOptions<PluginOptions>();
+		Cfg = OptionsPanelHandler.RegisterModOptions<PluginOptions>();
 
-		// set project-scoped logger instance
 		Logger = base.Logger;
 		Service = new(Logger);
 
 		GetFilePaths();
 		CreateMissingFolders();
 
-		try
-		{
-			Utilities.GenerateSamples(_sampleFileNames);
-		}
-		catch (Exception ex)
-		{
-			Logger.LogWarning(new LogMessage(context: ex.Message, notice: "Failed to generate samples", message: "Skipping"));
-		}
-		ConvertCC3Data();
+		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, GenerateSamples, "Generating Samples");
+		WaitScreenHandler.RegisterEarlyLoadTask(PluginInfo.PLUGIN_NAME, ConvertCC3Data, "Converting Files");
 
-		RegisterCraftTree();
-		RegisterItems();
-		RegisterSizes();
-		RegisterRecipes();
+		WaitScreenHandler.RegisterLoadTask(PluginInfo.PLUGIN_NAME, RegisterCraftTree, "Modifying Craft Tree");
+		WaitScreenHandler.RegisterLoadTask(PluginInfo.PLUGIN_NAME, RegisterItems, "Registering New Items");
+		WaitScreenHandler.RegisterLoadTask(PluginInfo.PLUGIN_NAME, RegisterRecipes, "Assigning Recipes");
+		WaitScreenHandler.RegisterLoadTask(PluginInfo.PLUGIN_NAME, RegisterSizes, "Setting Custom Sizes");
 
 		Logger.LogInfo($"Initialization complete.");
 	}
@@ -102,12 +95,24 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		Logger.LogDebug($"Created {created} missing folders.");
 	}
 
-	private void ConvertCC3Data()
+	private void GenerateSamples(WaitScreenHandler.WaitScreenTask task)
 	{
-		new CustomCraftConversion.Converter().ConvertFiles();
+		try
+		{
+			Utilities.GenerateSamples(_sampleFileNames);
+		}
+		catch (Exception ex)
+		{
+			Logger.LogWarning(new LogMessage(context: ex.Message, notice: "Failed to generate samples", message: "Skipping"));
+		}
 	}
 
-	private void RegisterCraftTree()
+	private void ConvertCC3Data(WaitScreenHandler.WaitScreenTask task)
+	{
+		CustomCraftConversion.Converter.ConvertFiles();
+	}
+
+	private void RegisterCraftTree(WaitScreenHandler.WaitScreenTask task)
 	{
 		Logger.LogDebug($"Registering Fabricator Groups...");
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -125,7 +130,7 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		Logger.LogDebug($"Registered Fabricator Groups in {stopwatch.ElapsedMilliseconds} ms.");
 	}
 
-	private void RegisterItems()
+	private void RegisterItems(WaitScreenHandler.WaitScreenTask task)
 	{
 		Logger.LogDebug($"Registering Custom Items...");
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -143,7 +148,7 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		Logger.LogDebug($"Registered item data in {stopwatch.ElapsedMilliseconds} ms.");
 	}
 
-	private void RegisterSizes()
+	private void RegisterSizes(WaitScreenHandler.WaitScreenTask task)
 	{
 		Logger.LogDebug($"Registering Custom Sizes...");
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -161,7 +166,7 @@ internal sealed partial class Plugin : BaseUnityPlugin
 		Logger.LogDebug($"Registered custom size data in {stopwatch.ElapsedMilliseconds} ms.");
 	}
 
-	private void RegisterRecipes()
+	private void RegisterRecipes(WaitScreenHandler.WaitScreenTask task)
 	{
 		Logger.LogDebug($"Registering Custom Recipes...");
 		var stopwatch = System.Diagnostics.Stopwatch.StartNew();
