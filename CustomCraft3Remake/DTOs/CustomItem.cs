@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Nautilus.Handlers;
 
 namespace FrootLuips.CustomCraft3Remake.DTOs;
 #nullable enable
@@ -45,6 +46,12 @@ internal sealed class CustomItemData : IRegisterable<CustomItem>
 	public bool TryConvert([NotNull] in List<string> errors, [MaybeNullWhen(false)] out CustomItem result)
 	{
 		result = null;
+
+		if (Validation.TryParseTechType(ItemId, out _))
+		{
+			errors.Add($"An Item with that ID has already been registered.");
+			return false;
+		}
 
 		if (Validation.TryParseTechType(ModelId, out var model).Fails())
 		{

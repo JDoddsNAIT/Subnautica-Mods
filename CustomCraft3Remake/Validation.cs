@@ -22,14 +22,14 @@ internal static class Validation
 
 	public static bool ParseFabricator(string text, out CraftTree.Type fabricator)
 	{
-		if (!string.IsNullOrWhiteSpace(text) && Enum.TryParse(text, out fabricator))
+		fabricator = DEFAULT_FABRICATOR;
+		if (string.IsNullOrWhiteSpace(text))
 		{
-			return true;
+			return false;
 		}
 		else
 		{
-			fabricator = DEFAULT_FABRICATOR;
-			return false;
+			return Enum.TryParse(text, out fabricator) || EnumHandler.TryGetValue(text, out fabricator);
 		}
 	}
 

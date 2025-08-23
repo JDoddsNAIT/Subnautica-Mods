@@ -5,7 +5,7 @@ using Nautilus.Assets.Gadgets;
 using Nautilus.Assets.PrefabTemplates;
 
 namespace FrootLuips.CustomCraft3Remake;
-
+#nullable enable
 internal static partial class Item
 {
 	public static void Register(CustomItem data, Assembly assembly)
@@ -18,7 +18,7 @@ internal static partial class Item
 			data.ItemId,
 			data.DisplayName,
 			data.Description,
-			unlockAtStart: data.PDAData is null || data.PDAData.UnlockAtStart,
+			unlockAtStart: data.PDAData?.UnlockAtStart ?? true,
 			techTypeOwner: assembly);
 
 		UnityEngine.Sprite icon = data.Icon is TechType.None
