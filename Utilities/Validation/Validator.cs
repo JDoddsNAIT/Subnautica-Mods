@@ -49,37 +49,15 @@ public static class Validator
 	}
 
 	/// <summary>
-	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, throwing an <see cref="AssertionFailedException"/> if not.
+	/// Validates an <paramref name="object"/> using the given <paramref name="validator"/>.
 	/// </summary>
-	/// <param name="condition"></param>
-	/// <param name="message"></param>
-	/// <returns>The value of <paramref name="condition"/>.</returns>
-	/// <exception cref="AssertionFailedException"></exception>
-	public static bool Assert(this bool condition, string? message = null)
+	/// <typeparam name="T"></typeparam>
+	/// <param name="object"></param>
+	/// <param name="validator"></param>
+	/// <returns><inheritdoc cref="Validate{T}(T, IEnumerator{Exception}, IValidator{T}.ValidationCallback?)"/></returns>
+	public static ValidationResult<T> Validate<T>(this T @object, IValidator<T> validator)
 	{
-		if (!condition)
-			throw new AssertionFailedException(message);
-		return condition;
-	}
-
-	/// <summary>
-	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, logging a <paramref name="message"/> to the console if not.
-	/// </summary>
-	/// <param name="condition"></param>
-	/// <param name="message"></param>
-	/// <param name="logger"></param>
-	/// <returns>The value of <paramref name="condition"/>.</returns>
-	public static bool AssertLog(this bool condition, ILogger logger, string? message = null)
-	{
-		try
-		{
-			return Assert(condition, message);
-		}
-		catch (AssertionFailedException ex)
-		{
-			logger.LogError(ex.Message);
-			return condition;
-		}
+		return Validate(@object, validator.Validate(@object), callback: validator.GetSuccess);
 	}
 
 	/// <summary>
@@ -95,7 +73,7 @@ public static class Validator
 	/// <returns>Whether validation succeeded or not, along with any issues that may have occurred.</returns>
 	public static ValidationResult<T> Validate<T>(this T @object,
 		IEnumerator<Exception> validator,
-		IValidator<T>.SuccessCallback? callback = null)
+		IValidator<T>.ValidationCallback? callback = null)
 	{
 		var errors = new List<Exception>();
 		callback ??= (static (o, e) => o != null && e.Count == 0)!;
@@ -111,18 +89,6 @@ public static class Validator
 			errors.Add(ex);
 		}
 		return new ValidationResult<T>(@object, callback(@object, errors), errors);
-	}
-
-	/// <summary>
-	/// <inheritdoc cref="Validate{T}(T, IEnumerator{Exception}, IValidator{T}.SuccessCallback?)"/>
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="object"></param>
-	/// <param name="validator"></param>
-	/// <returns><inheritdoc cref="Validate{T}(T, IEnumerator{Exception}, IValidator{T}.SuccessCallback?)"/></returns>
-	public static ValidationResult<T> Validate<T>(this T @object, IValidator<T> validator)
-	{
-		return Validate(@object, validator.Validate(@object), callback: validator.GetSuccess);
 	}
 
 	/// <summary>

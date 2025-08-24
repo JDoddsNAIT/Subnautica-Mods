@@ -9,7 +9,7 @@ namespace FrootLuips.Subnautica.Validation;
 public interface IValidator<in T>
 {
 	/// <summary>
-	/// Validated a <typeparamref name="T"/> object.
+	/// Validates a <typeparamref name="T"/> object.
 	/// </summary>
 	/// <param name="obj"></param>
 	/// <returns></returns>
@@ -28,7 +28,7 @@ public interface IValidator<in T>
 	/// <param name="obj">The object being validated.</param>
 	/// <param name="issues"></param>
 	/// <returns></returns>
-	public delegate bool SuccessCallback(T? obj, IReadOnlyCollection<Exception> issues);
+	public delegate bool ValidationCallback(T? obj, IReadOnlyCollection<Exception> issues);
 }
 
 /// <summary>

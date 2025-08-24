@@ -26,6 +26,7 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 	/// Constructs a file path.
 	/// </summary>
 	/// <returns></returns>
+	/// <exception cref="AggregateException"></exception>
 	public string Combine()
 	{
 		var parts = this.ToArray();

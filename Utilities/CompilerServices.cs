@@ -7,6 +7,10 @@ public static partial class RuntimeHelpers
 	internal static T[] GetSubArray<T>(this T[] array, Range range)
 	{
 		(int offset, int length) = range.GetOffsetAndLength(array.Length);
+
+		if (length == 0)
+			return Array.Empty<T>();
+
 		var result = new T[length];
 		for (int i = 0; i < length; i++)
 		{
