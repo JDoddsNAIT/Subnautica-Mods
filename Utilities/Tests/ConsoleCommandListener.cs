@@ -41,7 +41,7 @@ internal class ConsoleCommandListener : MonoBehaviour
 		{
 			var path = Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_GUID, _FILENAME);
 			File.WriteAllText(path, sb.ToString());
-			_logger!.LogMessage($"Test results output to {_FILENAME}.", inGame: true);
+			_logger!.LogDebug($"Test results output to {_FILENAME}.", inGame: true);
 		}
 		catch (System.Exception ex)
 		{

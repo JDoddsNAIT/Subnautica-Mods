@@ -76,12 +76,11 @@ public class GameLogger : ILogger
 
 	private void AddMessage(LogLevel level, string message)
 	{
-		level = level.GetHighestLevel();
 		// colour the message
-		message = level switch {
-			LogLevel.Fatal or LogLevel.Error => $"<color=red>{message}</color>",
-			LogLevel.Warning => $"<color=yellow>{message}</color>",
-			LogLevel.Debug => $"<color=silver>{message}</color>",
+		message = level.GetHighestLevel() switch {
+			LogLevel.Fatal or LogLevel.Error => string.Format(RichTextFormatter.Main, "{0:c=red}", message),
+			LogLevel.Warning => string.Format(RichTextFormatter.Main, "{0:c=yellow}", message),
+			LogLevel.Debug => string.Format(RichTextFormatter.Main, "{0:c=silver}", message),
 			_ => message,
 		};
 		ErrorMessage.AddError(message);

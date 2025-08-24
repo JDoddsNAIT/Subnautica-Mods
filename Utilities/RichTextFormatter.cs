@@ -14,11 +14,11 @@ public sealed class RichTextFormatter : Singleton<RichTextFormatter>, IFormatPro
 		try
 		{
 			return fmt[0] switch {
-				_ when fmt.Length is not 1 or 2 => HandleOtherFormats(format, text),
+				_ when fmt.Length is < 1 or > 2 => HandleOtherFormats(format, text),
 				"b" or "i" => Tag(fmt[0], text),
-				"c" or "color" => Tag(fmt[0], text, fmt[1]),
-				"s" or "size" when int.TryParse(fmt[1], out int size) => Tag(fmt[0], text, size),
-				"m" or "material" when int.TryParse(fmt[1], out int material) => Tag(fmt[0], text, material),
+				"c" or "color" => Tag("color", text, fmt[1]),
+				"s" or "size" when int.TryParse(fmt[1], out int size) => Tag("size", text, size),
+				"m" or "material" when int.TryParse(fmt[1], out int material) => Tag("material", text, material),
 				_ => HandleOtherFormats(format, text)
 			};
 		}
@@ -46,7 +46,7 @@ public sealed class RichTextFormatter : Singleton<RichTextFormatter>, IFormatPro
 	/// <returns></returns>
 	public static string Tag(string name, object text, object? arg = null)
 	{
-		return arg == null ? $"<{name}>{text}<{name}/>" : $"<{name}={arg}>{text}<{name}/>";
+		return arg == null ? $"<{name}>{text}</{name}>" : $"<{name}={arg}>{text}</{name}>";
 	}
 
 	private string HandleOtherFormats(string format, object arg)
