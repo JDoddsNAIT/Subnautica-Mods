@@ -44,14 +44,9 @@ public interface ITreeNode<out T> where T : class, ITreeNode<T>
 /// This class cannot be inherited.
 /// </remarks>
 /// <typeparam name="T"></typeparam>
-public sealed class TreeNodeHandler<T> : ITreeHandler<T>
+public sealed class TreeNodeHandler<T> : Singleton<TreeNodeHandler<T>>, ITreeHandler<T>
 	where T : class, ITreeNode<T>
 {
-	/// <summary>
-	/// Static instance of this class.
-	/// </summary>
-	public static TreeNodeHandler<T> Main => Singleton<TreeNodeHandler<T>>.Main;
-
 	/// <inheritdoc/>
 	public T GetRoot(T node)
 	{

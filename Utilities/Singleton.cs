@@ -6,9 +6,12 @@
 /// <typeparamref name="T"/> must be a reference type with an empty constructor to use this class.
 /// </remarks>
 /// <typeparam name="T"></typeparam>
-public static class Singleton<T> where T : class, new()
+public class Singleton<T> where T : class, new()
 {
-	private static T? _instance = new();
+	/// <summary>
+	/// Underlying value of <see cref="Main"/>.
+	/// </summary>
+	protected static T? _instance = new();
 
 	/// <summary>
 	/// The main <typeparamref name="T"/> instance.

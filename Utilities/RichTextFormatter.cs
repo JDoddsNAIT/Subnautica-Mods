@@ -5,7 +5,7 @@ namespace FrootLuips.Subnautica;
 /// <summary>
 /// Custom format provider used for unity's rich text.
 /// </summary>
-public sealed class RichTextFormatter : IFormatProvider, ICustomFormatter
+public sealed class RichTextFormatter : Singleton<RichTextFormatter>, IFormatProvider, ICustomFormatter
 {
 	/// <inheritdoc/>
 	public string Format(string format, object text, IFormatProvider formatProvider)

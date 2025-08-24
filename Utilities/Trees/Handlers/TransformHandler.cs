@@ -5,13 +5,8 @@ namespace FrootLuips.Subnautica.Trees.Handlers;
 /// <summary>
 /// Standard <see cref="ITreeHandler{T}"/> for <see cref="Transform"/>s.
 /// </summary>
-public sealed class TransformHandler : ITreeHandler<Transform>
+public sealed class TransformHandler : Singleton<TransformHandler>, ITreeHandler<Transform>
 {
-	/// <summary>
-	/// A static instance of this class.
-	/// </summary>
-	public static TransformHandler Main => Singleton<TransformHandler>.Main;
-
 	private static readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
 		GetRoot = static (n) => n.root,
 		TryGetParent = static (Transform n, [NotNullWhen(true)] out Transform? p) => (p = n.parent) != null,

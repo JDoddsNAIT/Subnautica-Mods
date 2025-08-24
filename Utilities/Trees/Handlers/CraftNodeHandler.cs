@@ -4,13 +4,8 @@ namespace FrootLuips.Subnautica.Trees.Handlers;
 /// <summary>
 /// Standard <see cref="ITreeHandler{T}"/> for <see cref="global::TreeNode"/>s.
 /// </summary>
-public class CraftNodeHandler : ITreeHandler<global::TreeNode>
+public class CraftNodeHandler : Singleton<CraftNodeHandler>, ITreeHandler<global::TreeNode>
 {
-	/// <summary>
-	/// A static instance of this class.
-	/// </summary>
-	public static CraftNodeHandler Main => Singleton<CraftNodeHandler>.Main;
-
 	/// <inheritdoc/>
 	public TreeNode GetRoot(TreeNode node)
 	{
