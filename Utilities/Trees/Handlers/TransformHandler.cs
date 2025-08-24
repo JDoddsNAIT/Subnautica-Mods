@@ -10,7 +10,7 @@ public sealed class TransformHandler : ITreeHandler<Transform>
 	/// <summary>
 	/// A static instance of this class.
 	/// </summary>
-	public static TransformHandler Main { get; } = new();
+	public static TransformHandler Main => Singleton<TransformHandler>.Main;
 
 	private static readonly ITreeHandler<Transform> _handler = new TreeHandler<Transform>() {
 		GetRoot = static (n) => n.root,

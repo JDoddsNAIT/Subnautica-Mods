@@ -40,6 +40,9 @@ public interface ITreeNode<out T> where T : class, ITreeNode<T>
 /// <summary>
 /// Standard <see cref="ITreeHandler{T}"/> for reference types that implement <see cref="ITreeNode{T}"/>
 /// </summary>
+/// <remarks>
+/// This class cannot be inherited.
+/// </remarks>
 /// <typeparam name="T"></typeparam>
 public sealed class TreeNodeHandler<T> : ITreeHandler<T>
 	where T : class, ITreeNode<T>
@@ -47,7 +50,7 @@ public sealed class TreeNodeHandler<T> : ITreeHandler<T>
 	/// <summary>
 	/// Static instance of this class.
 	/// </summary>
-	public static TreeNodeHandler<T> Main { get; } = new TreeNodeHandler<T>();
+	public static TreeNodeHandler<T> Main => Singleton<TreeNodeHandler<T>>.Main;
 
 	/// <inheritdoc/>
 	public T GetRoot(T node)

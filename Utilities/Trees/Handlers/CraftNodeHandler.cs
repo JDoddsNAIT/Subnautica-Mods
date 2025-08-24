@@ -9,7 +9,7 @@ public class CraftNodeHandler : ITreeHandler<global::TreeNode>
 	/// <summary>
 	/// A static instance of this class.
 	/// </summary>
-	public static CraftNodeHandler Main { get; } = new();
+	public static CraftNodeHandler Main => Singleton<CraftNodeHandler>.Main;
 
 	/// <inheritdoc/>
 	public TreeNode GetRoot(TreeNode node)
