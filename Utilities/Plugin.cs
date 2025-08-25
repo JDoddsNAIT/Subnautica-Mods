@@ -16,7 +16,7 @@ public sealed class Plugin : BaseUnityPlugin
 	/// <summary>
 	/// Project-scoped logger instance.
 	/// </summary>
-	public static new Logger Logger { get => _logger!; private set => _logger = value; }
+	internal static new Logger Logger { get => _logger!; private set => _logger = value; }
 
 	internal void Awake()
 	{
