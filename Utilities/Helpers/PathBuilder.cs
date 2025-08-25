@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FrootLuips.Subnautica.Extensions;
 using FrootLuips.Subnautica.Validation;
@@ -31,9 +32,9 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 	{
 		var parts = this.ToArray();
 
-		string? path = null;
-		parts.Validate(_validator).ThrowIfFailed();
-		return path!;
+		var result = parts.Validate(_validator);
+		result.ThrowIfFailed();
+		return result.Result;
 	}
 
 	/// <summary>
@@ -41,7 +42,7 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
-	public bool TryCombine(out string? path)
+	public bool TryCombine([NotNullWhen(true)] out string? path)
 	{
 		try
 		{
@@ -56,7 +57,7 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 	}
 }
 
-internal class PathValidator : IValidator<string[]>
+internal class PathValidator : IValidator<string[], string>
 {
 	private const string
 		_INVALID_CHAR_MESSAGE = "Contains an invalid {0} character.",
@@ -64,13 +65,18 @@ internal class PathValidator : IValidator<string[]>
 
 	public string? FilePath { get; private set; } = null;
 
-	public bool GetSuccess(string[]? obj, IReadOnlyCollection<Exception> issues)
+	public bool Callback(string[]? obj,
+		IReadOnlyCollection<Exception> issues,
+		[NotNullWhen(true)] out string? result)
 	{
+		result = FilePath;
 		return !string.IsNullOrWhiteSpace(FilePath);
 	}
 
 	public IEnumerator<Exception> Validate(string[]? parts)
 	{
+		FilePath = null;
+
 		if (parts == null)
 			throw new ArgumentNullException(nameof(parts));
 		if (parts.Length == 0)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using FrootLuips.Subnautica.Logging;
 
 namespace FrootLuips.Subnautica.Validation;
 /// <summary>
@@ -48,35 +47,10 @@ public static class Validator
 		}
 	}
 
-	/// <summary>
-	/// Validates an <paramref name="object"/> using the given <paramref name="validator"/>.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="object"></param>
-	/// <param name="validator"></param>
-	/// <returns><inheritdoc cref="Validate{T}(T, IEnumerator{Exception}, IValidator{T}.ValidationCallback?)"/></returns>
-	public static ValidationResult<T> Validate<T>(this T @object, IValidator<T> validator)
+	private static ValidationResult<TResult> Validate<T, TResult>(this T obj,
+		IEnumerator<Exception> validator, ValidationCallback<T, TResult> callback)
 	{
-		return Validate(@object, validator.Validate(@object), callback: validator.GetSuccess);
-	}
-
-	/// <summary>
-	/// Validates the given <paramref name="object"/>, iterating over the <paramref name="validator"/> then returning the result.
-	/// </summary>
-	/// <remarks>
-	/// Successful validation is determined by whether any issues were found, or the result of <paramref name="callback"/> if one is provided.
-	/// </remarks>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="object"></param>
-	/// <param name="validator"></param>
-	/// <param name="callback"></param>
-	/// <returns>Whether validation succeeded or not, along with any issues that may have occurred.</returns>
-	public static ValidationResult<T> Validate<T>(this T @object,
-		IEnumerator<Exception> validator,
-		IValidator<T>.ValidationCallback? callback = null)
-	{
-		var errors = new List<Exception>();
-		callback ??= (static (o, e) => o != null && e.Count == 0)!;
+		List<Exception> errors = new();
 		try
 		{
 			while (validator.MoveNext())
@@ -88,7 +62,50 @@ public static class Validator
 		{
 			errors.Add(ex);
 		}
-		return new ValidationResult<T>(@object, callback(@object, errors), errors);
+
+		bool success = callback(obj, errors, out var result);
+		return new ValidationResult<TResult>(success, errors, result);
+	}
+
+	/// <summary>
+	/// Uses the <paramref name="validator"/> to validate <paramref name="obj"/>, and returns the result.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="TResult"></typeparam>
+	/// <param name="obj"></param>
+	/// <param name="validator"></param>
+	/// <returns></returns>
+	public static ValidationResult<TResult> Validate<T, TResult>(this T obj,
+		IValidator<T, TResult> validator)
+	{
+		return Validate<T, TResult>(obj, validator.Validate(obj), validator.Callback);
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="Validate{T, TResult}(T, IValidator{T, TResult})"/>
+	/// </summary>
+	/// <remarks>
+	/// Successful validation is determined by whether the <paramref name="validator"/> returns any errors,
+	/// or the result of <paramref name="callback"/> if specified.
+	/// </remarks>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="obj"></param>
+	/// <param name="validator"></param>
+	/// <param name="callback"></param>
+	/// <returns></returns>
+	public static ValidationResult<T> Validate<T>(this T obj,
+		IEnumerator<Exception> validator, ValidationCallback<T>? callback = null)
+	{
+		callback ??= (static (o, e) => o != null && e.Count == 0);
+		return Validate(obj, validator, DefaultCallback(callback));
+	}
+
+	private static ValidationCallback<T, T> DefaultCallback<T>(ValidationCallback<T> callback)
+	{
+		return (T? obj, IReadOnlyCollection<Exception> errors, [NotNullWhen(true)] out T? result) => {
+			result = obj;
+			return callback(obj, errors);
+		};
 	}
 
 	/// <summary>
@@ -97,7 +114,8 @@ public static class Validator
 	/// <param name="exceptions"></param>
 	/// <param name="message"></param>
 	/// <returns></returns>
-	public static AggregateException ToAggregate(this IEnumerable<Exception> exceptions, string? message = null)
+	public static AggregateException ToAggregate(this IEnumerable<Exception> exceptions,
+		string? message = null)
 	{
 		return string.IsNullOrWhiteSpace(message)
 			? new AggregateException(exceptions)
