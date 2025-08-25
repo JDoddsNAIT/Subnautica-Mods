@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FrootLuips.Subnautica.Helpers;
 using UnityEngine;
 
 namespace FrootLuips.Subnautica.Trees.Handlers;

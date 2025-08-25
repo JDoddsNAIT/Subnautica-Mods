@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using FrootLuips.Subnautica.Extensions;
+using FrootLuips.Subnautica.Helpers;
 
 namespace FrootLuips.Subnautica.Tests;
 

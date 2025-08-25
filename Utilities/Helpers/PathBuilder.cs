@@ -4,7 +4,7 @@ using System.IO;
 using FrootLuips.Subnautica.Extensions;
 using FrootLuips.Subnautica.Validation;
 
-namespace FrootLuips.Subnautica;
+namespace FrootLuips.Subnautica.Helpers;
 
 /// <summary>
 /// Helper class for constructing file paths.

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrootLuips.Subnautica.Helpers;
 using UnityEngine;
 
 namespace FrootLuips.Subnautica.Extensions;

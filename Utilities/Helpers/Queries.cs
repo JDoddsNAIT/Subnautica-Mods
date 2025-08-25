@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FrootLuips.Subnautica;
+namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
 /// Provides alternatives to Linq methods to reduce memory allocations.
 /// </summary>

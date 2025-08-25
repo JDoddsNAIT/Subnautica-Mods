@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace FrootLuips.Subnautica;
+namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
 /// Custom format provider used for unity's rich text.
 /// </summary>

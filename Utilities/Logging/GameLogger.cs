@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using BepInEx.Logging;
 using FrootLuips.Subnautica.Extensions;
+using FrootLuips.Subnautica.Helpers;
 using UnityEngine.SceneManagement;
 
 namespace FrootLuips.Subnautica.Logging;

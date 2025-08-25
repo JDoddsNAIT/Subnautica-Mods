@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FrootLuips.Subnautica;
+namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
 /// Interface for types used to construct <typeparamref name="T"/> arrays.
 /// </summary>

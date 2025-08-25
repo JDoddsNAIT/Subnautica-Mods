@@ -1,4 +1,4 @@
-﻿namespace FrootLuips.Subnautica;
+﻿namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
 /// Provides access to a static instance of <typeparamref name="T"/> that is never <see langword="null"/>.
 /// </summary>
