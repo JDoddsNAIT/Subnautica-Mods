@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FrootLuips.Subnautica.Validation;
+using System.Linq;
+using FrootLuips.Subnautica.Extensions;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>
@@ -31,15 +33,7 @@ public class Tree<T> : ITreeHandler<T>
 	}
 
 	/// <summary>
-	/// Enumerates over every node in the tree.
-	/// </summary>
-	/// <param name="search"></param>
-	/// <returns></returns>
-	public IEnumerable<T> Enumerate(SearchMode search)
-		=> TreeHelpers.Enumerate(this.Handler, this.Root, search);
-
-	/// <summary>
-	/// <inheritdoc cref="Enumerate(SearchMode)"/>
+	/// Enumerates over all nodes, relative to the <see cref="Root"/>.
 	/// </summary>
 	/// <param name="options"></param>
 	/// <returns></returns>
@@ -54,13 +48,7 @@ public class Tree<T> : ITreeHandler<T>
 	/// <returns></returns>
 	public IEnumerable<T> FindAll(Predicate<T> predicate, SearchOptions<T> options)
 	{
-		foreach (var node in this.Enumerate(options))
-		{
-			if (predicate(node))
-			{
-				yield return node;
-			}
-		}
+		return this.Enumerate(options).Where(predicate.Invoke);
 	}
 
 	/// <summary>
