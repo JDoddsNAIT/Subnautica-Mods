@@ -13,30 +13,27 @@ internal interface ITestContainer
 
 internal readonly partial record struct TestResult(string Group, string Name, bool Passed, string Message = "")
 {
-	[Obsolete]
-	public static TestResult Assert(string name, Test test, string group = "")
+	public static TestResult Run(string group, string name, Action test)
 	{
-		string message;
-		bool passed;
+		string? message = null;
+		bool passed = false;
 
 		try
 		{
-			passed = test(out message);
+			test();
+		}
+		catch (Context context)
+		{
+			message = context.Message;
+			passed = context.Passed;
 		}
 		catch (Exception ex)
 		{
 			message = ex.ToString();
 			passed = false;
 		}
-
+		Validation.Assert.NotNull(message);
 		return new TestResult(group, name, passed, message);
-	}
-
-	[Obsolete]
-	public static bool GetResult(out string message, string actual, string expected)
-	{
-		message = $"Result is '{actual}', expected '{expected}'.";
-		return actual == expected;
 	}
 
 	public override string ToString()

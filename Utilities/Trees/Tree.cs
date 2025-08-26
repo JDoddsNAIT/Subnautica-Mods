@@ -83,7 +83,12 @@ public class Tree<T> : ITreeHandler<T>
 	/// <exception cref="NodeNotFoundException"></exception>
 	public T Find(string name, SearchOptions<T> options)
 	{
-		return this.Find(n => Handler.GetName(n) == name, options);
+		foreach (var node in this.Enumerate(options))
+		{
+			if (Handler.GetName(node) == name)
+				return node;
+		}
+		throw NodeNotFoundException.WithName(name);
 	}
 
 	/// <inheritdoc cref="Find(string, SearchOptions{T})"/>

@@ -10,12 +10,12 @@ internal class Queries_Tests : ITestContainer
 
 	public IEnumerator<TestResult> GetResults()
 	{
-		yield return FilterArray();
-		yield return FilterList();
-		yield return ConvertList();
+		yield return TestResult.Run(_TEST_GROUP, nameof(FilterArray), FilterArray);
+		yield return TestResult.Run(_TEST_GROUP, nameof(FilterList), FilterList);
+		yield return TestResult.Run(_TEST_GROUP, nameof(ConvertList), ConvertList);
 	}
 
-	private TestResult FilterArray()
+	void FilterArray()
 	{
 		int[] actual = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 		int[] expected = new[] { 6, 7, 8, 9, 10 };
@@ -23,11 +23,10 @@ internal class Queries_Tests : ITestContainer
 		static bool greaterThan5(int value) => value > 5;
 
 		Queries.Filter(ref actual, greaterThan5);
-		return new TestResult.Context(_TEST_GROUP, nameof(FilterArray))
-			.AssertEquals(expected, actual, _comparer);
+		Assert.Equals(expected, actual, _comparer);
 	}
 
-	private TestResult FilterList()
+	void FilterList()
 	{
 		List<int> actual = new() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 		List<int> expected = new() { 6, 7, 8, 9, 10 };
@@ -35,11 +34,10 @@ internal class Queries_Tests : ITestContainer
 		static bool greaterThan5(int value) => value > 5;
 
 		Queries.Filter(actual, greaterThan5);
-		return new TestResult.Context(_TEST_GROUP, nameof(FilterList))
-			.AssertEquals(expected, actual, _comparer);
+		Assert.Equals(expected, actual, _comparer);
 	}
 
-	private TestResult ConvertList()
+	void ConvertList()
 	{
 		int[] actual = new[] { -2, -1, 0, 1, 2 };
 		List<bool> destination = new(capacity: 5);
@@ -48,7 +46,6 @@ internal class Queries_Tests : ITestContainer
 		static bool toBool(int value) => value > 0;
 
 		Queries.Convert(actual, toBool, destination);
-		return new TestResult.Context(_TEST_GROUP, nameof(FilterArray))
-			.AssertEquals(expected, destination, new ListComparer<bool>());
+		Assert.Equals(expected, destination, new ListComparer<bool>());
 	}
 }
