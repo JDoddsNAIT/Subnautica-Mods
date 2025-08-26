@@ -93,6 +93,7 @@ public static class StringExtensions
 	/// <param name="substring"></param>
 	/// <param name="inclusive">Whether to include the <paramref name="substring"/> in the result.</param>
 	/// <returns></returns>
+	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="ArgumentOutOfRangeException"/>
 	public static string ToEndFrom(this string text, string substring, bool inclusive = true)
 	{

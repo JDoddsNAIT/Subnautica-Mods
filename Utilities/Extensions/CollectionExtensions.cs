@@ -159,7 +159,7 @@ public static class CollectionExtensions
 	/// <typeparam name="T"></typeparam>
 	/// <param name="collection"></param>
 	/// <returns></returns>
-	public static bool IsNullOrEmpty<T>([NotNullWhen(true)] this IReadOnlyCollection<T>? collection)
+	public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? collection)
 	{
 		return collection is null || collection.Count == 0;
 	}

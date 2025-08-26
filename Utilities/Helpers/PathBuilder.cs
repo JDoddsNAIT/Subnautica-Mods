@@ -44,16 +44,7 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 	/// <returns></returns>
 	public bool TryCombine([NotNullWhen(true)] out string? path)
 	{
-		try
-		{
-			path = this.Combine();
-			return true;
-		}
-		catch (AggregateException)
-		{
-			path = null;
-			return false;
-		}
+		return Validator.Try(this.Combine, out path);
 	}
 }
 

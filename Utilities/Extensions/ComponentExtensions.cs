@@ -1,6 +1,7 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FrootLuips.Subnautica.Helpers;
 using UnityEngine;
@@ -23,7 +24,7 @@ public enum HeirarchyPreference
 }
 
 /// <summary>
-/// Extension method for <see cref="GameObject"/>s and <see cref="Component"/>s relating to getting other components.
+/// Extension methods for <see cref="GameObject"/>s and <see cref="Component"/>s relating to getting other components.
 /// </summary>
 public static class ComponentExtensions
 {
@@ -50,6 +51,17 @@ public static class ComponentExtensions
 		}
 		return query;
 	}
+
+	/// <summary>
+	/// Returns the constant <see langword="null"/> if the object evaluates to <see langword="null"/>.
+	/// </summary>
+	/// <remarks>
+	/// Allows for safe null propagation of <see cref="UnityEngine.Object"/>s.
+	/// </remarks>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="obj"></param>
+	/// <returns></returns>
+	public static T OrNull<T>(this T obj) where T : UnityEngine.Object => (bool)obj ? obj : null;
 
 	/// <summary>
 	/// Begins a component query for a <paramref name="gameObject"/>.
@@ -181,7 +193,7 @@ public sealed class ComponentQuery
 		/// </summary>
 		/// <param name="component"></param>
 		/// <returns><see langword="true"/> if <paramref name="component"/> is not <see langword="null"/>.</returns>
-		public readonly bool TryOnSelf(out T component)
+		public readonly bool TryOnSelf([NotNullWhen(true)] out T component)
 		{
 			component = OnSelf();
 			return component != null;
@@ -207,7 +219,7 @@ public sealed class ComponentQuery
 		/// <param name="component"></param>
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>
 		/// <returns><inheritdoc cref="TryOnSelf(out T)"/></returns>
-		public readonly bool TryInParent(out T component,
+		public readonly bool TryInParent([NotNullWhen(true)] out T component,
 			bool includeInactive = false)
 		{
 			component = InParent(includeInactive);
@@ -234,14 +246,14 @@ public sealed class ComponentQuery
 		/// <param name="component"></param>
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>
 		/// <returns><inheritdoc cref="TryOnSelf(out T)"/></returns>
-		public readonly bool TryInChildren(out T component,
+		public readonly bool TryInChildren([NotNullWhen(true)] out T component,
 			bool includeInactive = false)
 		{
 			component = InChildren(includeInactive);
 			return component != null;
 		}
 
-		private delegate bool TryGet(out T component, bool includeInactive);
+		private delegate bool TryGet([NotNullWhen(true)] out T component, bool includeInactive);
 		/// <summary>
 		/// ...on this <see cref="GameObject"/>, one of it's ancestors, or any of it's children.
 		/// </summary>
@@ -265,7 +277,7 @@ public sealed class ComponentQuery
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>
 		/// <param name="preference">Where to look for a component first.</param>
 		/// <returns><inheritdoc cref="TryOnSelf(out T)"/></returns>
-		public readonly bool TryInHeirarchy(out T component,
+		public readonly bool TryInHeirarchy([NotNullWhen(true)] out T component,
 			bool includeInactive = false,
 			HeirarchyPreference preference = HeirarchyPreference.Parents)
 		{
@@ -311,7 +323,7 @@ public sealed class ComponentQuery
 		/// </summary>
 		/// <param name="components"></param>
 		/// <returns><see langword="true"/> if <paramref name="components"/> has at least one value.</returns>
-		public readonly bool TryOnSelf(out T[] components)
+		public readonly bool TryOnSelf([NotNullWhen(true)] out T[] components)
 		{
 			components = OnSelf();
 			return components.Length > 0;
@@ -336,7 +348,7 @@ public sealed class ComponentQuery
 		/// <param name="components"></param>
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>
 		/// <returns><inheritdoc cref="TryOnSelf(out T[])"/></returns>
-		public readonly bool TryInParent(out T[] components,
+		public readonly bool TryInParent([NotNullWhen(true)] out T[] components,
 			bool includeInactive = false)
 		{
 			components = InParent(includeInactive);
@@ -362,7 +374,7 @@ public sealed class ComponentQuery
 		/// <param name="components"></param>
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>
 		/// <returns><inheritdoc cref="TryOnSelf(out T[])"/></returns>
-		public readonly bool TryInChildren(out T[] components,
+		public readonly bool TryInChildren([NotNullWhen(true)] out T[] components,
 			bool includeInactive = false)
 		{
 			components = InChildren(includeInactive);
@@ -392,7 +404,7 @@ public sealed class ComponentQuery
 		/// <param name="components"></param>
 		/// <param name="includeInactive">Should inactive objects be included in the query? This object will always be included.</param>
 		/// <returns><inheritdoc cref="TryOnSelf(out T[])"/></returns>
-		public readonly bool TryInHeirarchy(out T[] components,
+		public readonly bool TryInHeirarchy([NotNullWhen(true)] out T[] components,
 			bool includeInactive = false)
 		{
 			components = InHeirarchy(includeInactive);

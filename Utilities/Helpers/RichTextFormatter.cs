@@ -40,13 +40,13 @@ public sealed class RichTextFormatter : Singleton<RichTextFormatter>, IFormatPro
 	/// <summary>
 	/// Generates a simple rich text tag.
 	/// </summary>
-	/// <param name="name"></param>
+	/// <param name="tag"></param>
 	/// <param name="text"></param>
 	/// <param name="arg"></param>
 	/// <returns></returns>
-	public static string Tag(string name, object text, object? arg = null)
+	public static string Tag(string tag, object text, object? arg = null)
 	{
-		return arg == null ? $"<{name}>{text}</{name}>" : $"<{name}={arg}>{text}</{name}>";
+		return arg == null ? $"<{tag}>{text}</{tag}>" : $"<{tag}={arg}>{text}</{tag}>";
 	}
 
 	private string HandleOtherFormats(string format, object arg)

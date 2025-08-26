@@ -54,16 +54,9 @@ public class ListComparer<T> :
 
 		int length = x.Count;
 		bool equals = true;
-
 		for (int i = 0; i < length && equals; i++)
 		{
-			T a = x[i], b = y[i];
-			equals = (a, b) switch {
-				(_, _) when ValueComparer is not null => ValueComparer.Equals(a, b),
-				(not null, _) => a.Equals(b),
-				(_, not null) => b.Equals(a),
-				(null, null) => true,
-			};
+			equals = ValueEquals(x[i], y[i]);
 		}
 		return equals;
 	}
@@ -85,20 +78,21 @@ public class ListComparer<T> :
 			return false;
 
 		bool equals = true;
-		foreach ((T a, T b) in (x, y))
+		var enumerator = (x, y).GetEnumerator();
+		T a, b;
+		while (enumerator.MoveNext() && equals)
 		{
-			equals = (a, b) switch {
-				(_, _) when ValueComparer is not null => ValueComparer.Equals(a, b),
-				(null, null) => true,
-				(not null, _) => a.Equals(b),
-				(_, not null) => b.Equals(a),
-			};
-			if (!equals)
-				break;
+			(a, b) = enumerator.Current;
+			equals = this.ValueEquals(a, b);
 		}
 		return equals;
 	}
-	
+
+	private bool ValueEquals(T a, T b)
+	{
+		return ValueComparer?.Equals(a, b) ?? Equals(a, b);
+	}
+
 	/// <inheritdoc/>
 	public int GetHashCode(List<T> obj) => obj.GetHashCode();
 	/// <inheritdoc/>

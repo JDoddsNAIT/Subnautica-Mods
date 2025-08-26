@@ -41,7 +41,7 @@ public static class Validator
 			method();
 			return true;
 		}
-		catch (Exception)
+		catch
 		{
 			return false;
 		}

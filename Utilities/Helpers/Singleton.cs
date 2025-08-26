@@ -27,6 +27,22 @@ public class Singleton<T> where T : class, new()
 		_ => _instance,
 	};
 
+	/// <summary>
+	/// Setter for <see cref="Main"/>
+	/// </summary>
+	/// <param name="instance"></param>
+	public static void SetMain(T? instance)
+	{
+		if (ReferenceEquals(instance, _instance))
+			return;
+		_instance = instance;
+
+		if (instance is ISingleton singleton)
+		{
+			singleton.OnSingletonInit();
+		}
+	}
+
 	private static T CreateNew()
 	{
 		if (_initialized)

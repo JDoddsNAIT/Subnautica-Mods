@@ -68,7 +68,7 @@ public class Tree<T> : ITreeHandler<T>
 	}
 
 	/// <inheritdoc cref="Find(Predicate{T}, SearchOptions{T})"/>
-	public bool TryFind(Predicate<T> predicate, SearchOptions<T> options, out T? result)
+	public bool TryFind(Predicate<T> predicate, SearchOptions<T> options, [NotNullWhen(true)] out T? result)
 	{
 		return Validator.Try(() => Find(predicate, options), out result);
 	}
@@ -91,7 +91,7 @@ public class Tree<T> : ITreeHandler<T>
 	}
 
 	/// <inheritdoc cref="Find(string, SearchOptions{T})"/>
-	public bool TryFind(string name, SearchOptions<T> options, out T? result)
+	public bool TryFind(string name, SearchOptions<T> options, [NotNullWhen(true)] out T? result)
 	{
 		return Validator.Try(() => Find(name, options), out result);
 	}

@@ -61,20 +61,21 @@ public static class Queries
 	/// <typeparam name="T"></typeparam>
 	/// <param name="source"></param>
 	/// <param name="destination">The destination list. Note that the list will be cleared before copying.</param>
+	/// <param name="resize">If <see langword="true"/>, the capacity of <paramref name="destination"/> will be set to match the count.</param>
 	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="OutOfMemoryException"></exception>
-	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
+	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination,
+		bool resize = false)
 	{
 		if (source is null)
 			throw new ArgumentNullException(nameof(source));
 		if (destination is null)
 			throw new ArgumentNullException(nameof(destination));
-		
+
 		if (destination.Count > source.Count)
-		{
 			destination.RemoveRange(source.Count, destination.Count - source.Count);
-		}
-		destination.Capacity = source.Count;
+		if (resize)
+			destination.Capacity = source.Count;
 
 		int length = source.Count;
 		for (int i = 0; i < length; i++)
@@ -97,7 +98,7 @@ public static class Queries
 	/// <param name="source"></param>
 	/// <param name="destination"></param>
 	/// <param name="converter"></param>
-	/// <param name="resize"><inheritdoc cref="Copy{T}(IReadOnlyList{T}, ref T[], bool)"/></param>
+	/// <param name="resize">Should <paramref name="destination"/> be resized to match the length of <paramref name="source"/>?</param>
 	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="InvalidOperationException"></exception>
 	public static void Convert<T1, T2>(IReadOnlyList<T1> source, ref T2[] destination, Converter<T1, T2> converter,
@@ -131,11 +132,13 @@ public static class Queries
 	/// <typeparam name="T1"></typeparam>
 	/// <typeparam name="T2"></typeparam>
 	/// <param name="source"></param>
-	/// <param name="destination"><inheritdoc cref="Copy{T}(IReadOnlyList{T}, List{T})"/></param>
+	/// <param name="destination">The destination list. Note that the list will be cleared before copying.</param>
 	/// <param name="converter"></param>
+	/// <param name="resize">If <see langword="true"/>, the capacity of <paramref name="destination"/> will be set to match the count.</param>
 	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="OutOfMemoryException"></exception>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, List<T2> destination, Converter<T1, T2> converter)
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, List<T2> destination, Converter<T1, T2> converter,
+		bool resize = false)
 	{
 		if (source is null)
 			throw new ArgumentNullException(nameof(source));
@@ -145,10 +148,9 @@ public static class Queries
 			throw new ArgumentNullException(nameof(converter));
 
 		if (destination.Count > source.Count)
-		{
 			destination.RemoveRange(source.Count, destination.Count - source.Count);
-		}
-		destination.Capacity = source.Count;
+		if (resize)
+			destination.Capacity = source.Count;
 
 		int length = source.Count;
 		for (int i = 0; i < length; i++)

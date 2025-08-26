@@ -18,6 +18,17 @@ public static class QuaternionExtensions
 	}
 
 	/// <summary>
+	/// Subtracts <paramref name="rhs"/> from <paramref name="lhs"/>.
+	/// </summary>
+	/// <param name="lhs"></param>
+	/// <param name="rhs"></param>
+	/// <returns></returns>
+	public static Quaternion Subtract(this Quaternion lhs, Quaternion rhs)
+	{
+		return Quaternion.Euler(lhs.eulerAngles - rhs.eulerAngles);
+	}
+
+	/// <summary>
 	/// Scales a <paramref name="quaternion"/> by the given <paramref name="factor"/>.
 	/// </summary>
 	/// <param name="quaternion"></param>

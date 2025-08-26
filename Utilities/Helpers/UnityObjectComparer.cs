@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
@@ -6,7 +7,7 @@ namespace FrootLuips.Subnautica.Helpers;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public sealed class UnityObjectComparer<T> : Singleton<UnityObjectComparer<T>>, IEqualityComparer<T>
-	where T : UnityEngine.Object
+	where T : Object
 {
 	/// <inheritdoc/>
 	public bool Equals(T? x, T? y)
