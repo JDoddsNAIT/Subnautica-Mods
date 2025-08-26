@@ -44,7 +44,7 @@ internal class Queries_Tests : ITestContainer
 
 		static bool toBool(int value) => value > 0;
 
-		Queries.Convert(actual, toBool, destination);
+		Queries.Convert(actual, destination, toBool);
 		Assert.Equals<bool>(expected, destination);
 	}
 }

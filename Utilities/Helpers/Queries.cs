@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -14,71 +15,149 @@ public static class Queries
 	/// <typeparam name="T"></typeparam>
 	/// <param name="value"></param>
 	/// <returns></returns>
-	public static bool NotNull<T>([NotNullWhen(true)] T? value) => value != null;
+	public static bool NotNull<T>([NotNullWhen(true)] T value) => value switch {
+		UnityEngine.Object obj => obj != null,
+		_ => value is not null,
+	};
 
 	/// <summary>
-	/// Converts a <typeparamref name="T1"/> collection into a <typeparamref name="T2"/> array.
+	/// Copies the elements from the <paramref name="source"/> into the <paramref name="destination"/>.
 	/// </summary>
-	/// <typeparam name="T1"></typeparam>
-	/// <typeparam name="T2"></typeparam>
+	/// <remarks>
+	/// If <paramref name="resize"/> is <see langword="false"/>, throws an <see cref="InvalidOperationException"/> if the length of <paramref name="destination"/> is less than the count of <paramref name="source"/>.
+	/// </remarks>
+	/// <typeparam name="T"></typeparam>
 	/// <param name="source"></param>
-	/// <param name="converter"></param>
 	/// <param name="destination"></param>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Converter<T1, T2> converter, ref T2[] destination)
+	/// <param name="resize">Should <paramref name="destination"/> be resized to match the length of <paramref name="source"/>?</param>
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="InvalidOperationException"></exception>
+	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination,
+		bool resize = false)
 	{
-		int length = source.Count;
-		if (destination.Length != length)
-			Array.Resize(ref destination, length);
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
 
+		if (resize && destination.Length != source.Count)
+			Array.Resize(ref destination, source.Count);
+		else if (destination.Length < source.Count)
+			throw new InvalidOperationException("Cannot copy to an array with a length less the source.");
+
+		int length = destination.Length;
 		for (int i = 0; i < length; i++)
 		{
-			destination[i] = converter(source[i]);
+			if (i < source.Count)
+				destination[i] = default;
+			else
+				destination[i] = source[i];
 		}
 	}
 
 	/// <summary>
-	/// Converts a <typeparamref name="T1"/> collection into a list of <typeparamref name="T2"/>s.
+	/// Copies the elements from the <paramref name="source"/> into the <paramref name="destination"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="source"></param>
+	/// <param name="destination">The destination list. Note that the list will be cleared before copying.</param>
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="OutOfMemoryException"></exception>
+	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
+	{
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+		
+		if (destination.Count > source.Count)
+		{
+			destination.RemoveRange(source.Count, destination.Count - source.Count);
+		}
+		destination.Capacity = source.Count;
+
+		int length = source.Count;
+		for (int i = 0; i < length; i++)
+		{
+			if (i < destination.Count)
+				destination[i] = source[i];
+			else
+				destination.Add(source[i]);
+		}
+	}
+
+	/// <summary>
+	/// Converts the <paramref name="source"/> <typeparamref name="T1"/> collection into the <paramref name="destination"/> <typeparamref name="T2"/> array.
+	/// </summary>
+	/// <remarks>
+	/// <inheritdoc cref="Copy{T}(IReadOnlyList{T}, ref T[], bool)"/>
+	/// </remarks>
+	/// <typeparam name="T1"></typeparam>
+	/// <typeparam name="T2"></typeparam>
+	/// <param name="source"></param>
+	/// <param name="destination"></param>
+	/// <param name="converter"></param>
+	/// <param name="resize"><inheritdoc cref="Copy{T}(IReadOnlyList{T}, ref T[], bool)"/></param>
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="InvalidOperationException"></exception>
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, ref T2[] destination, Converter<T1, T2> converter,
+		bool resize = false)
+	{
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+		if (converter is null)
+			throw new ArgumentNullException(nameof(converter));
+
+		if (resize && destination.Length != source.Count)
+			Array.Resize(ref destination, source.Count);
+		else if (destination.Length < source.Count)
+			throw new InvalidOperationException("Cannot copy to an array with a length less the source.");
+
+		int length = destination.Length;
+		for (int i = 0; i < length; i++)
+		{
+			if (i < source.Count)
+				destination[i] = default;
+			else
+				destination[i] = converter(source[i]);
+		}
+	}
+
+	/// <summary>
+	/// Converts the <paramref name="source"/> <typeparamref name="T1"/> collection into the <paramref name="destination"/> <typeparamref name="T2"/> list.
 	/// </summary>
 	/// <typeparam name="T1"></typeparam>
 	/// <typeparam name="T2"></typeparam>
 	/// <param name="source"></param>
+	/// <param name="destination"><inheritdoc cref="Copy{T}(IReadOnlyList{T}, List{T})"/></param>
 	/// <param name="converter"></param>
-	/// <param name="destination"></param>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, Converter<T1, T2> converter, List<T2> destination)
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="OutOfMemoryException"></exception>
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, List<T2> destination, Converter<T1, T2> converter)
 	{
-		for (int i = 0; i < Math.Max(source.Count, destination.Count); i++)
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+		if (converter is null)
+			throw new ArgumentNullException(nameof(converter));
+
+		if (destination.Count > source.Count)
 		{
-			T2? item = converter(source[i]);
-
-			if (i >= source.Count && i < destination.Count)
-				destination.RemoveAt(i);
-			else if (i < destination.Count)
-				destination[i] = item;
-			else
-				destination.Add(item);
+			destination.RemoveRange(source.Count, destination.Count - source.Count);
 		}
-	}
+		destination.Capacity = source.Count;
 
-	/// <summary>
-	/// Copies the elements from the <paramref name="source"/> into the <paramref name="destination"/>.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="source"></param>
-	/// <param name="destination"></param>
-	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination)
-	{
-		Convert(source, converter: static obj => obj, ref destination);
-	}
-
-	/// <summary>
-	/// Copies the elements from the <paramref name="source"/> into the <paramref name="destination"/>.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="source"></param>
-	/// <param name="destination"></param>
-	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
-	{
-		Convert(source, converter: static obj => obj, destination);
+		int length = source.Count;
+		for (int i = 0; i < length; i++)
+		{
+			if (i < destination.Count)
+				destination[i] = converter(source[i]);
+			else
+				destination.Add(converter(source[i]));
+		}
 	}
 
 	/// <summary>
@@ -87,11 +166,28 @@ public static class Queries
 	/// <typeparam name="T"></typeparam>
 	/// <param name="array"></param>
 	/// <param name="filter"></param>
-	public static void Filter<T>(ref T[] array, Predicate<T> filter)
+	/// <param name="resize">Should the <paramref name="array"/> be resized? If not, filtered values will be replaced with defaults.</param>
+	/// <exception cref="ArgumentNullException"></exception>
+	public static void Filter<T>(ref T[] array, Predicate<T> filter, bool resize = false)
 	{
-		List<T> result = new(array);
-		Filter(result, filter);
-		Copy(result, ref array);
+		if (array is null)
+			throw new ArgumentNullException(nameof(array));
+		if (filter is null)
+			throw new ArgumentNullException(nameof(filter));
+
+		int newLength = 0;
+
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (!filter(array[i]))
+				array[i] = default;
+			else
+				newLength++;
+		}
+
+		Array.Sort(array, Singleton<NullComparer<T>>.Main);
+		if (resize)
+			Array.Resize(ref array, newLength);
 	}
 
 	/// <summary>
@@ -100,8 +196,14 @@ public static class Queries
 	/// <typeparam name="T"></typeparam>
 	/// <param name="list"></param>
 	/// <param name="filter"></param>
+	/// <exception cref="ArgumentNullException"></exception>
 	public static void Filter<T>(List<T> list, Predicate<T> filter)
 	{
+		if (list is null)
+			throw new ArgumentNullException(nameof(list));
+		if (filter is null)
+			throw new ArgumentNullException(nameof(filter));
+
 		for (int i = list.Count - 1; i >= 0; i--)
 		{
 			if (!filter(list[i]))
@@ -114,7 +216,9 @@ public static class Queries
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="array"></param>
-	public static void FilterDuplicates<T>(ref T[] array)
+	/// <param name="resize"><inheritdoc cref="Filter{T}(ref T[], Predicate{T}, bool)"/></param>
+	/// <exception cref="ArgumentNullException"></exception>
+	public static void FilterDuplicates<T>(ref T[] array, bool resize = false)
 	{
 		Copy(GetUniqueItems(array), ref array);
 	}
@@ -124,6 +228,8 @@ public static class Queries
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="list"></param>
+	/// <exception cref="ArgumentNullException"></exception>
+	/// <exception cref="OutOfMemoryException"></exception>
 	public static void FilterDuplicates<T>(List<T> list)
 	{
 		Copy(GetUniqueItems(list), list);
@@ -146,6 +252,7 @@ public static class Queries
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="array"></param>
+	/// <exception cref="ArgumentNullException"></exception>
 	public static void FilterNulls<T>(ref T[] array) => Filter(ref array, filter: NotNull);
 
 	/// <summary>
@@ -153,5 +260,18 @@ public static class Queries
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="list"></param>
+	/// <exception cref="ArgumentNullException"></exception>
 	public static void FilterNulls<T>(List<T> list) => Filter(list, filter: NotNull);
+}
+
+internal class NullComparer<T> : IComparer<T>
+{
+	int IComparer<T>.Compare(T x, T y)
+	{
+		return (Equals(x, default(T)), Equals(y, default(T))) switch {
+			(true, false) => +1, // x > y
+			(false, false) or (true, true) => 0, // x = y
+			(false, true) => -1, // x < y
+		};
+	}
 }
