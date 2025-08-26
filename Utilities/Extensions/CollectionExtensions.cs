@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FrootLuips.Subnautica.Helpers;
 
 namespace FrootLuips.Subnautica.Extensions;
@@ -77,11 +79,16 @@ public static class CollectionExtensions
 	/// <typeparam name="T"></typeparam>
 	/// <param name="a"></param>
 	/// <param name="b"></param>
-	/// <returns><see langword="true"/> if both list have all the same elements.</returns>
+	/// <returns><see langword="true"/> if both lists have all the same elements.</returns>
 	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b)
 	{
-		Singleton<ListComparer<T>>.Main.ValueComparer = null;
-		return Singleton<ListComparer<T>>.Main.Equals(a, b);
+		return new ListComparer<T>().Equals(a, b);
+	}
+
+	/// <inheritdoc cref="CompareValues{T}(IReadOnlyList{T}, IReadOnlyList{T})"/>
+	public static bool CompareValues<T>(this IEnumerable<T> a, IEnumerable<T> b)
+	{
+		return new ListComparer<T>().Equals(a, b);
 	}
 
 	/// <summary>
@@ -91,12 +98,39 @@ public static class CollectionExtensions
 	/// <param name="a"></param>
 	/// <param name="b"></param>
 	/// <param name="comparer"></param>
-	/// <returns><see langword="true"/> if both list have all the same elements.</returns>
+	/// <returns><see langword="true"/> if both lists have all the same elements.</returns>
 	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b, IEqualityComparer<T> comparer)
 	{
-		Singleton<ListComparer<T>>.Main.ValueComparer = comparer;
-		return Singleton<ListComparer<T>>.Main.Equals(a, b);
+		return new ListComparer<T>(comparer).Equals(a, b);
+	}
 
+	/// <inheritdoc cref="CompareValues{T}(IReadOnlyList{T}, IReadOnlyList{T}, IEqualityComparer{T})"/>
+	public static bool CompareValues<T>(this IEnumerable<T> a, IEnumerable<T> b, IEqualityComparer<T> comparer)
+	{
+		return new ListComparer<T>(comparer).Equals(a, b);
+	}
+
+	/// <summary>
+	/// Creates an enumerator for a pair of <see cref="IEnumerable{T}"/>s.
+	/// </summary>
+	/// <remarks>
+	/// Values that are outside the bounds of either collection will be replaced with the default value
+	/// in the final result.
+	/// </remarks>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="tuple"></param>
+	/// <returns></returns>
+	public static IEnumerator<(T?, T?)> GetEnumerator<T>(this (IEnumerable<T> x, IEnumerable<T> y) tuple)
+	{
+		IEnumerator<T> xEnumerator = tuple.x.GetEnumerator(), yEnumerator = tuple.y.GetEnumerator();
+		bool xMove = xEnumerator.MoveNext(), yMove = yEnumerator.MoveNext();
+
+		while (xMove | yMove)
+		{
+			yield return (xEnumerator.Current, yEnumerator.Current);
+			xMove = xEnumerator.MoveNext();
+			yMove = yEnumerator.MoveNext();
+		}
 	}
 
 	/// <summary>
@@ -109,75 +143,4 @@ public static class CollectionExtensions
 	{
 		return collection is null || collection.Count == 0;
 	}
-}
-
-#nullable disable
-/// <summary>
-/// Compares two lists by value instead of by reference.
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public class ListComparer<T> :
-	IEqualityComparer<T[]>,
-	IEqualityComparer<List<T>>,
-	IEqualityComparer<IReadOnlyList<T>>
-{
-	/// <summary>
-	/// The <see cref="IEqualityComparer{T}"/> used to compare two <typeparamref name="T"/> values.
-	/// </summary>
-	public IEqualityComparer<T> ValueComparer { get; set; }
-
-	/// <summary>
-	/// Constructs a <see cref="ListComparer{T}"/> with the default comparer.
-	/// </summary>
-	public ListComparer() : this(null) { }
-
-	/// <summary>
-	/// Constructs a <see cref="ListComparer{T}"/> with the given comparer.
-	/// </summary>
-	/// <param name="valueComparer"></param>
-	public ListComparer(IEqualityComparer<T> valueComparer)
-	{
-		ValueComparer = valueComparer;
-	}
-
-	/// <inheritdoc/>
-	public bool Equals(T[] x, T[] y)
-	{
-		return (this as IEqualityComparer<IReadOnlyList<T>>).Equals(x, y);
-	}
-
-	/// <inheritdoc/>
-	public bool Equals(List<T> x, List<T> y)
-	{
-		return (this as IEqualityComparer<IReadOnlyList<T>>).Equals(x, y);
-	}
-
-	/// <inheritdoc/>
-	public bool Equals(IReadOnlyList<T> x, IReadOnlyList<T> y)
-	{
-		if (x is null || y is null || x.Count != y.Count)
-			return false;
-
-		int length = x.Count;
-		bool equals = true;
-
-		for (int i = 0; i < length && equals; i++)
-		{
-			T a = x[i], b = y[i];
-			equals = (a, b) switch {
-				(a: _, b: _) when ValueComparer is not null => ValueComparer.Equals(a, b),
-				(a: null, b: null) => true,
-				(a: not null, b: _) => a.Equals(b),
-				(a: _, b: not null) => b.Equals(a),
-			};
-		}
-		return equals;
-	}
-
-	/// <inheritdoc/>
-	public int GetHashCode(T[] obj) => obj.GetHashCode();
-	/// <inheritdoc/>
-	public int GetHashCode(List<T> obj) => obj.GetHashCode();
-	/// <inheritdoc/>
-	public int GetHashCode(IReadOnlyList<T> obj) => obj.GetHashCode();
 }

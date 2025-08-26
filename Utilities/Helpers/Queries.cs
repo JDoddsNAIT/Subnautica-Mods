@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
@@ -13,7 +14,7 @@ public static class Queries
 	/// <typeparam name="T"></typeparam>
 	/// <param name="value"></param>
 	/// <returns></returns>
-	public static bool NotNull<T>(T? value) => value != null;
+	public static bool NotNull<T>([NotNullWhen(true)] T? value) => value != null;
 
 	/// <summary>
 	/// Converts a <typeparamref name="T1"/> collection into a <typeparamref name="T2"/> array.

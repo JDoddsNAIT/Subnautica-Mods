@@ -23,8 +23,7 @@ internal class Queries_Tests : ITestContainer
 		static bool greaterThan5(int value) => value > 5;
 
 		Queries.Filter(ref actual, greaterThan5);
-		message = string.Join(", ", actual);
-
+		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
 	}
 
@@ -36,8 +35,7 @@ internal class Queries_Tests : ITestContainer
 		static bool greaterThan5(int value) => value > 5;
 
 		Queries.Filter(actual, greaterThan5);
-		message = string.Join(", ", actual);
-
+		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
 		return actual.CompareValues(expected);
 	}
 
@@ -50,7 +48,6 @@ internal class Queries_Tests : ITestContainer
 		static bool toBool(int value) => value > 0;
 
 		Queries.Convert(actual, toBool, destination);
-
 		TestResult.GetResult(out message, string.Join(", ", destination), string.Join(", ", expected));
 		return destination.CompareValues(expected);
 	}
