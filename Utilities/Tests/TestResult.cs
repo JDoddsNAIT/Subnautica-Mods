@@ -11,8 +11,9 @@ internal interface ITestContainer
 	IEnumerator<TestResult> GetResults();
 }
 
-internal readonly record struct TestResult(string Group, string Name, bool Passed, string Message = "")
+internal readonly partial record struct TestResult(string Group, string Name, bool Passed, string Message = "")
 {
+	[Obsolete]
 	public static TestResult Assert(string name, Test test, string group = "")
 	{
 		string message;
@@ -31,6 +32,7 @@ internal readonly record struct TestResult(string Group, string Name, bool Passe
 		return new TestResult(group, name, passed, message);
 	}
 
+	[Obsolete]
 	public static bool GetResult(out string message, string actual, string expected)
 	{
 		message = $"Result is '{actual}', expected '{expected}'.";

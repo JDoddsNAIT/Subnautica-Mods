@@ -5,17 +5,18 @@ using static FrootLuips.Subnautica.Tests.TestResult;
 namespace FrootLuips.Subnautica.Tests;
 internal class LogMessage_Tests : ITestContainer
 {
+	const string _TEST_GROUP = nameof(LogMessage);
+
 	public IEnumerator<TestResult> GetResults()
 	{
-		var group = nameof(LogMessage_Tests);
-		yield return Assert(nameof(ToString), ToString, group);
-		yield return Assert(nameof(NoContext), NoContext, group);
-		yield return Assert(nameof(NoNotice), NoNotice, group);
-		yield return Assert(nameof(NoMessage), NoMessage, group);
-		yield return Assert(nameof(NoRemarks), NoRemarks, group);
+		yield return AllFields();
+		yield return NoContext();
+		yield return NoMessage();
+		yield return NoNotice();
+		yield return NoRemarks();
 	}
 
-	private bool ToString(out string message)
+	private TestResult AllFields()
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
@@ -24,10 +25,10 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Message - Notice (Remarks)";
-		return GetResult(out message, actual, expected);
+		return new Context(_TEST_GROUP, nameof(AllFields)).AssertEquals(expected, actual);
 	}
 
-	private bool NoContext(out string message)
+	private TestResult NoContext()
 	{
 		var logMessage = new LogMessage()
 			.WithMessage("Message")
@@ -35,10 +36,10 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "Message - Notice (Remarks)";
-		return GetResult(out message, actual, expected);
+		return new Context(_TEST_GROUP, nameof(NoContext)).AssertEquals(expected, actual);
 	}
 
-	private bool NoNotice(out string message)
+	private TestResult NoMessage()
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
@@ -46,10 +47,10 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string expected = "[Context] Notice (Remarks)";
 		string actual = logMessage.ToString();
-		return GetResult(out message, actual, expected);
+		return new Context(_TEST_GROUP, nameof(NoMessage)).AssertEquals(expected, actual);
 	}
 
-	private bool NoMessage(out string message)
+	private TestResult NoNotice()
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
@@ -57,10 +58,10 @@ internal class LogMessage_Tests : ITestContainer
 			.WithRemarks("Remarks");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Message - (Remarks)";
-		return GetResult(out message, actual, expected);
+		return new Context(_TEST_GROUP, nameof(NoNotice)).AssertEquals(expected, actual);
 	}
 
-	private bool NoRemarks(out string message)
+	private TestResult NoRemarks()
 	{
 		var logMessage = new LogMessage()
 			.WithContext("Context")
@@ -68,6 +69,6 @@ internal class LogMessage_Tests : ITestContainer
 			.WithNotice("Notice");
 		string actual = logMessage.ToString();
 		string expected = "[Context] Message - Notice";
-		return GetResult(out message, actual, expected);
+		return new Context(_TEST_GROUP, nameof(NoRemarks)).AssertEquals(expected, actual);
 	}
 }

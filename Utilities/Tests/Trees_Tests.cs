@@ -1,36 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FrootLuips.Subnautica.Extensions;
+using FrootLuips.Subnautica.Helpers;
 using FrootLuips.Subnautica.Trees;
 using UnityEngine;
 
 namespace FrootLuips.Subnautica.Tests;
 internal class Trees_Tests : ITestContainer
 {
-	private static IReadOnlyDictionary<char, GameObject>? _objects;
+	private static readonly UnityObjectComparer<GameObject> _objectComparer = new();
+	private static readonly ListComparer<GameObject> _listComparer = new(_objectComparer);
+
 	private Tree<Transform>? _tree;
+
 #pragma warning disable IDE1006 // Naming Styles
-	const char A = 'A', B = 'B', C = 'C', D = 'D', E = 'E', F = 'F';
+	GameObject? A, B, C, D, E, F;
 #pragma warning restore IDE1006 // Naming Styles
 
-	private static Tree<Transform> CreateTestHeirarchy()
+	private Tree<Transform> CreateTestHeirarchy()
 	{
-		_objects ??= new Dictionary<char, GameObject>() {
-			[A] = new(name: "A"),
-			[B] = new(name: "B"),
-			[C] = new(name: "C"),
-			[D] = new(name: "D"),
-			[E] = new(name: "E"),
-			[F] = new(name: "F")
-		};
+		A = new(name: "A");
+		B = new(name: "B");
+		C = new(name: "C");
+		D = new(name: "D");
+		E = new(name: "E");
+		F = new(name: "F");
+		
 
-		_objects[B].transform.SetParent(_objects[A].transform);
-		_objects[C].transform.SetParent(_objects[A].transform);
+		B.transform.SetParent(A.transform);
+		C.transform.SetParent(A.transform);
 
-		_objects[D].transform.SetParent(_objects[B].transform);
-		_objects[E].transform.SetParent(_objects[B].transform);
+		D.transform.SetParent(B.transform);
+		E.transform.SetParent(B.transform);
 
-		_objects[F].transform.SetParent(_objects[C].transform);
+		F.transform.SetParent(C.transform);
 
 		//     A
 		//    / \
@@ -38,117 +40,116 @@ internal class Trees_Tests : ITestContainer
 		//  / \   \
 		// D   E   F
 
-		return new Tree<Transform>(_objects[A].transform, Trees.Handlers.TransformHandler.Main);
+		return new Tree<Transform>(A.transform, Trees.Handlers.TransformHandler.Main);
 	}
+
+	const string _TEST_GROUP = nameof(Tree<Transform>);
 
 	public IEnumerator<TestResult> GetResults()
 	{
-		string group = nameof(Trees_Tests);
 		_tree = CreateTestHeirarchy();
 
-		yield return TestResult.Assert(nameof(Enumerate_BFS), Enumerate_BFS, group);
-		yield return TestResult.Assert(nameof(Enumerate_DFS), Enumerate_DFS, group);
-		yield return TestResult.Assert(nameof(Enumerate_MaxDepth), Enumerate_MaxDepth, group);
-		yield return TestResult.Assert(nameof(Enumerate_NotInclusive), Enumerate_NotInclusive, group);
-		yield return TestResult.Assert(nameof(Enumerate_Predicate), Enumerate_Predicate, group);
+		yield return Enumerate_BFS();
+		yield return Enumerate_DFS();
+		yield return Enumerate_MaxDepth();
+		yield return Enumerate_NotInclusive();
+		yield return Enumerate_Predicate();
 
-		yield return TestResult.Assert(nameof(Find_Predicate), Enumerate_Predicate, group);
-		yield return TestResult.Assert(nameof(Find_Name), Find_Name, group);
-		yield return TestResult.Assert(nameof(Find_Path), Find_Path, group);
-		yield return TestResult.Assert(nameof(GetPath), GetPath, group);
+		yield return Find_Predicate();
+		yield return Find_Name();
+		yield return Find_Path();
+		yield return GetPath();
 	}
 
-	private bool Enumerate_BFS(out string message)
+	private TestResult Enumerate_BFS()
 	{
-		var expected = new[] { "A", "B", "C", "D", "E", "F" };
+		var expected = new[] { A!, B!, C!, D!, E!, F! };
 
 		var actual = _tree!.Enumerate(SearchMode.BreadthFirst)
-			.Select(_tree.Handler.GetName)
-			.ToArray();
+			.Select(static t => t.gameObject).ToArray();
 
-		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
-		return actual.CompareValues(expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(Enumerate_BFS))
+			.AssertEquals(expected, actual, _listComparer);
 	}
 
-	private bool Enumerate_DFS(out string message)
+	private TestResult Enumerate_DFS()
 	{
-		var expected = new[] { "A", "B", "D", "E", "C", "F" };
+		var expected = new[] { A!, B!, D!, E!, C!, F! };
 
 		var actual = _tree!.Enumerate(SearchMode.DepthFirst)
-			.Select(_tree.Handler.GetName)
-			.ToArray();
+			.Select(static t => t.gameObject).ToArray();
 
-		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
-		return actual.CompareValues(expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(Enumerate_DFS))
+			.AssertEquals(expected, actual, _listComparer);
 	}
 
-	private bool Enumerate_MaxDepth(out string message)
+	private TestResult Enumerate_MaxDepth()
 	{
-		var expected = new[] { "A", "B", "C" };
+		var expected = new[] { A!, B!, C! };
 		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, MaxDepth: 1))
-			.Select(_tree.Handler.GetName)
-			.ToArray();
+			.Select(static t => t.gameObject).ToArray();
 
-		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
-		return actual.CompareValues(expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(Enumerate_MaxDepth))
+			.AssertEquals(expected, actual, _listComparer);
 	}
 
-	private bool Enumerate_NotInclusive(out string message)
+	private TestResult Enumerate_NotInclusive()
 	{
-		var expected = new[] { "B", "D", "E", "C", "F" };
+		var expected = new[] { B!, D!, E!, C!, F! };
 		var actual = _tree!.Enumerate(options: new(SearchMode.DepthFirst, Inclusive: false))
-			.Select(_tree.Handler.GetName)
-			.ToArray();
+			.Select(static t => t.gameObject).ToArray();
 
-		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
-		return actual.CompareValues(expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(Enumerate_NotInclusive))
+			.AssertEquals(expected, actual, _listComparer);
 	}
 
 	private static bool Predicate(Transform n) => n.gameObject.name[0] % 2 == 0;
 
-	private bool Enumerate_Predicate(out string message)
+	private TestResult Enumerate_Predicate()
 	{
-		var expected = new[] { "A", "B", "D" };
+		var expected = new[] { A!, B!, D! };
 		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, Predicate: Predicate))
-			.Select(_tree.Handler.GetName)
-			.ToArray();
+			.Select(static t => t.gameObject).ToArray();
 
-		TestResult.GetResult(out message, string.Join(", ", actual), string.Join(", ", expected));
-		return actual.CompareValues(expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(Enumerate_Predicate))
+			.AssertEquals(expected, actual, _listComparer);
 	}
 
-	private bool Find_Predicate(out string message)
+	private TestResult Find_Predicate()
 	{
-		var expected = _objects![B].transform;
-		var actual = _tree!.Find(Predicate, SearchMode.BreadthFirst);
+		var expected = B!;
+		var actual = _tree!.Find(Predicate, SearchMode.BreadthFirst).gameObject;
 
-		return TestResult.GetResult(out message, actual.ToString(), expected.ToString());
+		return new TestResult.Context(_TEST_GROUP, nameof(Enumerate_BFS))
+			.AssertEquals(expected, actual, _objectComparer);
 	}
 
-	private bool Find_Name(out string message)
+	private TestResult Find_Name()
 	{
-		var expected = _objects![C].transform;
-		var actual = _tree!.Find(C.ToString(), SearchMode.DepthFirst);
+		var expected = C;
+		var actual = _tree!.Find(C!.ToString(), SearchMode.DepthFirst).gameObject;
 
-		return TestResult.GetResult(out message, actual.ToString(), expected.ToString());
+		return new TestResult.Context(_TEST_GROUP, nameof(Find_Name))
+			.AssertEquals(expected, actual, _objectComparer);
 	}
 
-	private bool Find_Path(out string message)
+	private TestResult Find_Path()
 	{
-		var expected = _objects![E].transform; // E
+		var expected = E!;
 		string path = "B/E";
-		var actual = _tree!.GetNode(path);
+		var actual = _tree!.GetNode(path).gameObject;
 
-		TestResult.GetResult(out message, actual.ToString(), expected.ToString());
-		return actual == expected;
+		return new TestResult.Context(_TEST_GROUP, nameof(Find_Path))
+			.AssertEquals(expected, actual, _objectComparer);
 	}
 
-	private bool GetPath(out string message)
+	private TestResult GetPath()
 	{
 		string expected = "A/B/E";
 		var node = _tree!.Find("E", SearchMode.DepthFirst);
 		string actual = TreeHelpers.GetPath(node, _tree.Handler);
 
-		return TestResult.GetResult(out message, actual, expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(GetPath))
+			.AssertEquals(expected, actual);
 	}
 }

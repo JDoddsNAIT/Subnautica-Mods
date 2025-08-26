@@ -4,55 +4,62 @@ using FrootLuips.Subnautica.Extensions;
 namespace FrootLuips.Subnautica.Tests;
 internal class StringExtensions_Tests : ITestContainer
 {
+	const string _TEST_GROUP = nameof(StringExtensions);
+
 	public IEnumerator<TestResult> GetResults()
 	{
-		string group = nameof(StringExtensions_Tests);
-		yield return TestResult.Assert(nameof(TrimAll), TrimAll, group);
-		yield return TestResult.Assert(nameof(FromStartTo_Inclusive), FromStartTo_Inclusive, group);
-		yield return TestResult.Assert(nameof(FromStartTo_Exclusive), FromStartTo_Exclusive, group);
-		yield return TestResult.Assert(nameof(ToEndFrom_Inclusive), ToEndFrom_Inclusive, group);
-		yield return TestResult.Assert(nameof(ToEndFrom_Exclusive), ToEndFrom_Exclusive, group);
+		yield return TrimAll();
+		yield return FromStartTo_Inclusive();
+		yield return FromStartTo_Exclusive();
+		yield return ToEndFrom_Inclusive();
+		yield return ToEndFrom_Exclusive();
 	}
 
-	private bool TrimAll(out string message)
+	private TestResult TrimAll()
 	{
 		string value = " This  is a    line  of text     ";
 		string expected = "This is a line of text";
 
 		value = value.TrimAll();
 
-		return TestResult.GetResult(out message, value, expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(TrimAll)).AssertEquals(expected, value);
 	}
 
-	private bool FromStartTo_Inclusive(out string message)
+	private TestResult FromStartTo_Inclusive()
 	{
 		string value = "This is a line of text";
 		string expected = "This is a line";
+
 		value = value.FromStartTo("line", inclusive: true);
-		return TestResult.GetResult(out message, value, expected);
+
+		return new TestResult.Context(_TEST_GROUP, nameof(FromStartTo_Inclusive)).AssertEquals(expected, value);
 	}
 
-	private bool FromStartTo_Exclusive(out string message)
+	private TestResult FromStartTo_Exclusive()
 	{
 		string value = "This is a line of text";
 		string expected = "This is a ";
+
 		value = value.FromStartTo("line", inclusive: false);
-		return TestResult.GetResult(out message, value, expected);
+
+		return new TestResult.Context(_TEST_GROUP, nameof(FromStartTo_Exclusive)).AssertEquals(expected, value);
 	}
 
-	private bool ToEndFrom_Inclusive(out string message)
+	private TestResult ToEndFrom_Inclusive()
 	{
 		string value = "This is a line of text";
 		string expected = "line of text";
+
 		value = value.ToEndFrom("line", inclusive: true);
-		return TestResult.GetResult(out message, value, expected);
+
+		return new TestResult.Context(_TEST_GROUP, nameof(ToEndFrom_Inclusive)).AssertEquals(expected, value);
 	}
 
-	private bool ToEndFrom_Exclusive(out string message)
+	private TestResult ToEndFrom_Exclusive()
 	{
 		string value = "This is a line of text";
 		string expected = " of text";
 		value = value.ToEndFrom("line", inclusive: false);
-		return TestResult.GetResult(out message, value, expected);
+		return new TestResult.Context(_TEST_GROUP, nameof(ToEndFrom_Exclusive)).AssertEquals(expected, value);
 	}
 }
