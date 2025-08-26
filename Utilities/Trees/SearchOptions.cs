@@ -35,7 +35,7 @@ public record class SearchOptions<T>(
 }
 
 /// <summary>
-/// Determines how and what node are searched.
+/// Determines how and what nodes are searched.
 /// </summary>
 public enum SearchMode
 {

@@ -41,7 +41,7 @@ public static class Assert
 	}
 
 	/// <summary>
-	/// Asserts that the given <paramref name="value"/> is not <see langword="null"/>.
+	/// Asserts that the given <paramref name="value"/> is not <see langword="null"/>, throwing an <see cref="AssertionFailedException"/> if not.
 	/// </summary>
 	/// <param name="value"></param>
 	/// <param name="message"></param>
@@ -57,7 +57,7 @@ public static class Assert
 	}
 
 	/// <summary>
-	/// Asserts that two <typeparamref name="T"/> objects are equal.
+	/// Asserts that two <typeparamref name="T"/> objects are equal, throwing an <see cref="AssertionFailedException"/> if not.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="expected"></param>
@@ -99,7 +99,7 @@ public static class Assert
 	}
 
 	/// <summary>
-	/// Asserts that the given <paramref name="action"/> throws a <typeparamref name="T"/> exception.
+	/// Asserts that the given <paramref name="action"/> throws a <typeparamref name="T"/> exception, throwing an <see cref="AssertionFailedException"/> if not.
 	/// </summary>
 	/// <typeparam name="T">The exception type.</typeparam>
 	/// <param name="action"></param>

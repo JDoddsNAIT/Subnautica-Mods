@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FrootLuips.Subnautica.Helpers;
 
 namespace FrootLuips.Subnautica.Extensions;
@@ -9,16 +10,16 @@ namespace FrootLuips.Subnautica.Extensions;
 public static class CollectionExtensions
 {
 	/// <summary>
-	/// <inheritdoc cref="object.ToString()"/>
+	/// Returns a string that represents the values of an <see cref="IEnumerable"/>, separated by the given <paramref name="separator"/>.
 	/// </summary>
-	/// <param name="objects"></param>
+	/// <param name="enumerable"></param>
 	/// <param name="separator"></param>
 	/// <returns></returns>
-	public static string ToSeparatedString(this IEnumerable objects, string separator = ", ")
+	public static string ToSeparatedString(this IEnumerable enumerable, string separator = ", ")
 	{
 		System.Text.StringBuilder sb = new();
 		bool first = true;
-		foreach (var item in objects)
+		foreach (var item in enumerable)
 		{
 			if (!first)
 				sb.Append(separator);
@@ -35,7 +36,7 @@ public static class CollectionExtensions
 	/// <param name="queue"></param>
 	/// <param name="item"></param>
 	/// <returns><see langword="true"/> if an <paramref name="item"/> was dequeued, otherwise <see langword="false"/>.</returns>
-	public static bool TryDequeue<T>(this Queue<T> queue, out T? item)
+	public static bool TryDequeue<T>(this Queue<T> queue, [NotNullWhen(true)] out T? item)
 	{
 		bool any = queue.Count > 0;
 		item = any ? queue.Dequeue() : default;
@@ -49,7 +50,7 @@ public static class CollectionExtensions
 	/// <param name="stack"></param>
 	/// <param name="item"></param>
 	/// <returns><see langword="true"/> if an <paramref name="item"/> was popped, otherwise <see langword="false"/>.</returns>
-	public static bool TryPop<T>(this Stack<T> stack, out T? item)
+	public static bool TryPop<T>(this Stack<T> stack, [NotNullWhen(true)] out T? item)
 	{
 		bool any = stack.Count > 0;
 		item = any ? stack.Pop() : default;
@@ -158,7 +159,7 @@ public static class CollectionExtensions
 	/// <typeparam name="T"></typeparam>
 	/// <param name="collection"></param>
 	/// <returns></returns>
-	public static bool IsNullOrEmpty<T>(this IReadOnlyCollection<T> collection)
+	public static bool IsNullOrEmpty<T>([NotNullWhen(true)] this IReadOnlyCollection<T>? collection)
 	{
 		return collection is null || collection.Count == 0;
 	}

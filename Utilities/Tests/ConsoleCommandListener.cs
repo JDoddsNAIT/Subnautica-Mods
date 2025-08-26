@@ -26,19 +26,19 @@ internal class ConsoleCommandListener : MonoBehaviour
 	public void OnConsoleCommand_runtests(NotificationCenter.Notification n)
 	{
 		var sb = new StringBuilder();
-		foreach (var container in Tests)
-		{
-			var enumerator = container.GetResults();
-
-			while (enumerator.MoveNext())
-			{
-				var result = enumerator.Current;
-				sb.AppendLine(result.ToString()).AppendLine();
-			}
-		}
-
 		try
 		{
+			foreach (var container in Tests)
+			{
+				var enumerator = container.GetResults();
+
+				while (enumerator.MoveNext())
+				{
+					var result = enumerator.Current;
+					sb.AppendLine(result.ToString()).AppendLine();
+				}
+			}
+
 			var path = Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_GUID, _FILENAME);
 			File.WriteAllText(path, sb.ToString().TrimEnd());
 			_logger!.LogDebug($"Test results output to {_FILENAME}.", inGame: true);
