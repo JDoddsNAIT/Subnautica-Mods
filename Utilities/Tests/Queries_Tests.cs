@@ -6,7 +6,6 @@ namespace FrootLuips.Subnautica.Tests;
 internal class Queries_Tests : ITestContainer
 {
 	const string _TEST_GROUP = nameof(Queries);
-	static readonly ListComparer<int> _comparer = new();
 
 	public IEnumerator<TestResult> GetResults()
 	{
@@ -23,7 +22,7 @@ internal class Queries_Tests : ITestContainer
 		static bool greaterThan5(int value) => value > 5;
 
 		Queries.Filter(ref actual, greaterThan5);
-		Assert.Equals(expected, actual, _comparer);
+		Assert.Equals<int>(expected, actual);
 	}
 
 	void FilterList()
@@ -34,7 +33,7 @@ internal class Queries_Tests : ITestContainer
 		static bool greaterThan5(int value) => value > 5;
 
 		Queries.Filter(actual, greaterThan5);
-		Assert.Equals(expected, actual, _comparer);
+		Assert.Equals<int>(expected, actual);
 	}
 
 	void ConvertList()
@@ -46,6 +45,6 @@ internal class Queries_Tests : ITestContainer
 		static bool toBool(int value) => value > 0;
 
 		Queries.Convert(actual, toBool, destination);
-		Assert.Equals(expected, destination, new ListComparer<bool>());
+		Assert.Equals<bool>(expected, destination);
 	}
 }

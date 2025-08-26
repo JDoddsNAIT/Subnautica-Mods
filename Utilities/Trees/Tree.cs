@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using FrootLuips.Subnautica.Validation;
 using System.Linq;
-using FrootLuips.Subnautica.Extensions;
+using FrootLuips.Subnautica.Validation;
 
 namespace FrootLuips.Subnautica.Trees;
 /// <summary>

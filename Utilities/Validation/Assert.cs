@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using FrootLuips.Subnautica.Helpers;
+using FrootLuips.Subnautica.Extensions;
 
 namespace FrootLuips.Subnautica.Validation;
 /// <summary>
@@ -9,7 +10,7 @@ namespace FrootLuips.Subnautica.Validation;
 /// </summary>
 public static class Assert
 {
-	private const string _EQUALS_MESSAGE = "\n\tExpected: {0}\n\n\tBut  was: {1}";
+	private const string _EQUALS_MESSAGE = "'{0}' is not equal to '{1}'";
 
 	/// <summary>
 	/// Asserts that <paramref name="condition"/> is <see langword="true"/>, throwing an <see cref="AssertionFailedException"/> if not.
@@ -65,7 +66,8 @@ public static class Assert
 	/// <exception cref="AssertionFailedException"></exception>
 	public static bool Equals<T>(T? expected, T? actual)
 	{
-		string message = string.Format(_EQUALS_MESSAGE, expected, actual);
+		string message = GetEqualsMessage(expected, actual);
+
 		return Assert.IsTrue(object.Equals(expected, actual), message);
 	}
 
@@ -80,7 +82,8 @@ public static class Assert
 	/// <exception cref="AssertionFailedException"></exception>
 	public static bool Equals<T>(T? expected, T? actual, [DisallowNull] IEqualityComparer<T> comparer)
 	{
-		string message = string.Format(_EQUALS_MESSAGE, expected, actual);
+		string message = GetEqualsMessage(expected, actual);
+
 		return (expected, actual) switch {
 			(null, null) => true,
 			(not null, not null) when comparer.Equals(expected, actual) => true,
@@ -88,31 +91,11 @@ public static class Assert
 		};
 	}
 
-	/// <summary>
-	/// Asserts that two collections have identical values.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="expected"></param>
-	/// <param name="actual"></param>
-	/// <returns></returns>
-	/// <exception cref="AssertionFailedException"></exception>
-	public static bool Equals<T>(IEnumerable<T> expected, IEnumerable<T> actual)
+	private static string GetEqualsMessage<T>(T? expected, T? actual)
 	{
-		return Assert.Equals(expected, actual, new ListComparer<T>());
-	}
-
-	/// <summary>
-	/// <inheritdoc cref="Equals{T}(IEnumerable{T}, IEnumerable{T})"/>
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="expected"></param>
-	/// <param name="actual"></param>
-	/// <param name="valueComparer"></param>
-	/// <returns></returns>
-	/// <exception cref="AssertionFailedException"></exception>
-	public static bool Equals<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T> valueComparer)
-	{
-		return Assert.Equals(expected, actual, new ListComparer<T>(valueComparer));
+		string exp = (expected as IEnumerable)?.ToSeparatedString() ?? expected?.ToString() ?? "Null";
+		string act = (actual as IEnumerable)?.ToSeparatedString() ?? actual?.ToString() ?? "Null";
+		return string.Format(_EQUALS_MESSAGE, exp, act);
 	}
 
 	/// <summary>

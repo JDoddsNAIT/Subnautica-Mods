@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FrootLuips.Subnautica.Helpers;
 
 namespace FrootLuips.Subnautica.Tests;
 internal static class Assert
@@ -10,6 +11,22 @@ internal static class Assert
 		_NULL_MESSAGE = "Expected a null value.",
 		_NOT_NULL_MESSAGE = "Expected a not null value.",
 		_THROWN_MESSAGE = "\n\tExpected: {0}\n\tThrown\t: {1}\n";
+
+	public static void Equals<T>(IEnumerable<T> expected, IEnumerable<T> actual)
+	{
+		string message = string.Format(_EQUALS_MESSAGE,
+			string.Join(", ", expected),
+			string.Join(", ", actual));
+		throw new TestResult.Context(new ListComparer<T>().Equals(expected, actual), message);
+	}
+
+	public static void Equals<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T> comparer)
+	{
+		string message = string.Format(_EQUALS_MESSAGE,
+			string.Join(", ", expected),
+			string.Join(", ", actual));
+		throw new TestResult.Context(new ListComparer<T>(comparer).Equals(expected, actual), message);
+	}
 
 	public static void Equals<T>(T? expected, T? actual)
 	{

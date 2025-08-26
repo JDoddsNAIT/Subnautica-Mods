@@ -8,7 +8,6 @@ namespace FrootLuips.Subnautica.Tests;
 internal class Trees_Tests : ITestContainer
 {
 	private static readonly UnityObjectComparer<GameObject> _objectComparer = new();
-	private static readonly ListComparer<GameObject> _listComparer = new(_objectComparer);
 
 	private Tree<Transform>? _tree;
 
@@ -68,7 +67,7 @@ internal class Trees_Tests : ITestContainer
 		var actual = _tree!.Enumerate(SearchMode.BreadthFirst)
 			.Select(static t => t.gameObject).ToArray();
 
-		Assert.Equals(expected, actual, _listComparer);
+		Assert.Equals(expected, actual, _objectComparer);
 	}
 
 	void Enumerate_DFS()
@@ -78,7 +77,7 @@ internal class Trees_Tests : ITestContainer
 		var actual = _tree!.Enumerate(SearchMode.DepthFirst)
 			.Select(static t => t.gameObject).ToArray();
 
-		Assert.Equals(expected, actual, _listComparer);
+		Assert.Equals(expected, actual, _objectComparer);
 	}
 
 	void Enumerate_MaxDepth()
@@ -87,7 +86,7 @@ internal class Trees_Tests : ITestContainer
 		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, MaxDepth: 1))
 			.Select(static t => t.gameObject).ToArray();
 
-		Assert.Equals(expected, actual, _listComparer);
+		Assert.Equals(expected, actual, _objectComparer);
 	}
 
 	void Enumerate_NotInclusive()
@@ -96,7 +95,7 @@ internal class Trees_Tests : ITestContainer
 		var actual = _tree!.Enumerate(options: new(SearchMode.DepthFirst, Inclusive: false))
 			.Select(static t => t.gameObject).ToArray();
 
-		Assert.Equals(expected, actual, _listComparer);
+		Assert.Equals(expected, actual, _objectComparer);
 	}
 
 	private static bool Predicate(Transform n) => n.gameObject.name[0] % 2 == 0;
@@ -107,7 +106,7 @@ internal class Trees_Tests : ITestContainer
 		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, Predicate: Predicate))
 			.Select(static t => t.gameObject).ToArray();
 
-		Assert.Equals(expected, actual, _listComparer);
+		Assert.Equals(expected, actual, _objectComparer);
 	}
 
 	void Find_Predicate()

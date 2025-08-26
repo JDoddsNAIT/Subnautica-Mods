@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using FrootLuips.Subnautica.Helpers;
 
 namespace FrootLuips.Subnautica.Extensions;
@@ -9,6 +8,26 @@ namespace FrootLuips.Subnautica.Extensions;
 /// </summary>
 public static class CollectionExtensions
 {
+	/// <summary>
+	/// <inheritdoc cref="object.ToString()"/>
+	/// </summary>
+	/// <param name="objects"></param>
+	/// <param name="separator"></param>
+	/// <returns></returns>
+	public static string ToSeparatedString(this IEnumerable objects, string separator = ", ")
+	{
+		System.Text.StringBuilder sb = new();
+		bool first = true;
+		foreach (var item in objects)
+		{
+			if (!first)
+				sb.Append(separator);
+			first = false;
+			sb.Append(item);
+		}
+		return sb.ToString();
+	}
+
 	/// <summary>
 	/// Dequeues an item from the <paramref name="queue"/>, if there are any.
 	/// </summary>

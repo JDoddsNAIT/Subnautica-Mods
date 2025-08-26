@@ -33,14 +33,14 @@ internal class ConsoleCommandListener : MonoBehaviour
 			while (enumerator.MoveNext())
 			{
 				var result = enumerator.Current;
-				sb.AppendLine(result.ToString());
+				sb.AppendLine(result.ToString()).AppendLine();
 			}
 		}
 
 		try
 		{
 			var path = Path.Combine(Paths.PluginPath, PluginInfo.PLUGIN_GUID, _FILENAME);
-			File.WriteAllText(path, sb.ToString());
+			File.WriteAllText(path, sb.ToString().TrimEnd());
 			_logger!.LogDebug($"Test results output to {_FILENAME}.", inGame: true);
 		}
 		catch (System.Exception ex)

@@ -36,7 +36,7 @@ internal readonly partial record struct TestResult(string Group, string Name, bo
 
 	public override string ToString()
 	{
-		var provider = new LogMessage.FormatProvider(message: "{0}:");
+		var provider = new LogMessage.FormatProvider(message: "{0}:", remarks: "{0}");
 		var message = new LogMessage()
 			.WithContext(Group)
 			.WithMessage("Test ", Name);
