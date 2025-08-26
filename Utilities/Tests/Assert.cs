@@ -6,10 +6,10 @@ namespace FrootLuips.Subnautica.Tests;
 internal static class Assert
 {
 	private const string
-		_EQUALS_MESSAGE = "\n\tExpected: {0}\n\n\tActual  : {1}",
+		_EQUALS_MESSAGE = "\n\tExpected\t: {0}\n\tActual\t: {1}\n",
 		_NULL_MESSAGE = "Expected a null value.",
 		_NOT_NULL_MESSAGE = "Expected a not null value.",
-		_THROWN_MESSAGE = "\n\tExpected: {0}\n\n\tThrown: {1}";
+		_THROWN_MESSAGE = "\n\tExpected\t: {0}\n\tThrown\t: {1}\n";
 
 	public static void Equals<T>(T? expected, T? actual)
 	{

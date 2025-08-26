@@ -4,8 +4,6 @@ using FrootLuips.Subnautica.Logging;
 
 namespace FrootLuips.Subnautica.Tests;
 
-internal delegate bool Test(out string message);
-
 internal interface ITestContainer
 {
 	IEnumerator<TestResult> GetResults();
