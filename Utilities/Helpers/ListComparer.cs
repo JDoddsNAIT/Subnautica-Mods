@@ -60,9 +60,9 @@ public class ListComparer<T> :
 			T a = x[i], b = y[i];
 			equals = (a, b) switch {
 				(_, _) when ValueComparer is not null => ValueComparer.Equals(a, b),
-				(null, null) => true,
 				(not null, _) => a.Equals(b),
 				(_, not null) => b.Equals(a),
+				(null, null) => true,
 			};
 		}
 		return equals;
