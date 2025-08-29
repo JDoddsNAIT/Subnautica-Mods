@@ -82,6 +82,18 @@ public static class Validator
 	}
 
 	/// <summary>
+	/// Validates this object.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="TResult"></typeparam>
+	/// <param name="obj"></param>
+	/// <returns></returns>
+	public static ValidationResult<TResult> Validate<T, TResult>(this T obj) where T : IValidator<T, TResult>
+	{
+		return Validate(obj, obj);
+	}
+
+	/// <summary>
 	/// <inheritdoc cref="Validate{T, TResult}(T, IValidator{T, TResult})"/>
 	/// </summary>
 	/// <remarks>

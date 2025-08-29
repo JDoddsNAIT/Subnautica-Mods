@@ -254,8 +254,9 @@ public static class Queries
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="array"></param>
+	/// <param name="resize"><inheritdoc cref="Filter{T}(ref T[], Predicate{T}, bool)"/></param>
 	/// <exception cref="ArgumentNullException"></exception>
-	public static void FilterNulls<T>(ref T[] array) => Filter(ref array, filter: NotNull);
+	public static void FilterNulls<T>(ref T[] array, bool resize = false) => Filter(ref array, filter: NotNull, resize);
 
 	/// <summary>
 	/// Filters <see langword="null"/> values out of the <paramref name="list"/>.

@@ -14,6 +14,26 @@ public class PathBuilder : ArrayBuilder<string>, IArrayBuilder<PathBuilder, stri
 {
 	private static readonly PathValidator _validator = new();
 
+	/// <inheritdoc cref="ArrayBuilder{T}.ArrayBuilder(int, T[])"/>
+	public PathBuilder(int capacity, params string[] initialValues) : base(capacity, initialValues)
+	{
+	}
+
+	/// <inheritdoc cref="ArrayBuilder{T}.ArrayBuilder(int)"/>
+	public PathBuilder(int capacity) : base(capacity)
+	{
+	}
+
+	/// <inheritdoc cref="ArrayBuilder{T}.ArrayBuilder(T[])"/>
+	public PathBuilder(params string[] initialValues) : base(initialValues)
+	{
+	}
+
+	/// <inheritdoc cref="ArrayBuilder{T}.ArrayBuilder()"/>
+	public PathBuilder() : base()
+	{
+	}
+
 	/// <inheritdoc/>
 	public new PathBuilder Append(params string[] values)
 	{

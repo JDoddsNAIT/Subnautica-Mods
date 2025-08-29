@@ -12,6 +12,15 @@ public class Logger : ILogger
 	/// <inheritdoc cref="GameLogger.Initialized"/>
 	public bool Initialized => _game.Initialized;
 
+	/// <summary>
+	/// <inheritdoc cref="ConsoleLogger"/>
+	/// </summary>
+	public ConsoleLogger Console => _console;
+	/// <summary>
+	/// <inheritdoc cref="GameLogger"/>
+	/// </summary>
+	public GameLogger Game => _game;
+
 	/// <summary/>
 	/// <param name="source"></param>
 	public Logger(ManualLogSource source)

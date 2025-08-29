@@ -76,37 +76,37 @@ public partial class LogMessage : IFormattable
 	}
 
 	/// <summary/>
-	/// <param name="notice"></param>
+	/// <param name="message"></param>
 	/// <returns></returns>
-	public LogMessage AddMessage(params object[] notice)
+	public LogMessage AddMessage(params object[] message)
 	{
-		AppendValues(_message, notice);
+		AppendValues(_message, message);
 		return this;
 	}
 	/// <summary/>
-	/// <param name="notice"></param>
+	/// <param name="message"></param>
 	/// <returns></returns>
-	public LogMessage WithMessage(params object[] notice)
+	public LogMessage WithMessage(params object[] message)
 	{
 		_message.Clear();
-		return AddMessage(notice);
+		return AddMessage(message);
 	}
 
 	/// <summary/>
-	/// <param name="message"></param>
+	/// <param name="notice"></param>
 	/// <returns></returns>
-	public LogMessage AddNotice(params object[] message)
+	public LogMessage AddNotice(params object[] notice)
 	{
-		AppendValues(_notice, message);
+		AppendValues(_notice, notice);
 		return this;
 	}
 	/// <summary/>
-	/// <param name="message"></param>
+	/// <param name="notice"></param>
 	/// <returns></returns>
-	public LogMessage WithNotice(params object[] message)
+	public LogMessage WithNotice(params object[] notice)
 	{
 		_notice.Clear();
-		return AddNotice(message);
+		return AddNotice(notice);
 	}
 
 	/// <summary/>

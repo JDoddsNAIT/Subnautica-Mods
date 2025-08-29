@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -7,7 +8,7 @@ namespace FrootLuips.Subnautica.Validation;
 /// Represents the results from validating a <typeparamref name="T"/> object.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public readonly record struct ValidationResult<T>
+public readonly record struct ValidationResult<T> : IEnumerable<Exception>
 {
 	/// <summary>
 	/// Creates a <see cref="ValidationResult{T}"/> object.
@@ -15,7 +16,7 @@ public readonly record struct ValidationResult<T>
 	/// <param name="success"></param>
 	/// <param name="issues"></param>
 	/// <param name="result"></param>
-	internal ValidationResult(bool success, IEnumerable<Exception> issues, T? result)
+	internal ValidationResult(bool success, IReadOnlyCollection<Exception> issues, T? result)
 	{
 		this.Success = success;
 		this.Issues = issues;
@@ -30,7 +31,7 @@ public readonly record struct ValidationResult<T>
 	/// <summary>
 	/// Any issues that may have occurred.
 	/// </summary>
-	public readonly IEnumerable<Exception> Issues { get; }
+	public readonly IReadOnlyCollection<Exception> Issues { get; }
 	/// <summary>
 	/// The resulting object.
 	/// </summary>
@@ -40,8 +41,13 @@ public readonly record struct ValidationResult<T>
 	/// Evaluates a <paramref name="result"/> for <see cref="Success"/>.
 	/// </summary>
 	/// <param name="result"></param>
-	[MemberNotNullWhen(true, nameof(Result))]
 	public static implicit operator bool(ValidationResult<T> result) => result.Success;
+
+	/// <summary>
+	/// <inheritdoc cref="Result"/>
+	/// </summary>
+	/// <param name="result"></param>
+	public static explicit operator T?(ValidationResult<T> result) => result.Result;
 
 	/// <summary>
 	/// Throws an <see cref="AggregateException"/> if validation was not successful.
@@ -52,4 +58,8 @@ public readonly record struct ValidationResult<T>
 		if (!Success)
 			throw Issues.ToAggregate();
 	}
+
+	/// <inheritdoc/>
+	public IEnumerator<Exception> GetEnumerator() => this.Issues.GetEnumerator();
+	IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)this.Issues).GetEnumerator();
 }
