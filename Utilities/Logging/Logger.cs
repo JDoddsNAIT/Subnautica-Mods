@@ -34,7 +34,7 @@ public class Logger : ILogger
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="inGame">Should the message also be shown in-game?</param>
-	public void LogDebug(string message, bool inGame = false)
+	public void LogDebug(string message, bool inGame = true)
 	{
 		_console.LogDebug(message);
 		if (inGame)
@@ -46,7 +46,7 @@ public class Logger : ILogger
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="inGame">Should the message also be shown in-game?</param>
-	public void LogInfo(string message, bool inGame = false)
+	public void LogInfo(string message, bool inGame = true)
 	{
 		_console.LogInfo(message);
 		if (inGame)
@@ -58,7 +58,7 @@ public class Logger : ILogger
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="inGame">Should the message also be shown in-game?</param>
-	public void LogMessage(string message, bool inGame = false)
+	public void LogMessage(string message, bool inGame = true)
 	{
 		_console.LogMessage(message);
 		if (inGame)
@@ -70,7 +70,7 @@ public class Logger : ILogger
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="inGame">Should the message also be shown in-game?</param>
-	public void LogWarning(string message, bool inGame = false)
+	public void LogWarning(string message, bool inGame = true)
 	{
 		_console.LogWarning(message);
 		if (inGame)
@@ -82,7 +82,7 @@ public class Logger : ILogger
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="inGame">Should the message also be shown in-game?</param>
-	public void LogError(string message, bool inGame = false)
+	public void LogError(string message, bool inGame = true)
 	{
 		_console.LogError(message);
 		if (inGame)
@@ -94,7 +94,7 @@ public class Logger : ILogger
 	/// </summary>
 	/// <param name="message"></param>
 	/// <param name="inGame">Should the message also be shown in-game?</param>
-	public void LogFatal(string message, bool inGame = false)
+	public void LogFatal(string message, bool inGame = true)
 	{
 		_console.LogFatal(message);
 		if (inGame)

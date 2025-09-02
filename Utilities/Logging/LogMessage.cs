@@ -142,7 +142,7 @@ public partial class LogMessage : IFormattable
 	/// <inheritdoc/>
 	public string ToString(string format, IFormatProvider provider)
 	{
-		return string.Format(provider, format, this.GetFormatArgs()).TrimAll();
+		return string.Format(provider, format ?? FORMAT, this.GetFormatArgs()).TrimAll();
 	}
 
 	/// <inheritdoc cref="ToString()"/>
