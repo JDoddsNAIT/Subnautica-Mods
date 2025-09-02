@@ -100,12 +100,14 @@ public static class CollectionExtensions
 	/// <param name="a"></param>
 	/// <param name="b"></param>
 	/// <returns><see langword="true"/> if both lists have all the same elements.</returns>
+	[System.Obsolete($"Use the {nameof(Queries)}.{nameof(Queries.ValueEquals)} method instead.")]
 	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b)
 	{
 		return new ListComparer<T>().Equals(a, b);
 	}
 
 	/// <inheritdoc cref="CompareValues{T}(IReadOnlyList{T}, IReadOnlyList{T})"/>
+	[System.Obsolete($"Use the {nameof(Queries)}.{nameof(Queries.ValueEquals)} method instead.")]
 	public static bool CompareValues<T>(this IEnumerable<T> a, IEnumerable<T> b)
 	{
 		return new ListComparer<T>().Equals(a, b);
@@ -119,12 +121,14 @@ public static class CollectionExtensions
 	/// <param name="b"></param>
 	/// <param name="comparer"></param>
 	/// <returns><see langword="true"/> if both lists have all the same elements.</returns>
+	[System.Obsolete($"Use the {nameof(Queries)}.{nameof(Queries.ValueEquals)} method instead.")]
 	public static bool CompareValues<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b, IEqualityComparer<T> comparer)
 	{
 		return new ListComparer<T>(comparer).Equals(a, b);
 	}
 
 	/// <inheritdoc cref="CompareValues{T}(IReadOnlyList{T}, IReadOnlyList{T}, IEqualityComparer{T})"/>
+	[System.Obsolete($"Use the {nameof(Queries)}.{nameof(Queries.ValueEquals)} method instead.")]
 	public static bool CompareValues<T>(this IEnumerable<T> a, IEnumerable<T> b, IEqualityComparer<T> comparer)
 	{
 		return new ListComparer<T>(comparer).Equals(a, b);

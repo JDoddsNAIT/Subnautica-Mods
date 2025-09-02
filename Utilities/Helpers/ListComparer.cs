@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FrootLuips.Subnautica.Extensions;
 
 namespace FrootLuips.Subnautica.Helpers;
 #nullable disable
@@ -33,64 +32,31 @@ public class ListComparer<T> :
 	/// <inheritdoc/>
 	public bool Equals(List<T> x, List<T> y)
 	{
-		return (this as IEqualityComparer<IReadOnlyList<T>>).Equals(x, y);
+		return Queries.ValueEquals(x, y, ValueComparer);
 	}
 
 	/// <inheritdoc/>
 	public bool Equals(T[] x, T[] y)
 	{
-		return (this as IEqualityComparer<IReadOnlyList<T>>).Equals(x, y);
+		return Queries.ValueEquals(x, y, ValueComparer);
 	}
 
 	/// <inheritdoc/>
 	public bool Equals(IReadOnlyList<T> x, IReadOnlyList<T> y)
 	{
-		if (x is null && y is null)
-			return true;
-		else if (x is null || y is null)
-			return false;
-		else if (x.Count != y.Count)
-			return false;
-
-		int length = x.Count;
-		bool equals = true;
-		for (int i = 0; i < length && equals; i++)
-		{
-			equals = ValueEquals(x[i], y[i]);
-		}
-		return equals;
+		return Queries.ValueEquals(x, y, ValueComparer);
 	}
 
 	/// <inheritdoc/>
 	public bool Equals(IReadOnlyCollection<T> x, IReadOnlyCollection<T> y)
 	{
-		if (x is null || y is null || x.Count != y.Count)
-			return false;
-		return (this as IEqualityComparer<IEnumerable<T>>).Equals(x, y);
+		return Queries.ValueEquals(x, y, ValueComparer);
 	}
 
 	/// <inheritdoc/>
 	public bool Equals(IEnumerable<T> x, IEnumerable<T> y)
 	{
-		if (x is null && y is null)
-			return true;
-		else if (x is null || y is null)
-			return false;
-
-		bool equals = true;
-		var enumerator = (x, y).GetEnumerator();
-		T a, b;
-		while (enumerator.MoveNext() && equals)
-		{
-			(a, b) = enumerator.Current;
-			equals = this.ValueEquals(a, b);
-		}
-		return equals;
-	}
-
-	private bool ValueEquals(T a, T b)
-	{
-		return ValueComparer?.Equals(a, b) ?? Equals(a, b);
+		return Queries.ValueEquals(x, y, ValueComparer);
 	}
 
 	/// <inheritdoc/>

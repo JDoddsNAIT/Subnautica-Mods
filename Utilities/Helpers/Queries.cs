@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FrootLuips.Subnautica.Extensions;
+using UnityObject = UnityEngine.Object;
 
 namespace FrootLuips.Subnautica.Helpers;
 /// <summary>
@@ -24,35 +26,53 @@ public static class Queries
 	/// Copies the elements from the <paramref name="source"/> into the <paramref name="destination"/>.
 	/// </summary>
 	/// <remarks>
-	/// If <paramref name="resize"/> is <see langword="false"/>, throws an <see cref="InvalidOperationException"/> if the length of <paramref name="destination"/> is less than the count of <paramref name="source"/>.
+	/// If <paramref name="resize"/> is <see langword="false"/>, throws an <see cref="ArgumentException"/> if the length of <paramref name="destination"/> is less than the count of <paramref name="source"/>.
 	/// </remarks>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="source"></param>
 	/// <param name="destination"></param>
 	/// <param name="resize">Should <paramref name="destination"/> be resized to match the length of <paramref name="source"/>?</param>
 	/// <exception cref="ArgumentNullException"></exception>
-	/// <exception cref="InvalidOperationException"></exception>
-	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination,
-		bool resize = false)
+	/// <exception cref="ArgumentException"></exception>
+	public static void Copy<T>(IReadOnlyList<T> source, ref T[] destination, bool resize = false)
 	{
 		if (source is null)
 			throw new ArgumentNullException(nameof(source));
 		if (destination is null)
 			throw new ArgumentNullException(nameof(destination));
 
-		if (resize && destination.Length != source.Count)
-			Array.Resize(ref destination, source.Count);
-		else if (destination.Length < source.Count)
-			throw new InvalidOperationException("Cannot copy to an array with a length less the source.");
+		int length = source.Count;
+		if (resize && destination.Length != length)
+			Array.Resize(ref destination, length);
+		else if (destination.Length < length)
+			throw new ArgumentException("Cannot copy to an array that is smaller than the source.");
 
-		int length = destination.Length;
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < destination.Length; i++)
 		{
-			if (i < source.Count)
-				destination[i] = default;
-			else
-				destination[i] = source[i];
+			destination[i] = i < length ? source[i] : default;
 		}
+	}
+
+	/// <inheritdoc cref="Copy{T}(IReadOnlyList{T}, ref T[], bool)"/>
+	public static void Copy<T>(IReadOnlyCollection<T> source, ref T[] destination, bool resize = false)
+	{
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+
+		int length = source.Count;
+		if (resize && destination.Length != length)
+			Array.Resize(ref destination, length);
+		else if (destination.Length < length)
+			throw new ArgumentException("Cannot copy to an array that is smaller than the source.");
+
+		int i = 0;
+		foreach (var item in source)
+		{
+			destination[i++] = item;
+		}
+		for (; i < destination.Length; destination[i++] = default) ;
 	}
 
 	/// <summary>
@@ -61,29 +81,54 @@ public static class Queries
 	/// <typeparam name="T"></typeparam>
 	/// <param name="source"></param>
 	/// <param name="destination">The destination list. Note that the list will be cleared before copying.</param>
-	/// <param name="resize">If <see langword="true"/>, the capacity of <paramref name="destination"/> will be set to match the count.</param>
 	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="OutOfMemoryException"></exception>
-	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination,
-		bool resize = false)
+	public static void Copy<T>(IReadOnlyList<T> source, List<T> destination)
 	{
 		if (source is null)
 			throw new ArgumentNullException(nameof(source));
 		if (destination is null)
 			throw new ArgumentNullException(nameof(destination));
 
-		if (destination.Count > source.Count)
-			destination.RemoveRange(source.Count, destination.Count - source.Count);
-		if (resize)
-			destination.Capacity = source.Count;
-
 		int length = source.Count;
+		if (destination.Count > length)
+			destination.RemoveRange(length, destination.Count - length);
+
+		if (destination.Capacity < length)
+			destination.Capacity = length;
+
 		for (int i = 0; i < length; i++)
 		{
 			if (i < destination.Count)
 				destination[i] = source[i];
 			else
 				destination.Add(source[i]);
+		}
+	}
+
+	/// <inheritdoc cref="Copy{T}(IReadOnlyList{T}, List{T})"/>
+	public static void Copy<T>(IReadOnlyCollection<T> source, List<T> destination)
+	{
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+
+		int length = source.Count;
+		if (destination.Count > length)
+			destination.RemoveRange(length, destination.Count - length);
+
+		if (destination.Capacity < length)
+			destination.Capacity = length;
+
+		int i = 0;
+		foreach (var item in source)
+		{
+			if (i < destination.Count)
+				destination[i] = item;
+			else
+				destination.Add(item);
+			i++;
 		}
 	}
 
@@ -100,8 +145,8 @@ public static class Queries
 	/// <param name="converter"></param>
 	/// <param name="resize">Should <paramref name="destination"/> be resized to match the length of <paramref name="source"/>?</param>
 	/// <exception cref="ArgumentNullException"></exception>
-	/// <exception cref="InvalidOperationException"></exception>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, ref T2[] destination, Converter<T1, T2> converter,
+	/// <exception cref="ArgumentException"></exception>
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, ref T2[] destination, Func<T1, T2> converter,
 		bool resize = false)
 	{
 		if (source is null)
@@ -111,19 +156,41 @@ public static class Queries
 		if (converter is null)
 			throw new ArgumentNullException(nameof(converter));
 
-		if (resize && destination.Length != source.Count)
-			Array.Resize(ref destination, source.Count);
-		else if (destination.Length < source.Count)
-			throw new InvalidOperationException("Cannot copy to an array with a length less the source.");
+		int length = source.Count;
+		if (resize && destination.Length != length)
+			Array.Resize(ref destination, length);
+		else if (destination.Length < length)
+			throw new ArgumentException("Cannot copy to an array that is smaller than the source.");
 
-		int length = destination.Length;
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < destination.Length; i++)
 		{
-			if (i < source.Count)
-				destination[i] = default;
-			else
-				destination[i] = converter(source[i]);
+			destination[i] = i < length ? converter(source[i]) : default;
 		}
+	}
+
+	/// <inheritdoc cref="Convert{T1, T2}(IReadOnlyList{T1}, ref T2[], Func{T1, T2}, bool)"/>
+	public static void Convert<T1, T2>(IReadOnlyCollection<T1> source, ref T2[] destination, Func<T1, T2> converter,
+		bool resize = false)
+	{
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+		if (converter is null)
+			throw new ArgumentNullException(nameof(converter));
+
+		int length = source.Count;
+		if (resize && destination.Length != length)
+			Array.Resize(ref destination, length);
+		else if (destination.Length < length)
+			throw new ArgumentException("Cannot copy to an array that is smaller than the source.");
+
+		int i = 0;
+		foreach (var item in source)
+		{
+			destination[i] = converter(item);
+		}
+		for (; i < destination.Length; destination[i++] = default) ;
 	}
 
 	/// <summary>
@@ -134,11 +201,9 @@ public static class Queries
 	/// <param name="source"></param>
 	/// <param name="destination">The destination list. Note that the list will be cleared before copying.</param>
 	/// <param name="converter"></param>
-	/// <param name="resize">If <see langword="true"/>, the capacity of <paramref name="destination"/> will be set to match the count.</param>
 	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="OutOfMemoryException"></exception>
-	public static void Convert<T1, T2>(IReadOnlyList<T1> source, List<T2> destination, Converter<T1, T2> converter,
-		bool resize = false)
+	public static void Convert<T1, T2>(IReadOnlyList<T1> source, List<T2> destination, Func<T1, T2> converter)
 	{
 		if (source is null)
 			throw new ArgumentNullException(nameof(source));
@@ -147,18 +212,47 @@ public static class Queries
 		if (converter is null)
 			throw new ArgumentNullException(nameof(converter));
 
-		if (destination.Count > source.Count)
-			destination.RemoveRange(source.Count, destination.Count - source.Count);
-		if (resize)
-			destination.Capacity = source.Count;
-
 		int length = source.Count;
+		if (destination.Count > length)
+			destination.RemoveRange(length, destination.Count - length);
+
+		if (destination.Capacity < length)
+			destination.Capacity = length;
+
 		for (int i = 0; i < length; i++)
 		{
 			if (i < destination.Count)
 				destination[i] = converter(source[i]);
 			else
 				destination.Add(converter(source[i]));
+		}
+	}
+
+	/// <inheritdoc cref="Convert{T1, T2}(IReadOnlyList{T1}, List{T2}, Func{T1, T2})"/>
+	public static void Convert<T1, T2>(IReadOnlyCollection<T1> source, List<T2> destination, Func<T1, T2> converter)
+	{
+		if (source is null)
+			throw new ArgumentNullException(nameof(source));
+		if (destination is null)
+			throw new ArgumentNullException(nameof(destination));
+		if (converter is null)
+			throw new ArgumentNullException(nameof(converter));
+
+		int length = source.Count;
+		if (destination.Count > length)
+			destination.RemoveRange(length, destination.Count - length);
+
+		if (destination.Capacity < length)
+			destination.Capacity = length;
+
+		int i = 0;
+		foreach (var item in source)
+		{
+			if (i < destination.Count)
+				destination[i] = converter(item);
+			else
+				destination.Add(converter(item));
+			i++;
 		}
 	}
 
@@ -177,19 +271,19 @@ public static class Queries
 		if (filter is null)
 			throw new ArgumentNullException(nameof(filter));
 
-		int newLength = 0;
-
+		int removed = 0;
 		for (int i = 0; i < array.Length; i++)
 		{
 			if (!filter(array[i]))
+			{
 				array[i] = default;
-			else
-				newLength++;
+				removed++;
+				MoveToEnd(array, i);
+			}
 		}
 
-		Array.Sort(array, Singleton<NullComparer<T>>.Main);
-		if (resize)
-			Array.Resize(ref array, newLength);
+		if (resize && removed > 0)
+			Array.Resize(ref array, array.Length - removed);
 	}
 
 	/// <summary>
@@ -265,16 +359,109 @@ public static class Queries
 	/// <param name="list"></param>
 	/// <exception cref="ArgumentNullException"></exception>
 	public static void FilterNulls<T>(List<T> list) => Filter(list, filter: NotNull);
-}
 
-internal class NullComparer<T> : IComparer<T>
-{
-	int IComparer<T>.Compare(T x, T y)
+	/// <summary>
+	/// Compares two lists by their values.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="valueComparer">The comparer used to compare the values of the two lists.</param>
+	/// <returns><see langword="true"/> if both lists have the same elements.</returns>
+	public static bool ValueEquals<T>(IReadOnlyList<T> x, IReadOnlyList<T> y, IEqualityComparer<T> valueComparer = null)
 	{
-		return (Equals(x, default(T)), Equals(y, default(T))) switch {
-			(true, false) => +1, // x > y
-			(false, false) or (true, true) => 0, // x = y
-			(false, true) => -1, // x < y
+		switch (x, y)
+		{
+			case (null, null): return true;
+			case (object, null) or (null, object): return false;
+		}
+
+		bool equals = x.Count == y.Count;
+		T a, b;
+		for (int i = 0; i < x.Count && equals; i++)
+		{
+			(a, b) = (x[i], y[i]);
+			equals = valueComparer?.Equals(a, b) ?? CompareValues(a, b);
+		}
+		return equals;
+	}
+
+	/// <summary>
+	/// Compares two collections by their values.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="valueComparer">The comparer used to compare the values.</param>
+	/// <returns><see langword="true"/> if both collections have the same elements.</returns>
+	public static bool ValueEquals<T>(IReadOnlyCollection<T> x, IReadOnlyCollection<T> y, IEqualityComparer<T> valueComparer = null)
+	{
+		switch (x, y)
+		{
+			case (null, null): return true;
+			case (object, null) or (null, object): return false;
+		}
+
+		bool equals = x.Count == y.Count;
+		return equals && ValueEquals((IEnumerable<T>)x, y, valueComparer);
+	}
+
+	/// <summary>
+	/// Compares two <see cref="IEnumerable{T}"/> by their values.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="valueComparer">The comparer used to compare the values.</param>
+	/// <returns><see langword="true"/> if both <see cref="IEnumerable{T}"/> have the same elements.</returns>
+	public static bool ValueEquals<T>(IEnumerable<T> x, IEnumerable<T> y, IEqualityComparer<T> valueComparer = null)
+	{
+		switch (x, y)
+		{
+			case (null, null): return true;
+			case (object, null) or (null, object): return false;
+		}
+
+		bool equals = true;
+		var enumerator = (x, y).GetEnumerator();
+		T a, b;
+		while (enumerator.MoveNext() && equals)
+		{
+			(a, b) = enumerator.Current;
+			equals = valueComparer?.Equals(a, b) ?? CompareValues(a, b);
+		}
+		return equals;
+	}
+
+	private static bool CompareValues<T>(T a, T b)
+	{
+		return (a, b) switch {
+			(UnityObject obj, null) => obj == null,
+			(null, UnityObject obj) => obj == null,
+			(UnityObject objX, UnityObject objY) => objX == objY,
+
+			(IEquatable<T> eq, _) => eq.Equals(b),
+			(_, IEquatable<T> eq) => eq.Equals(a),
+
+			_ => object.Equals(a, b),
 		};
+	}
+
+	/// <summary>
+	/// Shifts the value at the given <paramref name="index"/> to the end of the list of <paramref name="values"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="values"></param>
+	/// <param name="index"></param>
+	public static void MoveToEnd<T>(IList<T> values, int index)
+	{
+		int length = values.Count - 1;
+		if (index >= length)
+			return;
+
+		for (int i = index; i < length; i++)
+		{
+			(values[i], values[i + 1]) = (values[i + 1], values[i]);
+		}
 	}
 }
