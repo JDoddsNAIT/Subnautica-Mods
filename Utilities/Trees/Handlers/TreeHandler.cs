@@ -6,7 +6,7 @@ namespace FrootLuips.Subnautica.Trees.Handlers;
 /// Generic implementation of <see cref="ITreeHandler{T}"/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class TreeHandler<T> : ITreeHandler<T>
+public class TreeHandler<T> : ITreeHandler<T> where T : class
 {
 	/// <inheritdoc cref="GetParentDelegate"/>
 	public required GetParentDelegate TryGetParent { get; set; }

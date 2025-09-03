@@ -43,7 +43,7 @@ public static class TreeHelpers
 	/// <param name="node"></param>
 	/// <param name="handler"></param>
 	/// <returns></returns>
-	public static T GetRoot<T>(T node, ITreeHandler<T> handler)
+	public static T GetRoot<T>(T node, ITreeHandler<T> handler) where T : class
 	{
 		T current = node;
 		bool foundRoot = false;
@@ -71,7 +71,7 @@ public static class TreeHelpers
 	/// <param name="node"></param>
 	/// <param name="handler"></param>
 	/// <returns></returns>
-	public static int GetDepth<T>(T node, ITreeHandler<T> handler)
+	public static int GetDepth<T>(T node, ITreeHandler<T> handler) where T : class
 	{
 		T current = node;
 		bool foundRoot = false;
@@ -92,6 +92,18 @@ public static class TreeHelpers
 	}
 
 	/// <summary>
+	/// Gets the parent of a <paramref name="node"/> using the <paramref name="handler"/>.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="node"></param>
+	/// <param name="handler"></param>
+	/// <returns>The parent node, or null if there is none.</returns>
+	public static T? GetParent<T>(T node, ITreeHandler<T> handler) where T : class
+	{
+		return handler.TryGetParent(node, out var parent) ? parent : null;
+	}
+
+	/// <summary>
 	/// Gets the absolute path to a <paramref name="node"/>.
 	/// </summary>
 	/// <remarks>
@@ -101,7 +113,7 @@ public static class TreeHelpers
 	/// <param name="node"></param>
 	/// <param name="handler"></param>
 	/// <returns>The names of this <paramref name="node"/> and it's ancestors delimited by the <seealso cref="PATH_DELIMITER"/>.</returns>
-	public static string GetPath<T>(T node, ITreeHandler<T> handler)
+	public static string GetPath<T>(T node, ITreeHandler<T> handler) where T : class
 	{
 		T current = node;
 		bool foundRoot = false;
@@ -131,7 +143,7 @@ public static class TreeHelpers
 	/// <param name="path"></param>
 	/// <returns></returns>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public static T GetNode<T>(this ITreeHandler<T> handler, T node, string path)
+	public static T GetNode<T>(this ITreeHandler<T> handler, T node, string path) where T : class
 	{
 		return path switch {
 			null or "" => node,
@@ -141,7 +153,7 @@ public static class TreeHelpers
 	}
 
 	/// <inheritdoc cref="GetNode{T}(ITreeHandler{T}, T, string)"/>
-	public static T GetNode<T>(this ITreeHandler<T> handler, T node, params string[] path)
+	public static T GetNode<T>(this ITreeHandler<T> handler, T node, params string[] path) where T : class
 	{
 		if (path.Length == 0)
 			return node;
@@ -166,7 +178,7 @@ public static class TreeHelpers
 	/// <param name="name"></param>
 	/// <returns></returns>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public static T GetChild<T>(this ITreeHandler<T> handler, T node, string name)
+	public static T GetChild<T>(this ITreeHandler<T> handler, T node, string name) where T : class
 	{
 		T result;
 		for (int i = 0; i < handler.GetChildCount(node); i++)
@@ -191,7 +203,7 @@ public static class TreeHelpers
 	/// <returns></returns>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
 	/// <exception cref="NodeNotFoundException"></exception>
-	public static IEnumerable<T> Enumerate<T>(this ITreeHandler<T> handler, T node, SearchOptions<T> options)
+	public static IEnumerable<T> Enumerate<T>(this ITreeHandler<T> handler, T node, SearchOptions<T> options) where T : class
 	{
 		return options.Search switch {
 			SearchMode.BreadthFirst => Enumerate_BreadthFirst(handler, node, options),
@@ -201,7 +213,7 @@ public static class TreeHelpers
 		};
 	}
 
-	private static IEnumerable<T> Enumerate_Ancestors<T>(ITreeHandler<T> handler, T node, SearchOptions<T> options)
+	private static IEnumerable<T> Enumerate_Ancestors<T>(ITreeHandler<T> handler, T node, SearchOptions<T> options) where T : class
 	{
 		T? current = node;
 		if (options.Inclusive)
@@ -214,7 +226,7 @@ public static class TreeHelpers
 		}
 	}
 
-	private static IEnumerable<T> Enumerate_DepthFirst<T>(ITreeHandler<T> handler, T node, SearchOptions<T> options)
+	private static IEnumerable<T> Enumerate_DepthFirst<T>(ITreeHandler<T> handler, T node, SearchOptions<T> options) where T : class
 	{
 		var stack = new Stack<T>();
 		stack.Push(node);
@@ -241,7 +253,7 @@ public static class TreeHelpers
 		while (stack.Count > 0);
 	}
 
-	private static IEnumerable<T> Enumerate_BreadthFirst<T>(ITreeHandler<T> handler, T node, SearchOptions<T> options)
+	private static IEnumerable<T> Enumerate_BreadthFirst<T>(ITreeHandler<T> handler, T node, SearchOptions<T> options) where T : class
 	{
 		Queue<T> queue = new(capacity: 1);
 		queue.Enqueue(node);
