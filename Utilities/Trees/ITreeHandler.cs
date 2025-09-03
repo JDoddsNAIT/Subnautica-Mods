@@ -5,7 +5,7 @@ namespace FrootLuips.Subnautica.Trees;
 /// Defines how the parent, name, and children of <typeparamref name="T"/> values are accessed.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface ITreeHandler<T>
+public interface ITreeHandler<T> where T : class
 {
 	/// <summary>
 	/// Gets the root object of a <paramref name="node"/>.

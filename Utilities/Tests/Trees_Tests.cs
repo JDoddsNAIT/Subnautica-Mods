@@ -83,7 +83,7 @@ internal class Trees_Tests : ITestContainer
 	void Enumerate_MaxDepth()
 	{
 		var expected = new[] { A!, B!, C! };
-		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, MaxDepth: 1))
+		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, maxDepth: 1))
 			.Select(static t => t.gameObject).ToArray();
 
 		Assert.Equals(expected, actual, _objectComparer);
@@ -92,7 +92,7 @@ internal class Trees_Tests : ITestContainer
 	void Enumerate_NotInclusive()
 	{
 		var expected = new[] { B!, D!, E!, C!, F! };
-		var actual = _tree!.Enumerate(options: new(SearchMode.DepthFirst, Inclusive: false))
+		var actual = _tree!.Enumerate(options: new(SearchMode.DepthFirst, inclusive: false))
 			.Select(static t => t.gameObject).ToArray();
 
 		Assert.Equals(expected, actual, _objectComparer);
@@ -103,7 +103,7 @@ internal class Trees_Tests : ITestContainer
 	void Enumerate_Predicate()
 	{
 		var expected = new[] { A!, B!, D! };
-		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, Predicate: Predicate))
+		var actual = _tree!.Enumerate(options: new(SearchMode.BreadthFirst, predicate: Predicate))
 			.Select(static t => t.gameObject).ToArray();
 
 		Assert.Equals(expected, actual, _objectComparer);

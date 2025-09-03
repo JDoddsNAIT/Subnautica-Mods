@@ -9,7 +9,7 @@ namespace FrootLuips.Subnautica.Trees;
 /// Represents a tree structure of <typeparamref name="T"/> objects.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Tree<T> : ITreeHandler<T>
+public class Tree<T> : ITreeHandler<T> where T : class
 {
 	/// <summary>
 	/// The root node of the tree.
@@ -38,6 +38,35 @@ public class Tree<T> : ITreeHandler<T>
 	/// <returns></returns>
 	public IEnumerable<T> Enumerate(SearchOptions<T> options)
 		=> TreeHelpers.Enumerate(this.Handler, this.Root, options);
+
+	/// <summary>
+	/// The function used to traverse a tree.
+	/// </summary>
+	/// <param name="current">The current node.</param>
+	/// <param name="handler">The handler used by this tree.</param>
+	/// <returns>The next node to process, or null to end traversal.</returns>
+	public delegate T? TraverseFunc(T current, ITreeHandler<T> handler);
+
+	/// <summary>
+	/// Traverses the tree with the given <seealso cref="TraverseFunc"/>
+	/// </summary>
+	/// <param name="func"></param>
+	/// <param name="initialNode"></param>
+	/// <param name="maxIterations"></param>
+	/// <returns>The last node that was processed by this method.</returns>
+	public T Traverse(TraverseFunc func, T? initialNode = null, int maxIterations = 1024)
+	{
+		T? current = initialNode ?? this.Root;
+		T previous = current;
+
+		for (int i = 0; i < maxIterations && current is not null; i++)
+		{
+			previous = current;
+			current = func(current, Handler);
+		}
+
+		return current ?? previous;
+	}
 
 	/// <summary>
 	/// Finds all nodes in the tree that meet the given <paramref name="predicate"/>.
