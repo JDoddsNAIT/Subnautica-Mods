@@ -47,10 +47,65 @@ public static class Validator
 		}
 	}
 
-	private static ValidationResult<TResult> Validate<T, TResult>(this T obj,
-		IEnumerator<Exception> validator, ValidationCallback<T, TResult> callback)
+	internal static bool DefaultCallback<T>(T value, IReadOnlyList<Exception> errors, [MaybeNullWhen(false), NotNullWhen(true)] out T? result) where T : class
 	{
-		List<Exception> errors = new();
+		bool success = errors.Count == 0;
+		result = success ? value : null;
+		return success;
+	}
+
+	internal static bool DefaultValueCallback<T>(T value, IReadOnlyList<Exception> errors, [MaybeNullWhen(false), NotNullWhen(true)] out Nullable<T> result) where T : struct
+	{
+		bool success = errors.Count == 0;
+		result = success ? value : null;
+		return success;
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="Validate{T, TResult}(T, IValidator{T, TResult})"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="value"></param>
+	/// <param name="validator"></param>
+	/// <returns></returns>
+	public static ValidationResult<T?> Validate<T>(T value, IEnumerator<Exception> validator) where T : class
+	{
+		return Validate<T, T?>(value, validator, DefaultCallback);
+	}
+	/// <inheritdoc cref=" Validate{T}(T, IEnumerator{Exception})"/>
+	public static ValidationResult<T?> ValidateValue<T>(T value, IEnumerator<Exception> validator) where T : struct
+	{
+		return Validate<T, T?>(value, validator, DefaultValueCallback);
+	}
+
+	/// <summary>
+	/// Validates the <paramref name="value"/> using the <paramref name="validator"/> and returns the result.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="TResult"></typeparam>
+	/// <param name="value"></param>
+	/// <param name="validator"></param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentNullException"></exception>
+	public static ValidationResult<TResult?> Validate<T, TResult>(T value, IValidator<T, TResult> validator)
+	{
+		return Validate<T, TResult?>(value, validator.Validate(value), validator.TryGetResult);
+	}
+
+	/// <summary>
+	/// <inheritdoc cref="Validate{T, TResult}(T, IValidator{T, TResult})"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="TResult"></typeparam>
+	/// <param name="value"></param>
+	/// <param name="validator"></param>
+	/// <param name="callback"></param>
+	/// <returns></returns>
+	public static ValidationResult<TResult?> Validate<T, TResult>(T value, IEnumerator<Exception> validator, ValidationCallback<T, TResult?> callback)
+	{
+		bool success;
+		var errors = new List<Exception>();
+		TResult? result;
 		try
 		{
 			while (validator.MoveNext())
@@ -62,62 +117,11 @@ public static class Validator
 		{
 			errors.Add(ex);
 		}
-
-		bool success = callback(obj, errors, out var result);
-		return new ValidationResult<TResult>(success, errors, result);
-	}
-
-	/// <summary>
-	/// Uses the <paramref name="validator"/> to validate <paramref name="obj"/>, and returns the result.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <typeparam name="TResult"></typeparam>
-	/// <param name="obj"></param>
-	/// <param name="validator"></param>
-	/// <returns></returns>
-	public static ValidationResult<TResult> Validate<T, TResult>(this T obj,
-		IValidator<T, TResult> validator)
-	{
-		return Validate<T, TResult>(obj, validator.Validate(obj), validator.Callback);
-	}
-
-	/// <summary>
-	/// Validates this object.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <typeparam name="TResult"></typeparam>
-	/// <param name="obj"></param>
-	/// <returns></returns>
-	public static ValidationResult<TResult> Validate<T, TResult>(this T obj) where T : IValidator<T, TResult>
-	{
-		return Validate(obj, obj);
-	}
-
-	/// <summary>
-	/// <inheritdoc cref="Validate{T, TResult}(T, IValidator{T, TResult})"/>
-	/// </summary>
-	/// <remarks>
-	/// Successful validation is determined by whether the <paramref name="validator"/> returns any errors,
-	/// or the result of <paramref name="callback"/> if specified.
-	/// </remarks>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="obj"></param>
-	/// <param name="validator"></param>
-	/// <param name="callback"></param>
-	/// <returns></returns>
-	public static ValidationResult<T> Validate<T>(this T obj,
-		IEnumerator<Exception> validator, ValidationCallback<T>? callback = null)
-	{
-		callback ??= (static (o, e) => o != null && e.Count == 0);
-		return Validate(obj, validator, DefaultCallback(callback));
-	}
-
-	private static ValidationCallback<T, T> DefaultCallback<T>(ValidationCallback<T> callback)
-	{
-		return (T? obj, IReadOnlyCollection<Exception> errors, [NotNullWhen(true)] out T? result) => {
-			result = obj;
-			return callback(obj, errors);
-		};
+		finally
+		{
+			success = callback(value, errors, out result);
+		}
+		return new ValidationResult<TResult?>(success, errors, result);
 	}
 
 	/// <summary>
